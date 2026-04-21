@@ -1,0 +1,17 @@
+fastapi>=0.111
+uvicorn[standard]
+pandas>=2.0
+numpy
+scikit-learn>=1.4
+shap
+fairlearn
+sqlalchemy
+alembic
+pydantic>=2.0
+python-multipart
+joblib
+scipy
+matplotlib
+seaborn
+httpx
+python-dotenv

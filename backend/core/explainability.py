@@ -1,0 +1,84 @@
+from __future__ import annotations
+
+from typing import Any
+
+import numpy as np
+import pandas as pd
+import shap
+
+from .common import build_classifier, prepare_split
+from .feature_intelligence import detect_proxy_features
+
+
+def explain_flagged_decisions(df: pd.DataFrame, model, sensitive_cols: list[str], target_col: str, n_samples: int = 5) -> list[dict[str, Any]]:
+    prepared = prepare_split(df, target_col)
+    proxy_result = detect_proxy_features(df, sensitive_cols)
+    proxy_features = {item["feature"] for item in proxy_result.get("proxy_features", [])}
+
+    if model is None:
+        pipeline = build_classifier(prepared.X_train, model_type="rf")
+        pipeline.fit(prepared.X_train, prepared.y_train)
+    else:
+        pipeline = model
+        if hasattr(pipeline, "fit"):
+            pipeline.fit(prepared.X_train, prepared.y_train)
+
+    test_features = prepared.X_test.reset_index(drop=True)
+    predictions = pd.Series(pipeline.predict(test_features))
+    flagged: list[dict[str, Any]] = []
+
+    explainer = None
+    model_step = getattr(pipeline, "named_steps", {}).get("model") if hasattr(pipeline, "named_steps") else pipeline
+    if hasattr(model_step, "estimators_"):
+        explainer = shap.TreeExplainer(model_step)
+    elif hasattr(model_step, "coef_"):
+        explainer = shap.LinearExplainer(model_step, test_features, feature_perturbation="interventional")
+
+    transformed = pipeline.named_steps["preprocessor"].transform(test_features) if hasattr(pipeline, "named_steps") else test_features
+    shap_values = None
+    if explainer is not None:
+        shap_values = explainer.shap_values(transformed)
+
+    for idx in range(min(len(test_features), n_samples * 2)):
+        row = test_features.iloc[idx]
+        other_rows = test_features.drop(index=idx)
+        if other_rows.empty:
+            continue
+        diffs = other_rows.drop(columns=[col for col in sensitive_cols if col in other_rows.columns], errors="ignore")
+        if diffs.empty:
+            continue
+        distances = diffs.select_dtypes(include=[np.number]).sub(row.select_dtypes(include=[np.number]), axis=1).pow(2).sum(axis=1)
+        nearest = int(distances.idxmin()) if not distances.empty else idx
+        if predictions.iloc[idx] == predictions.iloc[nearest]:
+            continue
+        top_reasons: list[dict[str, Any]] = []
+        if shap_values is not None:
+            values = shap_values[0][idx] if isinstance(shap_values, list) else shap_values[idx]
+            feature_names = pipeline.named_steps["preprocessor"].get_feature_names_out()
+            ranked = sorted(zip(feature_names, values), key=lambda item: abs(item[1]), reverse=True)[:3]
+            for feature_name, shap_value in ranked:
+                base_feature = feature_name.split("__")[-1]
+                top_reasons.append(
+                    {
+                        "feature": base_feature,
+                        "shap_value": float(shap_value),
+                        "is_proxy_risk": base_feature in proxy_features,
+                    }
+                )
+        else:
+            for feature_name in list(test_features.columns)[:3]:
+                top_reasons.append({"feature": feature_name, "shap_value": 0.0, "is_proxy_risk": feature_name in proxy_features})
+
+        explanation = "This decision differs from a very similar record; proxy features may be influencing the result." if any(reason["is_proxy_risk"] for reason in top_reasons) else "The model treats this near-identical case differently, indicating potential bias or threshold sensitivity."
+        flagged.append(
+            {
+                "record_id": int(idx),
+                "decision": "approved" if int(predictions.iloc[idx]) == 1 else "rejected",
+                "sensitive_attribute": ", ".join(f"{col}={row[col]}" for col in sensitive_cols if col in row.index),
+                "top_reasons": top_reasons,
+                "human_explanation": explanation,
+            }
+        )
+        if len(flagged) >= n_samples:
+            break
+    return flagged
