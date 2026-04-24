@@ -1,122 +1,104 @@
-# Unbiased AI Decision Platform
+# ⚖️ BIAS-0: The Fairness Guardian for AI
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.111+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React-18.2+-61DAFB?logo=react)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.0+-646CFF?logo=vite)](https://vitejs.dev/)
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python)](https://www.python.org/)
+![BIAS-0 Banner](assets/banner.png)
 
-**A fairness‑guardian platform that audits datasets and ML models for bias, simulates fixes, and monitors fairness after deployment.**
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111+-009688?logo=fastapi&style=for-the-badge)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-18.2+-61DAFB?logo=react&style=for-the-badge)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.0+-646CFF?logo=vite&style=for-the-badge)](https://vitejs.dev/)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&style=for-the-badge)](https://www.python.org/)
 
-Unbiased AI Decision Platform is an end-to-end fairness-guardian workflow for auditing datasets and models. It helps data scientists and analysts uncover where bias hides, how bad it is, and suggests concrete fixes. It allows you to simulate mitigation strategies in a sandbox, track fairness after deployment, and present results in a single navigation shell designed for fast review.
-
----
-
-## 📸 Screenshots
-
-*(Add screenshots here after capture)*
+**Audit. Analyze. Mitigate. Monitor.**  
+BIAS-0 is a comprehensive, end-to-end fairness assurance platform designed to help data scientists and AI engineers detect, understand, and resolve bias in their datasets and machine learning models.
 
 ---
 
-## 🚀 Quick Start
+## 🌟 Core Value Proposition
 
-### Prerequisites
-- Node.js (v18+)
-- Python (3.10+)
+In the era of AI-driven decision-making, fairness is not just an ethical requirement but a business necessity. **BIAS-0** provides the technical infrastructure to ensure your models are accountable, transparent, and equitable across all demographic groups.
 
-### 1. Start the Backend
+- **Uncover Hidden Bias**: Detect proxy features that leak sensitive information.
+- **Explainable Decisions**: Understand *why* a model might be biased using SHAP-based explainability.
+- **Risk Mitigation**: Simulate fixes in a safe sandbox before deployment.
+- **Continuous Monitoring**: Track fairness drift in production with real-time alerts.
+
+---
+
+## 🏗 Platform Architecture
+
+The system follows a rigorous, linear fairness workflow to ensure no bias goes undetected:
+
+```mermaid
+graph TD
+    A[📤 Upload Data & Model] --> B[🔍 Data Audit & Proxy Detection]
+    B --> C[⚖️ Model Bias Analysis]
+    C --> D[💡 Explainability & SHAP]
+    D --> E[🔄 Counterfactual Testing]
+    E --> F[🧪 Stress Testing]
+    F --> G[🛠 Auto-Fix Recommendations]
+    G --> H[🏗 Sandbox Simulation]
+    H --> I[📡 Continuous Monitoring]
+    
+    style A fill:#1e2533,stroke:#4f8ef7,stroke-width:2px
+    style I fill:#1e2533,stroke:#22c55e,stroke-width:2px
+```
+
+---
+
+## ✨ Key Features
+
+| Feature | Description |
+| :--- | :--- |
+| **🔍 Data Audit** | Scans for group representation, class imbalances, and missing data severity. |
+| **🕵️ Proxy Detection** | Identifies features (like ZIP codes) that act as proxies for sensitive attributes. |
+| **⚖️ Bias Metrics** | Calculates Demographic Parity, Equal Opportunity, and FPR gaps using `fairlearn`. |
+| **💡 Explainability** | SHAP-powered local explanations for decisions that appear biased. |
+| **🔄 Counterfactuals** | Tests if changing *only* a sensitive attribute flips the model's decision. |
+| **🧪 Stress Testing** | Evaluates model robustness against distribution shifts and minority under-sampling. |
+| **🏗 Sandbox** | Interactive simulation to visualize the trade-off between Accuracy and Fairness. |
+| **📡 Monitoring** | Real-time fairness tracking with multi-line group breakdown visualizations. |
+
+---
+
+## 📊 Standardized Fairness Metrics
+
+BIAS-0 uses a unified **Fairness Score (0-100)** to provide a clear risk assessment:
+
+- **100**: Perfectly Fair. No detectable bias across demographic groups.
+- **75+**: **Low Risk (Green)**. Minor disparities detected.
+- **50-74**: **Moderate Risk (Yellow)**. Significant bias identified; monitoring recommended.
+- **< 50**: **High Risk (Red)**. Critical bias detected; immediate mitigation required.
+
+---
+
+## 🚀 Quick Start Guide
+
+### 1. Backend Setup
 ```bash
 cd backend
 python -m venv .venv
-source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python utils/synthetic_data.py  # Generate synthetic demo datasets
+python utils/synthetic_data.py  # Populate demo datasets
 uvicorn main:app --reload
 ```
-The backend will run at `http://localhost:8000`.
 
-### 2. Start the Frontend
+### 2. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-The frontend will run at `http://localhost:5173`.
+
+### 3. Demo Mode
+Don't have a dataset? Use the **"Load Demo Project"** button on the Upload page to instantly explore the platform using a synthetic loan application dataset with pre-baked bias patterns.
 
 ---
 
-## 🏗 Architecture Overview
+## 🛠 Technology Stack
 
-The system follows a linear fairness workflow:
-
-```mermaid
-graph LR
-    A[Upload Data & Model] --> B[Data Audit & Proxy Detection]
-    B --> C[Model Bias Analysis]
-    C --> D[Explainability & SHAP]
-    D --> E[Counterfactual Testing]
-    E --> F[Stress Testing]
-    F --> G[Auto-Fix Recommendations]
-    G --> H[Sandbox Simulation]
-    H --> I[Continuous Monitoring]
-```
-
-The frontend (Vite + React + TypeScript) calls the FastAPI backend through the `/api` proxy. The backend stores audit and monitoring results in SQLite for local development and serves the demo datasets so the full pipeline can run without manual file uploads.
-
----
-
-## ✨ Features
-
-- **Data Audit & Feature Intelligence:** Scans datasets for group representation, class imbalances, missing data, and hidden proxy features (e.g., zip code acting as a proxy for race/caste).
-- **Model Bias Analysis:** Calculates advanced fairness metrics across protected groups using `fairlearn`.
-- **Explainability:** Uses SHAP values to explain individual flagged decisions and highlight if proxy features influenced the outcome.
-- **Counterfactual Testing:** Flips sensitive attributes (e.g., changing gender from Male to Female) to see if the model's decision flips.
-- **Stress Testing:** Automatically tests the model's robustness against under-sampling, label noise, and distribution shifts.
-- **Auto-Fix Sandbox:** Recommends targeted fixes (like removing a proxy feature or resampling) and simulates the fairness vs. accuracy trade-off in a sandbox.
-- **Real-Time Monitoring:** Tracks the fairness score over time after deployment and triggers alerts if fairness drops below baseline.
-
----
-
-## 🧪 Demo Mode
-
-To run the platform without your own data, use the **Upload page's `Load Demo Project`** action. This fetches the synthetic loan dataset generated by the backend, prefills the required fields, and starts the audit workflow.
-
-**Demo Loan Dataset Configurations:**
-- `sensitive_cols` = `["gender", "caste"]`
-- `target_col` = `"approved"`
-- `domain` = `"loan"`
-
-*Synthetic datasets are pre-configured with baked-in bias to demonstrate the platform's detection capabilities.*
-
----
-
-## 📊 Fairness Metrics Used
-
-- **Demographic Parity Difference:** The gap between the highest and lowest selection rates across groups.
-- **Equal Opportunity Difference:** The gap between true positive rates across groups.
-- **False Positive Rate (FPR) Gap:** The gap between false positive rates across groups.
-- **Fairness Score:** A 0-100 composite score derived from the three gaps above. A score of 100 means perfectly fair; 0 means maximum detected bias.
-- **Counterfactual Flip Rate:** The percentage of decisions that change when only one sensitive attribute changes.
-- **Stress Fragility:** Indicates whether fairness drops significantly under controlled perturbations.
-
----
-
-## 🛠 Tech Stack
-
-**Backend:**
-- Python 3
-- FastAPI
-- Pandas & NumPy
-- Scikit-Learn & Fairlearn
-- SHAP (Explainability)
-- SQLAlchemy (SQLite)
-
-**Frontend:**
-- React 18
-- TypeScript
-- Vite
-- Recharts (Data Visualization)
-- Radix UI & Lucide React (Components/Icons)
-- React Router DOM
+- **Backend**: FastAPI (Python), Pandas, Scikit-Learn, Fairlearn, SHAP, SQLAlchemy (SQLite).
+- **Frontend**: React 18, TypeScript, Vite, Recharts, Lucide Icons, Radix UI.
+- **Design System**: Custom high-contrast dark theme optimized for data visualization.
 
 ---
 
@@ -124,21 +106,16 @@ To run the platform without your own data, use the **Upload page's `Load Demo Pr
 
 ```text
 unbiased-ai/
-├── backend/                  # FastAPI Application
-│   ├── core/                 # Business logic for fairness analysis
-│   ├── models/               # SQLAlchemy DB Models & Pydantic Schemas
-│   ├── routers/              # API Endpoints
-│   └── utils/                # Helper scripts (e.g., Synthetic data generator)
-├── frontend/                 # Vite + React + TS Application
-│   ├── src/
-│   │   ├── api/              # Axios API Client
-│   │   ├── components/       # Reusable UI Components
-│   │   ├── pages/            # Application Pages
-│   │   └── styles/           # Global CSS and Design System
-├── data/                     # Generated Synthetic Datasets
-└── PROMPT.md                 # Original architecture and development spec
+├── backend/                  # FastAPI & Fairness Engines
+│   ├── core/                 # Audit, Bias, and Sandbox logic
+│   ├── models/               # Database and Schemas
+│   └── routers/              # API Endpoints
+├── frontend/                 # Vite + React Dashboard
+│   ├── src/components/       # Reusable Gauge and Chart components
+│   └── src/pages/            # Dashboard, Audit, and Sandbox views
+└── data/                     # Synthetic demo datasets
 ```
 
 ---
 
-*Built for fairness, transparency, and accountability in AI decision-making.*
+*Built with ❤️ for a more equitable AI future.*
