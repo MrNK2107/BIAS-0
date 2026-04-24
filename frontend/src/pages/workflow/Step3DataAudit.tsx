@@ -1,27 +1,63 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Link } from 'react-router-dom';
-import { useAppContext } from '../context/AppContext';
+import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../../context/AppContext';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
-export default function AuditReport() {
-  const { auditResult: audit, proxyResult: proxy } = useAppContext();
+export default function Step3DataAudit() {
+  const { file, auditResult: audit, proxyResult: proxy, runDataAudit } = useAppContext();
   const [dismissed, setDismissed] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!file) {
+      navigate('/workflow/step-1');
+      return;
+    }
+    
+    if (!audit && !loading) {
+      setLoading(true);
+      runDataAudit().finally(() => setLoading(false));
+    }
+  }, [file, audit, loading, runDataAudit, navigate]);
 
   const chartData = useMemo(() => {
     if (!audit?.group_stats?.gender) return [];
-    
     return Object.entries(audit.group_stats.gender).map(([group, metrics]: any) => ({ 
       group, 
       rate: Math.round((metrics.positive_rate || 0) * 100) 
     }));
   }, [audit]);
 
-  if (!audit || !proxy) {
-    return <div className="card">No audit data available. Please <Link to="/upload">upload a dataset</Link> first.</div>;
+  if (loading) {
+    return (
+      <div>
+        <div className="page-header">
+          <div>
+            <div className="kicker">Step 3 of 9</div>
+            <h1 className="page-title">Data Audit</h1>
+          </div>
+        </div>
+        <div className="card" style={{ padding: 40, textAlign: 'center' }}>
+          Running data audit... Checking for representation and proxy leakage.
+        </div>
+      </div>
+    );
   }
+
+  if (!audit || !proxy) return null;
 
   return (
     <div>
+      <div className="page-header">
+        <div>
+          <div className="kicker">Step 3 of 9</div>
+          <h1 className="page-title">Data Audit</h1>
+          <p className="page-subtitle">We analyzed your dataset for representation bias and missing data before modeling.</p>
+        </div>
+      </div>
+
       <div className={`banner ${audit.risk_level.toLowerCase()}`} style={{ marginBottom: 16 }}>
         <h2 className="section-title" style={{ margin: 0 }}>{audit.risk_level} risk detected</h2>
         <p className="helper" style={{ color: 'inherit' }}>{audit.risk_reason}</p>
@@ -75,7 +111,8 @@ export default function AuditReport() {
         </div>
         <div className="card">
           <div className="section-title">Proxy risk</div>
-          <div className="notice-list">
+          <div className="helper">Features that highly correlate with sensitive attributes.</div>
+          <div className="notice-list" style={{ marginTop: 12 }}>
             {proxy.proxy_features.map((feature: any) => (
               <div className="notice" key={feature.feature}>
                 <strong>{feature.feature}</strong>
@@ -88,7 +125,14 @@ export default function AuditReport() {
         </div>
       </div>
 
-      <Link className="btn btn-primary" to="/bias-report">Proceed to Bias Analysis</Link>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>
+        <button className="btn" onClick={() => navigate('/workflow/step-2')}>
+          <ArrowLeft size={16} /> Back
+        </button>
+        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-4')}>
+          Next: Analyze Model Bias <ArrowRight size={16} />
+        </button>
+      </div>
     </div>
   );
 }

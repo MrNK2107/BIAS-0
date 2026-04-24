@@ -1,0 +1,191 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { formApi } from '../../api/client';
+import { useAppContext } from '../../context/AppContext';
+import { ArrowRight, ArrowLeft, AlertTriangle } from 'lucide-react';
+
+export default function Step5Explanations() {
+  const { file, explainResult, explainSummary, runModelBias, projectId } = useAppContext();
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!file) {
+      navigate('/workflow/step-1');
+      return;
+    }
+    
+    if (!explainResult && !loading) {
+      setLoading(true);
+      runModelBias().finally(() => setLoading(false));
+    }
+  }, [file, explainResult, loading, runModelBias, navigate]);
+
+  if (loading) {
+    return (
+      <div>
+        <div className="page-header">
+          <div>
+            <div className="kicker">Step 5 of 9</div>
+            <h1 className="page-title">Explanations</h1>
+          </div>
+        </div>
+        <div className="card" style={{ padding: 40, textAlign: 'center' }}>
+          Generating explainability reports. Please wait...
+        </div>
+      </div>
+    );
+  }
+
+  if (!explainResult) return null;
+
+  return (
+    <div>
+      <div className="page-header">
+        <div>
+          <div className="kicker">Step 5 of 9</div>
+          <h1 className="page-title">Explanations</h1>
+          <p className="page-subtitle">Understand why the model made certain decisions and review high-risk flags.</p>
+        </div>
+      </div>
+
+      <div style={{ 
+        backgroundColor: '#fffbeb', 
+        border: '1px solid #fcd34d', 
+        borderRadius: '8px', 
+        padding: '16px',
+        marginBottom: '24px',
+        display: 'flex',
+        gap: '12px',
+        alignItems: 'flex-start'
+      }}>
+        <AlertTriangle color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} size={20} />
+        <div>
+          <div style={{ fontWeight: 600, color: '#92400e', marginBottom: '4px' }}>Model explanations do not imply fairness</div>
+          <div style={{ fontSize: '0.95rem', color: '#b45309' }}>
+            An explainable decision may still be a biased decision. SHAP values only tell us what the model learned, not whether what it learned is fair.
+          </div>
+        </div>
+      </div>
+
+      {explainSummary && (
+        <div className="card" style={{ marginBottom: 16, borderLeft: '4px solid var(--accent)', background: 'rgba(79, 142, 247, 0.05)' }}>
+          <div className="section-title" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
+             <span>Manager Summary</span>
+          </div>
+          <p style={{ fontSize: '1.1rem', lineHeight: 1.5, margin: '8px 0 0' }}>
+            {explainSummary}
+          </p>
+        </div>
+      )}
+
+      <div style={{ marginBottom: 16 }}>
+        <div className="section-title">Record Analysis</div>
+        <div className="helper" style={{ marginBottom: 16 }}>
+          Review specific decisions flagged for high risk. We split the analysis into how the model works versus why it might be unfair.
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {explainResult.map((item: any) => {
+            const proxyReasons = (item.top_reasons || []).filter((r: any) => r.is_proxy_risk);
+            
+            return (
+              <div className="card" key={item.record_id} style={{ padding: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #f3f4f6', paddingBottom: '12px' }}>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>
+                    Record {item.record_id} <span className="pill muted" style={{ marginLeft: '8px' }}>{item.decision}</span>
+                  </div>
+                  <span className={`pill ${item.explanation_type === 'individual' ? 'muted' : 'red'}`}>{item.sensitive_attribute}</span>
+                </div>
+
+                <div className="grid-2" style={{ gap: '24px' }}>
+                  {/* Section 1: Model Decision (SHAP) */}
+                  <div style={{ borderRight: '1px solid #f3f4f6', paddingRight: '24px' }}>
+                    <div style={{ fontWeight: 600, marginBottom: '16px', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      Why the model made this decision
+                    </div>
+                    <div className="helper" style={{ marginBottom: '16px', fontSize: '0.85rem' }}>
+                      Top feature contributions (SHAP values).
+                    </div>
+                    
+                    <div style={{ display: 'grid', gap: '12px' }}>
+                      {(item.top_reasons || []).map((reason: any) => (
+                        <div key={reason.feature}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '4px' }}>
+                            <span style={{ fontWeight: 500 }}>{reason.feature}</span>
+                            <span style={{ color: '#6b7280' }}>{reason.shap_value.toFixed(2)}</span>
+                          </div>
+                          <div className="progress-track">
+                            <div 
+                              className="progress-fill" 
+                              style={{ 
+                                width: `${Math.min(Math.abs(reason.shap_value) * 100, 100)}%`, 
+                                background: reason.is_proxy_risk ? 'linear-gradient(90deg, #f59e0b, #ef4444)' : 'linear-gradient(90deg, #3550c8, #4f8ef7)' 
+                              }} 
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Section 2: Fairness Assessment */}
+                  <div>
+                    <div style={{ fontWeight: 600, marginBottom: '16px', color: '#b91c1c', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      Why this may be unfair
+                    </div>
+                    
+                    <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                      <div style={{ fontSize: '0.95rem', lineHeight: 1.5, color: '#374151' }}>
+                        {item.human_explanation}
+                      </div>
+                    </div>
+
+                    {proxyReasons.length > 0 && (
+                      <div style={{ marginBottom: '16px' }}>
+                        <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#991b1b', marginBottom: '8px' }}>
+                          Proxy Feature Warnings
+                        </div>
+                        <ul style={{ paddingLeft: '20px', margin: 0, fontSize: '0.9rem', color: '#7f1d1d' }}>
+                          {proxyReasons.map((pr: any) => (
+                            <li key={pr.feature} style={{ marginBottom: '4px' }}>
+                              The feature <strong>{pr.feature}</strong> is highly correlated with the sensitive attribute and is driving this decision.
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div style={{ marginTop: '24px' }}>
+                      <button className="btn btn-small" style={{ backgroundColor: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5' }} onClick={() => {
+                        const reason = window.prompt('Enter reason for flagging this decision:');
+                        if (reason) {
+                          formApi.post('/monitoring/flag', {
+                            project_id: parseInt(projectId),
+                            record_id: String(item.record_id),
+                            reason,
+                          });
+                        }
+                      }}>
+                        🚩 Flag this decision for review
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>
+        <button className="btn" onClick={() => navigate('/workflow/step-4')}>
+          <ArrowLeft size={16} /> Back
+        </button>
+        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-6')}>
+          Next: Run Counterfactuals <ArrowRight size={16} />
+        </button>
+      </div>
+    </div>
+  );
+}

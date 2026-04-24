@@ -46,6 +46,7 @@ interface AppContextType extends AppState {
   // Pipeline methods
   runDataAudit: () => Promise<void>;
   runModelBias: (customStressScenarios?: any[]) => Promise<void>;
+  runCounterfactualAnalysis: () => Promise<void>;
   runRecommendFixes: () => Promise<void>;
   runSandboxSimulation: (fixes: string[]) => Promise<void>;
   runMonitoringSimulation: () => Promise<void>;
@@ -158,6 +159,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setStressResult(stressRes.data);
   };
 
+  const runCounterfactualAnalysis = async () => {
+    if (!file) return;
+    const cfRes = await formApi.post('/bias/counterfactual', getFormDataForCounterfactual());
+    setCounterfactualResult(cfRes.data);
+  };
+
   const runRecommendFixes = async () => {
     if (!file) return;
     const payload = {
@@ -206,7 +213,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       counterfactualResult, setCounterfactualResult,
       stressResult, setStressResult, recommendResult, setRecommendResult,
       sandboxResult, setSandboxResult, monitoringResult, setMonitoringResult,
-      runDataAudit, runModelBias, runRecommendFixes, runSandboxSimulation,
+      runDataAudit, runModelBias, runCounterfactualAnalysis, runRecommendFixes, runSandboxSimulation,
       runMonitoringSimulation, getMonitoringData
     }}>
       {children}
