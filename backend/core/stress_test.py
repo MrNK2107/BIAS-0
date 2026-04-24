@@ -13,7 +13,7 @@ def _minority_group(series: pd.Series) -> str:
     return str(series.value_counts().idxmin())
 
 
-def run_stress_tests(df: pd.DataFrame, model, sensitive_cols: list[str], target_col: str) -> dict[str, Any]:
+def run_stress_tests(df: pd.DataFrame, model, sensitive_cols: list[str], target_col: str, custom_scenarios: list[dict] | None = None) -> dict[str, Any]:
     prepared = prepare_split(df, target_col)
     pipeline = model or build_classifier(prepared.X_train, model_type="rf")
     pipeline.fit(prepared.X_train, prepared.y_train)
@@ -23,36 +23,49 @@ def run_stress_tests(df: pd.DataFrame, model, sensitive_cols: list[str], target_
     baseline_score = fairness_score_from_gaps(baseline_gaps)
 
     scenarios: list[dict[str, Any]] = []
-    minority_source = df[sensitive_cols[0]] if sensitive_cols else df[target_col]
-    minority_value = _minority_group(minority_source)
+    
+    if custom_scenarios:
+        scenario_configs = custom_scenarios
+    else:
+        minority_source = df[sensitive_cols[0]] if sensitive_cols else df[target_col]
+        minority_value = _minority_group(minority_source)
+        scenario_configs = [
+            {"name": "Under-sampling minority group (70%)", "type": "undersample", "target_group": minority_value, "sensitive_col": sensitive_cols[0] if sensitive_cols else None, "magnitude": 0.7},
+            {"name": "Label noise on minority group (10%)", "type": "label_noise", "target_group": minority_value, "sensitive_col": sensitive_cols[0] if sensitive_cols else None, "magnitude": 0.1},
+            {"name": "Distribution shift on minority income (-20%)", "type": "shift", "target_group": minority_value, "sensitive_col": sensitive_cols[0] if sensitive_cols else None, "magnitude": 0.2},
+        ]
 
-    scenario_names = [
-        ("Under-sampling minority group (70%)", "undersample"),
-        ("Label noise on minority group (10%)", "label_noise"),
-        ("Distribution shift on minority income (-20%)", "shift"),
-    ]
-    for name, scenario_type in scenario_names:
+    for config in scenario_configs:
+        name = config.get("name", "Unnamed Scenario")
+        scenario_type = config.get("type")
+        target_group = str(config.get("target_group"))
+        s_col = config.get("sensitive_col") or (sensitive_cols[0] if sensitive_cols else None)
+        mag = float(config.get("magnitude", 0.5))
+
         modified_df = df.copy()
-        if scenario_type == "undersample" and sensitive_cols:
-            mask = modified_df[sensitive_cols[0]].astype(str) == minority_value
-            drop_index = modified_df[mask].sample(frac=0.7, random_state=42).index
-            modified_df = modified_df.drop(index=drop_index)
-        elif scenario_type == "label_noise" and sensitive_cols:
-            mask = modified_df[sensitive_cols[0]].astype(str) == minority_value
-            sample_index = modified_df[mask].sample(frac=0.1, random_state=42).index
-            modified_df.loc[sample_index, target_col] = 1 - modified_df.loc[sample_index, target_col]
-        elif scenario_type == "shift":
+        if scenario_type == "undersample" and s_col in modified_df.columns:
+            mask = modified_df[s_col].astype(str) == target_group
+            if mask.any():
+                drop_index = modified_df[mask].sample(frac=mag, random_state=42).index
+                modified_df = modified_df.drop(index=drop_index)
+        elif scenario_type == "label_noise" and s_col in modified_df.columns:
+            mask = modified_df[s_col].astype(str) == target_group
+            if mask.any():
+                sample_index = modified_df[mask].sample(frac=mag, random_state=42).index
+                modified_df.loc[sample_index, target_col] = 1 - modified_df.loc[sample_index, target_col]
+        elif scenario_type == "shift" and s_col in modified_df.columns:
             income_cols = [col for col in modified_df.columns if "income" in col.lower()]
-            if income_cols and sensitive_cols:
-                mask = modified_df[sensitive_cols[0]].astype(str) == minority_value
-                modified_df.loc[mask, income_cols[0]] = modified_df.loc[mask, income_cols[0]] * 0.8
+            if income_cols:
+                mask = modified_df[s_col].astype(str) == target_group
+                if mask.any():
+                    modified_df.loc[mask, income_cols[0]] = modified_df.loc[mask, income_cols[0]] * (1.0 - mag)
 
         scenario_split = prepare_split(modified_df, target_col)
         scenario_model = build_classifier(scenario_split.X_train, model_type="rf")
         scenario_model.fit(scenario_split.X_train, scenario_split.y_train)
         scenario_pred = pd.Series(scenario_model.predict(scenario_split.X_test), index=scenario_split.y_test.index)
         scenario_accuracy = float(accuracy_score(scenario_split.y_test, scenario_pred))
-        scenario_gaps = fairness_gaps(scenario_pred, scenario_split.y_test, modified_df.loc[scenario_split.y_test.index, sensitive_cols[0]]) if sensitive_cols else {"demographic_parity_difference": 0.0, "equal_opportunity_difference": 0.0, "fpr_gap": 0.0}
+        scenario_gaps = fairness_gaps(scenario_pred, scenario_split.y_test, modified_df.loc[scenario_split.y_test.index, s_col]) if s_col in modified_df.columns else {"demographic_parity_difference": 0.0, "equal_opportunity_difference": 0.0, "fpr_gap": 0.0}
         scenario_score = fairness_score_from_gaps(scenario_gaps)
         fairness_drop = round(baseline_score - scenario_score)
         scenarios.append(

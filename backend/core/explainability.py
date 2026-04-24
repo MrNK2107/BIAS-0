@@ -77,8 +77,82 @@ def explain_flagged_decisions(df: pd.DataFrame, model, sensitive_cols: list[str]
                 "sensitive_attribute": ", ".join(f"{col}={row[col]}" for col in sensitive_cols if col in row.index),
                 "top_reasons": top_reasons,
                 "human_explanation": explanation,
+                "explanation_type": "contrastive",
             }
         )
         if len(flagged) >= n_samples:
             break
+
+    if len(flagged) == 0:
+        for idx in range(min(len(test_features), n_samples, 10)):
+            row = test_features.iloc[idx]
+            top_reasons: list[dict[str, Any]] = []
+            if shap_values is not None:
+                values = shap_values[0][idx] if isinstance(shap_values, list) else shap_values[idx]
+                feature_names = (
+                    pipeline.named_steps["preprocessor"].get_feature_names_out()
+                    if hasattr(pipeline, "named_steps")
+                    else test_features.columns
+                )
+                ranked = sorted(zip(feature_names, values), key=lambda item: abs(item[1]), reverse=True)[:3]
+                for feature_name, shap_value in ranked:
+                    base_feature = feature_name.split("__")[-1]
+                    top_reasons.append(
+                        {
+                            "feature": base_feature,
+                            "shap_value": float(shap_value),
+                            "is_proxy_risk": base_feature in proxy_features,
+                        }
+                    )
+            else:
+                for feature_name in list(test_features.columns)[:3]:
+                    top_reasons.append({"feature": feature_name, "shap_value": 0.0, "is_proxy_risk": feature_name in proxy_features})
+
+            flagged.append(
+                {
+                    "record_id": int(idx),
+                    "decision": "approved" if int(predictions.iloc[idx]) == 1 else "rejected",
+                    "sensitive_attribute": ", ".join(f"{col}={row[col]}" for col in sensitive_cols if col in row.index),
+                    "top_reasons": top_reasons,
+                    "human_explanation": "No near-identical contrasting case found. Showing top influential features for this individual decision.",
+                    "explanation_type": "individual",
+                }
+            )
+
     return flagged
+
+
+def generate_narrative_summary(flagged_list: list[dict[str, Any]], sensitive_cols: list[str], domain: str) -> str:
+    """
+    Generate a plain-English narrative summary of the flagged decisions.
+    """
+    if not flagged_list:
+        return f"No flagged decisions were identified in the {domain} domain analysis."
+
+    proxy_count = sum(1 for item in flagged_list if any(reason.get("is_proxy_risk") for reason in item.get("top_reasons", [])))
+
+    all_proxy_features = []
+    for item in flagged_list:
+        for reason in item.get("top_reasons", []):
+            if reason.get("is_proxy_risk"):
+                all_proxy_features.append(reason.get("feature"))
+
+    if not all_proxy_features:
+        return (
+            f"Out of {len(flagged_list)} reviewed decisions in the {domain} domain, "
+            f"none showed explicit signs of proxy-driven bias. The model decisions appear to be based on "
+            f"non-sensitive features with lower correlation to protected attributes."
+        )
+
+    from collections import Counter
+
+    top_feature = Counter(all_proxy_features).most_common(1)[0][0]
+    sensitive_col = sensitive_cols[0] if sensitive_cols else "sensitive attributes"
+
+    return (
+        f"Out of {len(flagged_list)} reviewed decisions in the {domain} domain, "
+        f"{proxy_count} showed signs of proxy-driven bias. The most influential feature linked to "
+        f"discrimination risk was '{top_feature}', which appears correlated with {sensitive_col}. "
+        f"This suggests the model may be using {top_feature} as an indirect signal for {sensitive_col} "
+        f"when making decisions."
+    )

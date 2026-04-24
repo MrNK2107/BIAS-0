@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import CounterfactualFlip from '../components/CounterfactualFlip';
 import ScoreGauge from '../components/ScoreGauge';
 import { useAppContext } from '../context/AppContext';
+import { formApi } from '../api/client';
 
 export default function Counterfactual() {
-  const { file, sensitiveCols, counterfactualResult, runModelBias } = useAppContext();
+  const { file, sensitiveCols, counterfactualResult, runModelBias, projectId } = useAppContext();
   const [sensitiveCol, setSensitiveCol] = useState(sensitiveCols[0] || 'gender');
   const [loading, setLoading] = useState(false);
 
@@ -65,6 +66,40 @@ export default function Counterfactual() {
               <strong>{name.replace('_', ' to ')}</strong>
               <div className="progress-track" style={{ margin: '10px 0' }}><div className="progress-fill" style={{ width: `${entry.rate * 100}%` }} /></div>
               <div className="helper">{entry.flips} flips out of {entry.total}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="card" style={{ marginTop: 16 }}>
+        <div className="section-title">Individual record results</div>
+        <div className="notice-list">
+          {(!counterfactualResult.sample_flips || counterfactualResult.sample_flips.length === 0) && (
+            <div className="helper">No individual flips identified for the current selection.</div>
+          )}
+          {(counterfactualResult.sample_flips || []).map((flip: any, i: number) => (
+            <div className="notice notice-contrastive" key={i}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <strong>Record {flip.record_id}</strong>
+                  <div className="helper" style={{ marginTop: 4 }}>
+                    Changing <strong>{sensitiveCol}</strong> from <em>{flip.original_value}</em> to <em>{flip.flipped_value}</em> 
+                    flipped decision from <span className="pill muted">{flip.original_decision}</span> to <span className="pill red">{flip.flipped_decision}</span>.
+                  </div>
+                </div>
+                <button className="btn btn-small" onClick={() => {
+                  const reason = window.prompt('Enter reason for flagging this decision:');
+                  if (reason) {
+                    formApi.post('/monitoring/flag', {
+                      project_id: parseInt(projectId),
+                      record_id: String(flip.record_id),
+                      reason,
+                    }).then(() => {
+                      alert('Decision flagged for review.');
+                    });
+                  }
+                }}>🚩 Flag this decision</button>
+              </div>
             </div>
           ))}
         </div>

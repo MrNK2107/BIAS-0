@@ -55,3 +55,9 @@ Thumbs.db
 
 
 skills/
+# Local databases
+*.db
+backend/unbiased_ai.db
+
+# Generated data
+data/

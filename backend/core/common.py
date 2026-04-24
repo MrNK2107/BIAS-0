@@ -134,6 +134,7 @@ def fairness_gaps(y_pred: pd.Series, y_true: pd.Series, group: pd.Series) -> dic
     approval_rates = []
     tprs = []
     fprs = []
+    fnrs = []
     for value in group_values:
         mask = group.astype(str) == value
         group_true = y_true[mask]
@@ -142,15 +143,29 @@ def fairness_gaps(y_pred: pd.Series, y_true: pd.Series, group: pd.Series) -> dic
         approval_rates.append(float(np.mean(group_pred)))
         tprs.append(float(tp / max(tp + fn, 1)))
         fprs.append(float(fp / max(fp + tn, 1)))
+        fnrs.append(float(fn / max(tp + fn, 1)))
     return {
         "demographic_parity_difference": float(max(approval_rates) - min(approval_rates)) if approval_rates else 0.0,
         "equal_opportunity_difference": float(max(tprs) - min(tprs)) if tprs else 0.0,
         "fpr_gap": float(max(fprs) - min(fprs)) if fprs else 0.0,
+        "fnr_gap": float(max(fnrs) - min(fnrs)) if fnrs else 0.0,
     }
 
 
-def fairness_score_from_gaps(gaps: dict[str, float]) -> float:
-    raw_penalty = 30 * gaps.get("demographic_parity_difference", 0.0) + 25 * gaps.get("equal_opportunity_difference", 0.0) + 20 * gaps.get("fpr_gap", 0.0)
+def fairness_score_from_gaps(gaps: dict[str, float], metric_weights: dict[str, float] | None = None) -> float:
+    if metric_weights is None:
+        metric_weights = {
+            "demographic_parity_difference": 25,
+            "equal_opportunity_difference": 20,
+            "fpr_gap": 15,
+            "fnr_gap": 15,
+        }
+    raw_penalty = (
+        metric_weights.get("demographic_parity_difference", 25) * gaps.get("demographic_parity_difference", 0.0)
+        + metric_weights.get("equal_opportunity_difference", 20) * gaps.get("equal_opportunity_difference", 0.0)
+        + metric_weights.get("fpr_gap", 15) * gaps.get("fpr_gap", 0.0)
+        + metric_weights.get("fnr_gap", 15) * gaps.get("fnr_gap", 0.0)
+    )
     return float(max(0.0, min(100.0, 100.0 - raw_penalty)))
 
 

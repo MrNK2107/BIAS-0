@@ -9,6 +9,10 @@ export default function UploadPage() {
     sensitiveCols, setSensitiveCols, 
     targetCol, setTargetCol, 
     domain, setDomain,
+    modelType, setModelType,
+    apiUrl, setApiUrl,
+    requestFormat, setRequestFormat,
+    metricPriority, setMetricPriority,
     runDataAudit, runModelBias, runRecommendFixes
   } = useAppContext();
 
@@ -135,15 +139,78 @@ export default function UploadPage() {
           <select className="select" value={domain} onChange={(event) => setDomain(event.target.value)}>
             {['loan', 'hiring', 'insurance', 'healthcare'].map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
+          <div style={{ height: 16 }} />
+          <div className="section-title">Fairness Priority</div>
+          <select className="select" value={metricPriority} onChange={(event) => setMetricPriority(event.target.value)}>
+            <option value="balanced">Balanced (Default)</option>
+            <option value="equal_opportunity_first">Equal Opportunity First</option>
+            <option value="demographic_parity_first">Demographic Parity First</option>
+          </select>
         </div>
       </div>
+
+      <div className="card" style={{ marginTop: 16 }}>
+        <div className="section-title">Model source</div>
+        <div className="helper">Choose whether to upload a model file or use an external API endpoint.</div>
+        <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input
+              type="radio"
+              value="file"
+              checked={modelType === 'file'}
+              onChange={(e) => setModelType(e.target.value as 'file' | 'api')}
+            />
+            File Upload
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input
+              type="radio"
+              value="api"
+              checked={modelType === 'api'}
+              onChange={(e) => setModelType(e.target.value as 'file' | 'api')}
+            />
+            API Endpoint
+          </label>
+        </div>
+      </div>
+
+      {modelType === 'api' && (
+        <div className="card" style={{ marginTop: 16 }}>
+          <div className="section-title">API Configuration</div>
+          <div className="helper">Configure your model API endpoint for bias analysis.</div>
+          
+          <div style={{ marginTop: 12 }}>
+            <label className="helper" style={{ display: 'block', marginBottom: 8 }}>Model API URL</label>
+            <input
+              className="input"
+              type="text"
+              placeholder="https://api.example.com/predict"
+              value={apiUrl}
+              onChange={(e) => setApiUrl(e.target.value)}
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div style={{ marginTop: 12 }}>
+            <label className="helper" style={{ display: 'block', marginBottom: 8 }}>Request format template (JSON)</label>
+            <textarea
+              className="input"
+              placeholder={'{"input": "{feature1}", "age": {age}, "score": {score}}'}
+              value={requestFormat}
+              onChange={(e) => setRequestFormat(e.target.value)}
+              style={{ width: '100%', minHeight: 100, fontFamily: 'monospace' }}
+            />
+            <p className="helper" style={{ marginTop: 8 }}>Use {'{column_name}'} as placeholders for CSV columns</p>
+          </div>
+        </div>
+      )}
 
       <div className="card" style={{ marginTop: 16 }}>
         <div className="section-title">Model upload</div>
         <div className="helper">Optional .pkl or .joblib file. You can skip this for the built-in model.</div>
         <input className="input" type="file" accept=".pkl,.joblib" />
         <div style={{ height: 12 }} />
-        <button className="btn btn-primary" onClick={startAudit} disabled={!file}>Start Audit</button>
+        <button className="btn btn-primary" onClick={startAudit} disabled={!file || (modelType === 'api' && (!apiUrl || !requestFormat))}>Start Audit</button>
         {status && <p className="helper">{status}</p>}
       </div>
     </div>

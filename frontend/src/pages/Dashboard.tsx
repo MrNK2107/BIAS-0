@@ -12,7 +12,9 @@ export default function Dashboard() {
     counterfactualResult, 
     stressResult, 
     recommendResult, 
-    monitoringResult 
+    monitoringResult,
+    auditResult,
+    proxyResult
   } = useAppContext();
 
   // Compute metrics from context or use fallbacks
@@ -37,6 +39,38 @@ export default function Dashboard() {
     ? monitoringResult.events.slice(-10).map((e: any, i: number) => ({ x: i + 1, value: e.fairness_score }))
     : [];
 
+  // Determine Primary Bias
+  const getPrimaryBias = () => {
+    const issues: any[] = [];
+    if (proxyResult?.proxy_features?.length > 0) {
+      const top = proxyResult.proxy_features[0];
+      issues.push({
+        type: "Proxy Leakage",
+        detail: `${top.feature} correlates with ${top.correlated_with} (score: ${top.proxy_score})`,
+        severity: top.proxy_score
+      });
+    }
+    if (auditResult?.under_represented_groups?.length > 0) {
+      issues.push({
+        type: "Representation Bias",
+        detail: `Groups ${auditResult.under_represented_groups.join(', ')} are under-represented in training data`,
+        severity: 0.6
+      });
+    }
+    const dpd = biasResult?.metrics?.demographic_parity_difference || 0;
+    if (dpd > 0.2) {
+      issues.push({
+        type: "Outcome Disparity",
+        detail: `Approval rate gap of ${Math.round(dpd * 100)}% between groups`,
+        severity: dpd
+      });
+    }
+    issues.sort((a, b) => b.severity - a.severity);
+    return issues[0] || null;
+  };
+
+  const primaryBias = getPrimaryBias();
+
   return (
     <div>
       <div className="page-header">
@@ -57,9 +91,23 @@ export default function Dashboard() {
           <div className="stat-number">{file ? file.name : 'No Active Project'}</div>
           <div className="helper">Domain: {domain}</div>
         </div>
-        <div className="card">
-          <div className="section-title">Fairness Score</div>
-          <ScoreGauge score={fairnessScore} />
+        <div style={{ display: 'grid', gap: 16 }}>
+          <div className="card" style={{ textAlign: 'center' }}>
+            <div className="section-title">Fairness Score</div>
+            <ScoreGauge score={fairnessScore} />
+            <div className="helper" style={{ marginTop: 8 }}>
+              Score reflects fairness (0=most biased, 100=most fair)
+            </div>
+          </div>
+          {primaryBias && (
+            <div className="card" style={{ borderLeft: '5px solid var(--red)', background: 'rgba(239, 68, 68, 0.08)' }}>
+              <div className="kicker" style={{ color: 'var(--red)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>⚠️ Primary Bias Detected</span>
+              </div>
+              <h2 style={{ fontSize: '1.4rem', margin: '8px 0 4px' }}>{primaryBias.type}</h2>
+              <p className="helper" style={{ color: 'var(--text-primary)', fontSize: '0.95rem' }}>{primaryBias.detail}</p>
+            </div>
+          )}
         </div>
         <div className="card">
           <div className="section-title">Monitoring Trend</div>

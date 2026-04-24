@@ -25,24 +25,32 @@ async def run_sandbox(
     sensitiveCols: str = Form(...),
     targetCol: str = Form(...),
     strategies: str = Form(...),
-) -> list[dict[str, Any]]:
-    """
-    Mock endpoint for sandbox simulation. In a real system, this would retrain
-    the model with the selected strategies.
-    """
-    strategy_list = json.loads(strategies)
+    metric_priority: str = Form(default="balanced"),
+    audit_result: str = Form(...),
+    proxy_result: str = Form(...),
+    bias_result: str = Form(...),
+) -> dict[str, Any]:
+    from core.sandbox import run_sandbox_simulation
+    from core.common import upload_file_to_dataframe
     
-    # Base scenario
-    results = [
-        {"name": "Original", "accuracy": 0.87, "fairness_score": 42, "risk_level": "Red", "notes": "Baseline"}
-    ]
+    df = await upload_file_to_dataframe(file)
+    sensitive_list = [item.strip() for item in sensitiveCols.split(",") if item.strip()]
+    selected_ids = [s.strip() for s in strategies.split(",") if s.strip()]
     
-    # Mock result generation for the strategies combined
-    if strategy_list:
-        name = " + ".join(s.replace("remove_", "").replace("_", " ").title() for s in strategy_list)
-        # Randomly boost fairness and slightly penalize accuracy
-        results.append(
-            {"name": name, "accuracy": 0.82, "fairness_score": 79, "risk_level": "Green", "notes": "Simulated result"}
-        )
-        
-    return results
+    # Get all recommendations to find the full fix objects
+    all_recommendations = generate_fix_recommendations(
+        json.loads(audit_result), 
+        json.loads(proxy_result), 
+        json.loads(bias_result)
+    )
+    
+    fixes_to_apply = [r for r in all_recommendations if r["fix_id"] in selected_ids]
+    
+    # Define metric weights based on priority
+    metric_weights = None
+    if metric_priority == "fairness":
+        metric_weights = {"demographic_parity_difference": 0.4, "equal_opportunity_difference": 0.4, "fpr_gap": 0.2}
+    elif metric_priority == "accuracy":
+         metric_weights = {"demographic_parity_difference": 0.1, "equal_opportunity_difference": 0.1, "fpr_gap": 0.1}
+         
+    return run_sandbox_simulation(df, sensitive_list, targetCol, fixes_to_apply, metric_weights=metric_weights)

@@ -56,8 +56,22 @@ class MonitoringEvent(Base):
     fairness_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     alert_triggered: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     note: Mapped[str] = mapped_column(String(500), default="", nullable=False)
+    group_breakdown: Mapped[dict | None] = mapped_column(JSON, nullable=True)
 
     project: Mapped[Project] = relationship(back_populates="monitoring_events")
+
+class FairnessFlag(Base):
+    __tablename__ = "fairness_flags"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
+    record_id: Mapped[str] = mapped_column(String, nullable=False)
+    reason: Mapped[str] = mapped_column(String, nullable=False)
+    flagged_by: Mapped[str] = mapped_column(String, default="user")
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    resolved: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    project: Mapped[Project] = relationship("Project", backref="fairness_flags")
 
 
 Base.metadata.create_all(bind=engine)

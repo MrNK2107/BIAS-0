@@ -6,6 +6,7 @@ import { useAppContext } from '../context/AppContext';
 export default function Sandbox() {
   const { file, recommendResult, runRecommendFixes, runSandboxSimulation } = useAppContext();
   const [selected, setSelected] = useState<string[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [scenarios, setScenarios] = useState<any[] | null>(null);
   const [scenarioLoading, setScenarioLoading] = useState(false);
@@ -20,7 +21,17 @@ export default function Sandbox() {
   // Pre-select the first 2 fixes when recommendations are available
   useEffect(() => {
     if (recommendResult && selected.length === 0) {
-      setSelected(recommendResult.slice(0, 2).map((r: any) => r.fix_id));
+      const initialSelected = recommendResult.slice(0, 2).map((r: any) => r.fix_id);
+      setSelected(initialSelected);
+      
+      // Initialize option selections for fixes with mitigation options
+      const initialOptions: Record<string, string> = {};
+      recommendResult.forEach((r: any) => {
+        if (r.mitigation_options && r.mitigation_options.length > 0) {
+          initialOptions[r.fix_id] = r.mitigation_options[0].option;
+        }
+      });
+      setSelectedOptions(initialOptions);
     }
   }, [recommendResult, selected]);
 
@@ -28,9 +39,6 @@ export default function Sandbox() {
     setScenarioLoading(true);
     try {
       await runSandboxSimulation(selected);
-      // setScenarios comes from the AppContext's sandboxResult in a normal implementation,
-      // but let's just use the returned promise if it returns data.
-      // Wait, runSandboxSimulation returned void and sets it in context!
     } catch (e) {
       console.error('Simulation failed', e);
     } finally {
@@ -38,8 +46,6 @@ export default function Sandbox() {
     }
   };
 
-  // Assuming AppContext sets sandboxResult and we can get it from there. Let's destructure it above.
-  // Wait, let's just fetch it:
   const { sandboxResult } = useAppContext();
 
   if (!file) {
@@ -67,18 +73,50 @@ export default function Sandbox() {
         <div className="notice-list">
           {recommendResult.length === 0 && <span className="helper">No fixes recommended</span>}
           {recommendResult.map((fix: any) => (
-            <label className="notice" key={fix.fix_id} style={{ display: 'block', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <input
-                  type="checkbox"
-                  checked={selected.includes(fix.fix_id)}
-                  onChange={(event) => setSelected((current) => event.target.checked ? [...current, fix.fix_id] : current.filter((item) => item !== fix.fix_id))}
-                />
-                <strong>{fix.fix_type.replace('_', ' ').toUpperCase()}</strong>
-              </div>
-              <div className="helper" style={{ marginLeft: 24, marginTop: 4 }}>{fix.description}</div>
-              <div className="helper" style={{ marginLeft: 24 }}>{fix.estimated_impact}</div>
-            </label>
+            <div key={fix.fix_id} style={{ marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid #e0e0e0' }}>
+              <label style={{ display: 'block', cursor: 'pointer', marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(fix.fix_id)}
+                    onChange={(event) => setSelected((current) => event.target.checked ? [...current, fix.fix_id] : current.filter((item) => item !== fix.fix_id))}
+                  />
+                  <strong>{fix.fix_type.replace('_', ' ').toUpperCase()}</strong>
+                </div>
+                <div className="helper" style={{ marginLeft: 24, marginTop: 4 }}>{fix.description}</div>
+                <div className="helper" style={{ marginLeft: 24 }}>{fix.estimated_impact}</div>
+              </label>
+
+              {fix.mitigation_options && fix.mitigation_options.length > 0 && (
+                <div style={{ marginLeft: 24, marginTop: 12, paddingTop: 12, borderTop: '1px solid #f0f0f0' }}>
+                  <div className="helper" style={{ fontWeight: 600, marginBottom: 12 }}>Mitigation Strategy:</div>
+                  {fix.mitigation_options.map((option: any) => (
+                    <label key={option.option} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12, cursor: 'pointer' }}>
+                      <input
+                        type="radio"
+                        name={`option_${fix.fix_id}`}
+                        value={option.option}
+                        checked={selectedOptions[fix.fix_id] === option.option}
+                        onChange={() => setSelectedOptions((prev) => ({ ...prev, [fix.fix_id]: option.option }))}
+                        style={{ marginTop: 4 }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 600, marginBottom: 4 }}>
+                          Option {option.option}: {option.name}
+                        </div>
+                        <div className="helper" style={{ marginBottom: 4 }}>{option.description}</div>
+                        <div className="helper" style={{ color: '#666', fontSize: 12 }}>
+                          <strong>Rationale:</strong> {option.rationale}
+                        </div>
+                        <div className="helper" style={{ color: '#666', fontSize: 12 }}>
+                          <strong>Impact:</strong> {option.estimated_impact}
+                        </div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>

@@ -94,7 +94,7 @@ To run the platform without your own data, use the **Upload page's `Load Demo Pr
 - **Demographic Parity Difference:** The gap between the highest and lowest selection rates across groups.
 - **Equal Opportunity Difference:** The gap between true positive rates across groups.
 - **False Positive Rate (FPR) Gap:** The gap between false positive rates across groups.
-- **Fairness Score:** A 0-100 composite score derived from the three gaps above.
+- **Fairness Score:** A 0-100 composite score derived from the three gaps above. A score of 100 means perfectly fair; 0 means maximum detected bias.
 - **Counterfactual Flip Rate:** The percentage of decisions that change when only one sensitive attribute changes.
 - **Stress Fragility:** Indicates whether fairness drops significantly under controlled perturbations.
 

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { formApi } from '../api/client';
 import ScoreGauge from '../components/ScoreGauge';
 import FairnessTable from '../components/FairnessTable';
 import { useAppContext } from '../context/AppContext';
 
 export default function BiasReport() {
-  const { file, biasResult, explainResult, runModelBias } = useAppContext();
+  const { file, biasResult, explainResult, explainSummary, runModelBias, projectId } = useAppContext();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -29,6 +30,17 @@ export default function BiasReport() {
 
   return (
     <div>
+      {explainSummary && (
+        <div className="card" style={{ marginBottom: 16, borderLeft: '4px solid var(--accent)', background: 'rgba(79, 142, 247, 0.05)' }}>
+          <div className="section-title" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
+             <span>Manager Summary</span>
+          </div>
+          <p style={{ fontSize: '1.1rem', lineHeight: 1.5, margin: '8px 0 0' }}>
+            {explainSummary}
+          </p>
+        </div>
+      )}
+
       <div className="grid-2" style={{ marginBottom: 16 }}>
         <div className="card" style={{ display: 'grid', placeItems: 'center' }}>
           <ScoreGauge score={biasResult.fairness_score} />
@@ -41,6 +53,7 @@ export default function BiasReport() {
               ['Demographic Parity Difference', biasResult.metrics.demographic_parity_difference],
               ['Equal Opportunity Difference', biasResult.metrics.equal_opportunity_difference],
               ['FPR Gap', biasResult.metrics.fpr_gap],
+              ['FNR Gap', biasResult.metrics.fnr_gap],
             ].map(([label, value]) => (
               <div className="notice" key={label as string}>
                 <strong>{label as string}</strong>
@@ -62,10 +75,22 @@ export default function BiasReport() {
         <div className="section-title">Explainability</div>
         <div className="notice-list">
           {explainResult.map((item: any) => (
-            <div className="notice" key={item.record_id}>
+            <div className={`notice ${item.explanation_type === 'individual' ? 'notice-individual' : 'notice-contrastive'}`} key={item.record_id}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
                 <strong>Record {item.record_id} - {item.decision}</strong>
-                <span className="pill red">{item.sensitive_attribute}</span>
+            <button className="btn btn-small" onClick={() => {
+              const reason = window.prompt('Enter reason for flagging this decision:');
+              if (reason) {
+                formApi.post('/monitoring/flag', {
+                  project_id: parseInt(projectId),
+                  record_id: String(item.record_id),
+                  reason,
+                }).then(() => {
+                  // optional: show toast or refresh flags elsewhere
+                });
+              }
+            }}>🚩 Flag this decision</button>
+                <span className={`pill ${item.explanation_type === 'individual' ? 'muted' : 'red'}`}>{item.sensitive_attribute}</span>
               </div>
               <div style={{ marginTop: 10, display: 'grid', gap: 8 }}>
                 {(item.top_reasons || []).map((reason: any) => (
