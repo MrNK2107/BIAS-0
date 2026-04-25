@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { AlertTriangle, Filter, Users, TrendingDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export interface SubgroupBias {
   id: string;
@@ -127,16 +128,25 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
 
       {/* Worst Subgroup Highlight */}
       {worstSubgroup && (
-        <div style={{ 
-          backgroundColor: '#fef2f2', 
-          border: '1px solid #fecaca', 
-          borderRadius: '8px', 
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          gap: '16px',
-          alignItems: 'flex-start'
-        }}>
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ 
+            opacity: 1, 
+            y: 0,
+            boxShadow: ['0 0 0px rgba(239, 68, 68, 0)', '0 0 20px rgba(239, 68, 68, 0.15)', '0 0 0px rgba(239, 68, 68, 0)']
+          }}
+          transition={{ duration: 0.5, boxShadow: { duration: 2.5, repeat: Infinity } }}
+          style={{ 
+            backgroundColor: '#fef2f2', 
+            border: '1px solid #fecaca', 
+            borderRadius: '8px', 
+            padding: '20px',
+            marginBottom: '24px',
+            display: 'flex',
+            gap: '16px',
+            alignItems: 'flex-start'
+          }}
+        >
           <AlertTriangle color="#ef4444" style={{ marginTop: '4px', flexShrink: 0 }} />
           <div>
             <div style={{ fontWeight: 600, color: '#991b1b', marginBottom: '4px' }}>Highest Intersectional Risk</div>
@@ -147,7 +157,7 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
               <Users size={14} /> Sample size: {worstSubgroup.sampleSize}
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Filtering */}
@@ -216,40 +226,49 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
                 </tr>
               </thead>
               <tbody>
-                {topBiased.map((sg, idx) => {
-                  const isNegative = sg.metricValue < 0;
-                  return (
-                    <tr key={sg.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                      <td style={{ padding: '12px 8px', fontWeight: 500, color: '#111827' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ 
-                            display: 'inline-flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            width: '24px', 
-                            height: '24px', 
-                            borderRadius: '50%', 
-                            backgroundColor: idx === 0 ? '#fee2e2' : '#f3f4f6',
-                            color: idx === 0 ? '#ef4444' : '#6b7280',
-                            fontSize: '0.8rem',
-                            fontWeight: 700
-                          }}>
-                            {idx + 1}
+                <AnimatePresence>
+                  {topBiased.map((sg, idx) => {
+                    const isNegative = sg.metricValue < 0;
+                    return (
+                      <motion.tr 
+                        key={sg.id} 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2, delay: idx * 0.05 }}
+                        style={{ borderBottom: '1px solid #f3f4f6' }}
+                      >
+                        <td style={{ padding: '12px 8px', fontWeight: 500, color: '#111827' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ 
+                              display: 'inline-flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              width: '24px', 
+                              height: '24px', 
+                              borderRadius: '50%', 
+                              backgroundColor: idx === 0 ? '#fee2e2' : '#f3f4f6',
+                              color: idx === 0 ? '#ef4444' : '#6b7280',
+                              fontSize: '0.8rem',
+                              fontWeight: 700
+                            }}>
+                              {idx + 1}
+                            </span>
+                            {sg.definition}
+                          </div>
+                        </td>
+                        <td style={{ padding: '12px 8px' }}>
+                          <span className={`pill ${isNegative ? 'red' : 'green'}`} style={{ fontWeight: 600 }}>
+                            {sg.metricDifference}
                           </span>
-                          {sg.definition}
-                        </div>
-                      </td>
-                      <td style={{ padding: '12px 8px' }}>
-                        <span className={`pill ${isNegative ? 'red' : 'green'}`} style={{ fontWeight: 600 }}>
-                          {sg.metricDifference}
-                        </span>
-                      </td>
-                      <td style={{ padding: '12px 8px', color: '#6b7280' }}>
-                        {sg.sampleSize}
-                      </td>
-                    </tr>
-                  );
-                })}
+                        </td>
+                        <td style={{ padding: '12px 8px', color: '#6b7280' }}>
+                          {sg.sampleSize}
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </AnimatePresence>
               </tbody>
             </table>
           </div>

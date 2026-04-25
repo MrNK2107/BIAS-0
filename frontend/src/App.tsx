@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import WorkflowShell from './components/WorkflowShell';
 import Step1Upload from './pages/workflow/Step1Upload';
 import Step2Config from './pages/workflow/Step2Config';
@@ -11,23 +11,39 @@ import Step8Sandbox from './pages/workflow/Step8Sandbox';
 import Step9Monitoring from './pages/workflow/Step9Monitoring';
 
 import Dashboard from './pages/Dashboard';
+import HeroPage from './pages/HeroPage';
+import PageTransition from './components/animations/PageTransition';
+import BackgroundGrid from './components/animations/BackgroundGrid';
 
 export default function App() {
+  const location = useLocation();
+
   return (
-    <Routes>
-      <Route path="/" element={<WorkflowShell><Dashboard /></WorkflowShell>} />
-      
-      <Route path="/workflow/step-1" element={<WorkflowShell><Step1Upload /></WorkflowShell>} />
-      <Route path="/workflow/step-2" element={<WorkflowShell><Step2Config /></WorkflowShell>} />
-      <Route path="/workflow/step-3" element={<WorkflowShell><Step3DataAudit /></WorkflowShell>} />
-      <Route path="/workflow/step-4" element={<WorkflowShell><Step4ModelBias /></WorkflowShell>} />
-      <Route path="/workflow/step-5" element={<WorkflowShell><Step5Explanations /></WorkflowShell>} />
-      <Route path="/workflow/step-6" element={<WorkflowShell><Step6Counterfactual /></WorkflowShell>} />
-      <Route path="/workflow/step-7" element={<WorkflowShell><Step7StressTest /></WorkflowShell>} />
-      <Route path="/workflow/step-8" element={<WorkflowShell><Step8Sandbox /></WorkflowShell>} />
-      <Route path="/workflow/step-9" element={<WorkflowShell><Step9Monitoring /></WorkflowShell>} />
-      
-      <Route path="*" element={<Navigate to="/workflow/step-1" replace />} />
-    </Routes>
+    <>
+      {location.pathname !== '/' && <BackgroundGrid />}
+      <Routes location={location} key={location.pathname === '/' ? 'root' : 'app'}>
+        <Route path="/" element={<PageTransition locationKey="hero"><HeroPage /></PageTransition>} />
+        
+        <Route path="/*" element={
+          <WorkflowShell>
+            <Routes location={location} key={location.pathname}>
+              <Route path="/dashboard" element={<PageTransition locationKey="dash"><Dashboard /></PageTransition>} />
+              
+              <Route path="/workflow/step-1" element={<PageTransition locationKey="s1"><Step1Upload /></PageTransition>} />
+              <Route path="/workflow/step-2" element={<PageTransition locationKey="s2"><Step2Config /></PageTransition>} />
+              <Route path="/workflow/step-3" element={<PageTransition locationKey="s3"><Step3DataAudit /></PageTransition>} />
+              <Route path="/workflow/step-4" element={<PageTransition locationKey="s4"><Step4ModelBias /></PageTransition>} />
+              <Route path="/workflow/step-5" element={<PageTransition locationKey="s5"><Step5Explanations /></PageTransition>} />
+              <Route path="/workflow/step-6" element={<PageTransition locationKey="s6"><Step6Counterfactual /></PageTransition>} />
+              <Route path="/workflow/step-7" element={<PageTransition locationKey="s7"><Step7StressTest /></PageTransition>} />
+              <Route path="/workflow/step-8" element={<PageTransition locationKey="s8"><Step8Sandbox /></PageTransition>} />
+              <Route path="/workflow/step-9" element={<PageTransition locationKey="s9"><Step9Monitoring /></PageTransition>} />
+              
+              <Route path="*" element={<Navigate to="/workflow/step-1" replace />} />
+            </Routes>
+          </WorkflowShell>
+        } />
+      </Routes>
+    </>
   );
 }

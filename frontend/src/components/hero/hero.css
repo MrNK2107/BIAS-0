@@ -1,0 +1,89 @@
+/* ================================================================
+   3D SCROLL EXPERIENCE — Unbiased AI
+   Minimal infrastructure for R3F + HTML Overlay
+   ================================================================ */
+
+.hero-viewport {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background: #020617;
+  overflow: hidden;
+}
+
+/* --- Layout Utilities (replacing Tailwind) --- */
+.h-screen { height: 100vh; }
+.w-full { width: 100%; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.justify-center { justify-content: center; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.px-12 { padding-left: 3rem; padding-right: 3rem; }
+.px-24 { padding-left: 6rem; padding-right: 6rem; }
+.max-w-xl { max-width: 36rem; }
+.max-w-2xl { max-width: 42rem; }
+.max-w-3xl { max-width: 48rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mt-lg { margin-top: 2rem; }
+
+/* --- Typography --- */
+.font-display {
+  font-family: var(--font-display, serif);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.font-sans {
+  font-family: var(--font-body, sans-serif);
+  font-weight: 300;
+}
+
+.text-7xl { font-size: 4.5rem; }
+.text-8xl { font-size: 6rem; }
+.text-9xl { font-size: 8rem; }
+.text-5xl { font-size: 3rem; }
+.text-6xl { font-size: 3.75rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-lg { font-size: 1.125rem; }
+
+.tracking-tighter { letter-spacing: -0.05em; }
+
+/* --- Colors --- */
+.text-white { color: #ffffff; }
+.text-slate-400 { color: #94a3b8; }
+.text-teal-400 { color: #2dd4bf; }
+.text-red-500 { color: #f43f5e; }
+
+/* --- Interactives --- */
+.pointer-events-none { pointer-events: none; }
+.pointer-events-auto { pointer-events: auto; }
+
+.bg-teal-500 { background-color: #14b8a6; }
+.hover\:bg-teal-400:hover { background-color: #2dd4bf; }
+.text-slate-950 { color: #020617; }
+
+.rounded-full { border-radius: 9999px; }
+.shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+.transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+.hover\:scale-105:hover { transform: scale(1.05); }
+.active\:scale-95:active { transform: scale(0.95); }
+
+/* --- Mobile Fixes --- */
+@media (max-width: 768px) {
+  .text-7xl { font-size: 3rem; }
+  .text-8xl { font-size: 4rem; }
+  .text-9xl { font-size: 5rem; }
+  .text-5xl { font-size: 2rem; }
+  .text-6xl { font-size: 2.5rem; }
+  .px-12, .px-24 { padding-left: 1.5rem; padding-right: 1.5rem; }
+}

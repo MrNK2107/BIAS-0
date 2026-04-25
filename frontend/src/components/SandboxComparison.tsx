@@ -1,3 +1,6 @@
+import { motion, AnimatePresence } from 'framer-motion';
+import AnimatedNumber from './animations/AnimatedNumber';
+
 type Scenario = {
   name: string;
   accuracy: number;
@@ -20,20 +23,34 @@ export default function SandboxComparison({ scenarios }: { scenarios: Scenario[]
         </tr>
       </thead>
       <tbody>
-        {scenarios.map((scenario) => (
-          <tr key={scenario.name} style={scenario.fairness_score === best ? { outline: '1px solid rgba(34,197,94,0.45)', background: 'rgba(34,197,94,0.06)' } : undefined}>
-            <td>{scenario.name}</td>
-            <td>{(scenario.accuracy * 100).toFixed(1)}%</td>
-            <td>
-              <div className="progress-track" style={{ maxWidth: 200, marginBottom: 6 }}>
-                <div className="progress-fill" style={{ width: `${scenario.fairness_score}%` }} />
-              </div>
-              {scenario.fairness_score}
-            </td>
-            <td>{scenario.risk_level}</td>
-            <td>{scenario.notes}</td>
-          </tr>
-        ))}
+        <AnimatePresence>
+          {scenarios.map((scenario, index) => (
+            <motion.tr 
+              key={scenario.name} 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              style={scenario.fairness_score === best ? { outline: '1px solid rgba(34,197,94,0.45)', background: 'rgba(34,197,94,0.06)' } : undefined}
+            >
+              <td>{scenario.name}</td>
+              <td>{(scenario.accuracy * 100).toFixed(1)}%</td>
+              <td>
+                <div className="progress-track" style={{ maxWidth: 200, marginBottom: 6 }}>
+                  <motion.div 
+                    className="progress-fill" 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${scenario.fairness_score}%` }}
+                    transition={{ duration: 0.8, delay: index * 0.1 + 0.2 }}
+                  />
+                </div>
+                <AnimatedNumber value={scenario.fairness_score} />
+              </td>
+              <td>{scenario.risk_level}</td>
+              <td>{scenario.notes}</td>
+            </motion.tr>
+          ))}
+        </AnimatePresence>
       </tbody>
     </table>
   );

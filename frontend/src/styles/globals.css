@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Josefin+Sans:wght@300;400;500;600;700&display=swap');
+
 /* ================================================================
    DESIGN SYSTEM — Unbiased AI
    Tokens → Typography → Layout → Components → Utilities
@@ -6,36 +8,36 @@
 /* --- 1. TOKENS ------------------------------------------------- */
 :root {
   /* Surfaces */
-  --bg: #0b0d12;
-  --surface: #13171f;
-  --surface-raised: #1a1f2b;
-  --surface-overlay: #212838;
-  --border: #262e3f;
-  --border-subtle: rgba(148, 163, 184, 0.08);
+  --bg: #020617; /* Abyssal Indigo */
+  --surface: #0f172a; /* Deep Slate */
+  --surface-raised: #1e293b; 
+  --surface-overlay: #334155;
+  --border: rgba(45, 212, 191, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.05);
 
-  /* Accent */
-  --accent: #4f8ef7;
-  --accent-soft: rgba(79, 142, 247, 0.12);
-  --accent-glow: rgba(79, 142, 247, 0.18);
+  /* Accent: Neon Mint */
+  --accent: #2dd4bf;
+  --accent-soft: rgba(45, 212, 191, 0.1);
+  --accent-glow: rgba(45, 212, 191, 0.2);
 
-  /* Semantic colors — use for meaning only */
-  --green: #22c55e;
-  --green-soft: rgba(34, 197, 94, 0.12);
-  --yellow: #f59e0b;
-  --yellow-soft: rgba(245, 158, 11, 0.12);
-  --red: #ef4444;
-  --red-soft: rgba(239, 68, 68, 0.12);
-  --purple: #8b5cf6;
-  --purple-soft: rgba(139, 92, 246, 0.12);
+  /* Semantic colors */
+  --green: #10b981;
+  --green-soft: rgba(16, 185, 129, 0.1);
+  --yellow: #fbbf24;
+  --yellow-soft: rgba(251, 191, 36, 0.1);
+  --red: #f43f5e;
+  --red-soft: rgba(244, 63, 94, 0.1);
+  --purple: #818cf8;
+  --purple-soft: rgba(129, 140, 248, 0.1);
 
   /* Text */
-  --text-primary: #eef2ff;
-  --text-secondary: #7c8db5;
-  --text-tertiary: #4e5d7a;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
 
   /* Typography */
-  --font-display: 'DM Serif Display', serif;
-  --font-body: 'IBM Plex Mono', monospace;
+  --font-display: 'Cinzel', serif;
+  --font-body: 'Josefin Sans', sans-serif;
 
   /* Spacing scale */
   --sp-xs: 4px;
@@ -46,10 +48,10 @@
   --sp-2xl: 48px;
 
   /* Radii */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 24px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
   --radius-full: 999px;
 }
 
@@ -107,8 +109,8 @@ button, input, select, textarea { font: inherit; }
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #3754d6, #4f8ef7);
-  box-shadow: 0 8px 24px rgba(79, 142, 247, 0.3);
+  background: linear-gradient(135deg, #0f172a, var(--accent));
+  box-shadow: 0 8px 32px rgba(45, 212, 191, 0.2);
   font-size: 1rem;
 }
 
@@ -145,7 +147,7 @@ button, input, select, textarea { font: inherit; }
 }
 .nav-link:hover, .nav-link.active {
   background: var(--accent-soft);
-  border-color: rgba(79, 142, 247, 0.2);
+  border-color: rgba(59, 130, 246, 0.2);
   color: #fff;
   transform: translateX(2px);
 }
@@ -249,8 +251,8 @@ button, input, select, textarea { font: inherit; }
 }
 
 .card-primary {
-  background: linear-gradient(135deg, rgba(79,142,247,0.06), rgba(79,142,247,0.02)), var(--surface);
-  border-color: rgba(79, 142, 247, 0.18);
+  background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(59,130,246,0.02)), var(--surface);
+  border-color: rgba(59, 130, 246, 0.18);
 }
 
 .card-raised {
@@ -274,8 +276,8 @@ button, input, select, textarea { font: inherit; }
   cursor: pointer;
 }
 .card-interactive:hover {
-  border-color: rgba(79, 142, 247, 0.3);
-  box-shadow: 0 12px 40px rgba(79, 142, 247, 0.08);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.08);
   transform: translateY(-1px);
 }
 
@@ -303,8 +305,8 @@ button, input, select, textarea { font: inherit; }
 }
 .btn:hover {
   transform: translateY(-1px);
-  border-color: rgba(79, 142, 247, 0.35);
-  box-shadow: 0 8px 20px rgba(79, 142, 247, 0.1);
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.1);
 }
 .btn:disabled {
   opacity: 0.45;
@@ -313,12 +315,12 @@ button, input, select, textarea { font: inherit; }
   box-shadow: none;
 }
 .btn-primary {
-  background: linear-gradient(135deg, #3550c8, #4f8ef7);
+  background: linear-gradient(135deg, #1E293B, #3B82F6);
   border-color: transparent;
   color: #fff;
 }
 .btn-primary:hover {
-  box-shadow: 0 8px 24px rgba(79, 142, 247, 0.25);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
 }
 .btn-secondary {
   background: var(--surface-raised);
@@ -377,7 +379,7 @@ button, input, select, textarea { font: inherit; }
 .pill.green  { background: var(--green-soft);  color: #86efac; border-color: rgba(34,197,94,0.2); }
 .pill.yellow { background: var(--yellow-soft); color: #fcd34d; border-color: rgba(245,158,11,0.2); }
 .pill.red    { background: var(--red-soft);    color: #fca5a5; border-color: rgba(239,68,68,0.2); }
-.pill.blue   { background: var(--accent-soft); color: #93bbfd; border-color: rgba(79,142,247,0.2); }
+.pill.blue   { background: var(--accent-soft); color: #93bbfd; border-color: rgba(59,130,246,0.2); }
 
 /* --- 9. BANNERS ------------------------------------------------ */
 .banner {
@@ -436,7 +438,7 @@ button, input, select, textarea { font: inherit; }
 .progress-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #3550c8, #4f8ef7);
+  background: linear-gradient(90deg, #1E293B, #3B82F6);
   transition: width 400ms ease;
 }
 
@@ -445,15 +447,15 @@ button, input, select, textarea { font: inherit; }
   display: grid;
   place-items: center;
   min-height: 180px;
-  border: 1.5px dashed rgba(79, 142, 247, 0.35);
+  border: 1.5px dashed rgba(59, 130, 246, 0.35);
   border-radius: var(--radius-xl);
-  background: rgba(79, 142, 247, 0.04);
+  background: rgba(59, 130, 246, 0.04);
   text-align: center;
   transition: all 200ms;
 }
 .dropzone:hover {
-  border-color: rgba(79, 142, 247, 0.6);
-  background: rgba(79, 142, 247, 0.08);
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(59, 130, 246, 0.08);
 }
 
 /* --- 15. NOTICES ----------------------------------------------- */

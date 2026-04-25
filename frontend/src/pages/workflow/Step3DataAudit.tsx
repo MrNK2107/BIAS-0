@@ -1,5 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import AnimatedBarChart from '../../components/animations/AnimatedBarChart';
+import ScanningSkeleton from '../../components/animations/ScanningSkeleton';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
@@ -25,8 +27,8 @@ export default function Step3DataAudit() {
   const chartData = useMemo(() => {
     if (!audit?.group_stats?.gender) return [];
     return Object.entries(audit.group_stats.gender).map(([group, metrics]: any) => ({ 
-      group, 
-      rate: Math.round((metrics.positive_rate || 0) * 100) 
+      label: group, 
+      value: Math.round((metrics.positive_rate || 0) * 100) 
     }));
   }, [audit]);
 
@@ -40,7 +42,11 @@ export default function Step3DataAudit() {
           </div>
         </div>
         <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-          Running data audit... Checking for representation and proxy leakage.
+          <ScanningSkeleton height="40px" width="60%" borderRadius="8px" />
+          <div style={{ marginTop: '24px' }}>
+            <ScanningSkeleton height="16px" width="40%" borderRadius="4px" />
+          </div>
+          <p className="helper" style={{ marginTop: '16px' }}>Running data audit... Checking for representation and proxy leakage.</p>
         </div>
       </div>
     );
@@ -66,16 +72,8 @@ export default function Step3DataAudit() {
       <div className="grid-2" style={{ marginBottom: 16 }}>
         <div className="card">
           <div className="section-title">Gender group stats</div>
-          <div style={{ height: 280 }}>
-            <ResponsiveContainer>
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.12)" />
-                <XAxis dataKey="group" tick={{ fill: '#8b9ab3' }} />
-                <YAxis tick={{ fill: '#8b9ab3' }} />
-                <Tooltip />
-                <Bar dataKey="rate" fill="#4f8ef7" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div style={{ height: 280, marginTop: 16 }}>
+            <AnimatedBarChart data={chartData} height={250} maxDomain={100} valueSuffix="%" />
           </div>
         </div>
         <div className="card">

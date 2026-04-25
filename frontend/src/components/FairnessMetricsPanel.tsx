@@ -1,5 +1,7 @@
 import React from 'react';
 import { HelpCircle } from 'lucide-react';
+import AnimatedCard from './animations/AnimatedCard';
+import AnimatedNumber from './animations/AnimatedNumber';
 
 interface FairnessMetricsPanelProps {
   biasResult: any;
@@ -15,12 +17,13 @@ interface MetricItemProps {
     moderate: (v: number) => boolean;
   };
   isPercentage?: boolean;
+  index: number;
 }
 
-const MetricCard: React.FC<MetricItemProps> = ({ title, value, description, thresholds, isPercentage }) => {
+const MetricCard: React.FC<MetricItemProps> = ({ title, value, description, thresholds, isPercentage, index }) => {
   const numValue = typeof value === 'number' ? value : parseFloat(value as string);
   
-  let severity = 'red';
+  let severity: 'green' | 'amber' | 'red' | 'gray' = 'red';
   let interpretation = 'High disparity';
   
   if (!isNaN(numValue)) {
@@ -36,12 +39,6 @@ const MetricCard: React.FC<MetricItemProps> = ({ title, value, description, thre
     interpretation = 'No data';
   }
 
-  const formatValue = (val: number | string) => {
-    if (typeof val !== 'number' || isNaN(val)) return '-';
-    if (isPercentage) return `${(val * 100).toFixed(1)}%`;
-    return val.toFixed(3);
-  };
-
   const getSeverityColor = (sev: string) => {
     switch (sev) {
       case 'green': return '#10b981';
@@ -52,7 +49,7 @@ const MetricCard: React.FC<MetricItemProps> = ({ title, value, description, thre
   };
 
   return (
-    <div className="card" style={{ padding: '20px', borderTop: `4px solid ${getSeverityColor(severity)}` }}>
+    <AnimatedCard severity={severity} delay={index * 0.1} style={{ padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>{title}</h4>
         <div title={description} style={{ cursor: 'help', color: '#9ca3af' }}>
@@ -61,7 +58,7 @@ const MetricCard: React.FC<MetricItemProps> = ({ title, value, description, thre
       </div>
       
       <div className="stat-number" style={{ fontSize: '2rem', marginBottom: '8px' }}>
-        {formatValue(numValue)}
+        <AnimatedNumber value={numValue} isPercentage={isPercentage} />
       </div>
       
       <div style={{ 
@@ -75,7 +72,7 @@ const MetricCard: React.FC<MetricItemProps> = ({ title, value, description, thre
       }}>
         {interpretation}
       </div>
-    </div>
+    </AnimatedCard>
   );
 };
 
@@ -98,6 +95,7 @@ export default function FairnessMetricsPanel({ biasResult, counterfactualResult 
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
         <MetricCard
+          index={0}
           title="Demographic Parity Gap"
           value={dpGap}
           description="Difference in selection rates between groups. A value closer to 0 indicates groups are selected at similar rates."
@@ -107,6 +105,7 @@ export default function FairnessMetricsPanel({ biasResult, counterfactualResult 
           }}
         />
         <MetricCard
+          index={1}
           title="Equal Opportunity Gap"
           value={eoGap}
           description="Difference in true positive rates between groups. A value closer to 0 indicates qualified individuals from all groups have similar chances."
@@ -116,6 +115,7 @@ export default function FairnessMetricsPanel({ biasResult, counterfactualResult 
           }}
         />
         <MetricCard
+          index={2}
           title="Counterfactual Flip Rate"
           value={flipRate}
           isPercentage={true}
@@ -126,6 +126,7 @@ export default function FairnessMetricsPanel({ biasResult, counterfactualResult 
           }}
         />
         <MetricCard
+          index={3}
           title="Overall Accuracy"
           value={accuracy}
           isPercentage={true}

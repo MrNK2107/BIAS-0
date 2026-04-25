@@ -1,6 +1,9 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
+import { motion } from 'framer-motion';
+import AnimatedNumber from '../../components/animations/AnimatedNumber';
+import ScanningSkeleton from '../../components/animations/ScanningSkeleton';
 
 export default function Step7StressTest() {
   const { file, stressResult, biasResult, runModelBias } = useAppContext();
@@ -46,8 +49,11 @@ export default function Step7StressTest() {
   if (loading || !stressResult) {
     return (
       <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-        <h2>Running Stress Testing...</h2>
-        <p className="helper">Probing model fairness fragility under various perturbations.</p>
+        <ScanningSkeleton height="40px" width="60%" borderRadius="8px" />
+        <div style={{ marginTop: '24px' }}>
+          <ScanningSkeleton height="16px" width="40%" borderRadius="4px" />
+        </div>
+        <p className="helper" style={{ marginTop: '16px' }}>Probing model fairness fragility under various perturbations.</p>
       </div>
     );
   }
@@ -162,20 +168,20 @@ export default function Step7StressTest() {
                 <div style={{ padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px', textAlign: 'center' }}>
                   <div className="helper" style={{ marginBottom: '4px' }}>Baseline</div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#374151' }}>
-                    {scenario.baseline_fairness_score.toFixed(2)}
+                    <AnimatedNumber value={scenario.baseline_fairness_score} />
                   </div>
                 </div>
                 <div style={{ padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px', textAlign: 'center' }}>
                   <div className="helper" style={{ marginBottom: '4px' }}>After Stress</div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#374151' }}>
-                    {scenario.fairness_score.toFixed(2)}
+                    <AnimatedNumber value={scenario.fairness_score} />
                   </div>
                 </div>
                 <div style={{ padding: '12px', backgroundColor: isNegative ? '#fef2f2' : '#ecfdf5', borderRadius: '8px', textAlign: 'center' }}>
                   <div className="helper" style={{ marginBottom: '4px' }}>Change</div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 600, color: isNegative ? '#dc2626' : '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                     {isNegative ? '▼' : '▲'}
-                    {Math.abs(delta).toFixed(2)}
+                    <AnimatedNumber value={Math.abs(delta)} />
                   </div>
                 </div>
               </div>
@@ -188,21 +194,29 @@ export default function Step7StressTest() {
                 </div>
                 <div style={{ position: 'relative', height: '16px', backgroundColor: '#e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
                   {/* Baseline Bar */}
-                  <div style={{ 
-                    position: 'absolute', 
-                    top: 0, bottom: 0, left: 0, 
-                    width: `${Math.max(0, Math.min(100, scenario.baseline_fairness_score * 100))}%`, 
-                    backgroundColor: '#9ca3af',
-                    opacity: 0.4
-                  }} />
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.max(0, Math.min(100, scenario.baseline_fairness_score * 100))}%` }}
+                    transition={{ duration: 0.8, ease: 'easeOut' }}
+                    style={{ 
+                      position: 'absolute', 
+                      top: 0, bottom: 0, left: 0, 
+                      backgroundColor: '#9ca3af',
+                      opacity: 0.4
+                    }} 
+                  />
                   {/* Scenario Bar */}
-                  <div style={{ 
-                    position: 'absolute', 
-                    top: 4, bottom: 4, left: 0, 
-                    width: `${Math.max(0, Math.min(100, scenario.fairness_score * 100))}%`, 
-                    backgroundColor: isNegative ? '#ef4444' : '#3b82f6',
-                    borderRadius: '0 4px 4px 0'
-                  }} />
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.max(0, Math.min(100, scenario.fairness_score * 100))}%` }}
+                    transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+                    style={{ 
+                      position: 'absolute', 
+                      top: 4, bottom: 4, left: 0, 
+                      backgroundColor: isNegative ? '#ef4444' : '#3b82f6',
+                      borderRadius: '0 4px 4px 0'
+                    }} 
+                  />
                 </div>
                 <div className="helper" style={{ marginTop: '8px', textAlign: 'center', fontSize: '0.85rem' }}>
                   <span style={{ display: 'inline-block', width: 10, height: 10, backgroundColor: '#9ca3af', opacity: 0.4, marginRight: 4 }}></span> Baseline
