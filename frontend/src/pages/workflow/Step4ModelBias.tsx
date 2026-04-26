@@ -30,6 +30,10 @@ export default function Step4ModelBias() {
 
   const availableGroups = Object.keys(biasResult.group_performance || {});
   const displayGroupKey = availableGroups.length > 0 ? availableGroups[0] : null;
+  const fairnessScore = Math.max(
+    0,
+    Math.round(100 - ((biasResult.metrics?.demographic_parity_difference || 0) * 100)),
+  );
 
   return (
     <div>
@@ -38,6 +42,13 @@ export default function Step4ModelBias() {
           <div className="kicker">Step 4 of 9</div>
           <h1 className="page-title">Model Bias</h1>
           <p className="page-subtitle">We evaluated the model across different groups to check for disparate impact.</p>
+        </div>
+      </div>
+
+      <div className="card section-gap">
+        <div className="stat-label">Fairness Score</div>
+        <div className={`stat-number text-8xl ${fairnessScore < 70 ? 'text-red' : 'text-accent'}`}>
+          {fairnessScore}
         </div>
       </div>
 

@@ -1,15 +1,16 @@
+"""Utility for loading a user-uploaded serialized model from bytes."""
 from __future__ import annotations
 
-from pathlib import Path
-
+import io
 import joblib
 
 
-def load_model(path: str):
-    return joblib.load(path)
+def load_model_from_bytes(raw: bytes):
+    """Deserialize a joblib/pickle model from raw bytes.
 
-
-def resolve_model_path(model_cache_dir: str, file_name: str) -> Path:
-    cache_dir = Path(model_cache_dir)
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    return cache_dir / file_name
+    Returns the fitted model object, or raises ValueError if deserialization fails.
+    """
+    try:
+        return joblib.load(io.BytesIO(raw))
+    except Exception as exc:
+        raise ValueError(f"Failed to deserialize uploaded model: {exc}") from exc

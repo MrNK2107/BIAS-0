@@ -31,7 +31,7 @@ export default function SandboxComparison({ scenarios }: { scenarios: Scenario[]
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              style={scenario.fairness_score === best ? { outline: '1px solid rgba(34,197,94,0.45)', background: 'rgba(34,197,94,0.06)' } : undefined}
+              style={scenario.fairness_score === best ? { outline: '0.5px solid rgba(212,163,115,0.72)', background: 'rgba(212,163,115,0.1)' } : undefined}
             >
               <td>{scenario.name}</td>
               <td>{(scenario.accuracy * 100).toFixed(1)}%</td>

@@ -15,6 +15,16 @@ export default function Step1Upload() {
   const [status, setStatus] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (file && headers.length === 0) {
+      file.text().then((text) => {
+        const lines = text.trim().split(/\r?\n/);
+        setRowCount(Math.max(lines.length - 1, 0));
+        setHeaders(lines[0]?.split(',') ?? []);
+      }).catch(console.error);
+    }
+  }, [file, headers.length]);
+
   const parseFile = async (selected: File) => {
     setFile(selected);
     const text = await selected.text();
@@ -31,22 +41,6 @@ export default function Step1Upload() {
     }
   };
 
-  const loadDemo = async () => {
-    setStatus('Loading demo data...');
-    try {
-      const response = await api.get('/demo/loan');
-      const csvText = response.data.csv_text as string;
-      const demoFile = new File([csvText], 'demo_loan.csv', { type: 'text/csv' });
-      await parseFile(demoFile);
-      setSensitiveCols(['gender', 'caste']);
-      setTargetCol('approved');
-      setDomain('loan');
-      setStatus('Demo loaded successfully.');
-    } catch (err) {
-      setStatus('Failed to load demo data.');
-    }
-  };
-
   return (
     <div>
       <div className="page-header">
@@ -55,23 +49,26 @@ export default function Step1Upload() {
           <h1 className="page-title">Upload Dataset</h1>
           <p className="page-subtitle">Provide the dataset you want to audit for fairness. We support CSV files.</p>
         </div>
-        <button className="btn btn-ghost" onClick={loadDemo}>Use Demo Project</button>
       </div>
 
       <div className="card" style={{ marginBottom: 24 }}>
         <div className="dropzone" onDragOver={(event) => event.preventDefault()} onDrop={onDrop}>
           <div>
-            <h3 className="section-title">CSV drag and drop</h3>
-            <p className="helper">Drop a .csv file here or choose one manually.</p>
+            <h3 className="section-title">Secure Data Ingestion</h3>
+            <p className="helper">Initialize audit sequence with a valid .csv dataset.</p>
             <input
+              id="file-upload"
               className="input"
               type="file"
               accept=".csv"
               onChange={(event) => event.target.files?.[0] && parseFile(event.target.files[0])}
-              style={{ maxWidth: 380, marginTop: 12 }}
+              style={{ display: 'none' }}
             />
+            <label htmlFor="file-upload" className="btn btn-secondary" style={{ marginTop: 16, cursor: 'pointer' }}>
+              Browse Files
+            </label>
             {file && (
-              <div style={{ marginTop: 16, padding: 12, background: 'rgba(79, 142, 247, 0.1)', borderRadius: 8 }}>
+              <div style={{ marginTop: 16, padding: 12, background: 'rgba(212, 163, 115, 0.1)', borderRadius: 8 }}>
                 <strong style={{ color: 'var(--accent)' }}>Loaded {file.name}</strong>
                 <p className="helper" style={{ margin: '4px 0 0' }}>Detected {rowCount.toLocaleString()} rows and {headers.length} columns.</p>
               </div>

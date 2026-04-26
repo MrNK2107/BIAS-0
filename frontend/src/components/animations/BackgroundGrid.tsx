@@ -47,7 +47,7 @@ export default function BackgroundGrid() {
           position: 'absolute',
           width: '100%',
           height: '100%',
-          background: 'radial-gradient(circle at 15% 50%, rgba(79, 142, 247, 0.04), transparent 25%), radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.04), transparent 25%)',
+          background: 'radial-gradient(circle at 15% 50%, rgba(212, 163, 115, 0.06), transparent 28%), radial-gradient(circle at 85% 30%, rgba(188, 71, 73, 0.05), transparent 26%)',
         }}
       />
     </div>

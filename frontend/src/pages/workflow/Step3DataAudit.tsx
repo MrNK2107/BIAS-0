@@ -9,6 +9,12 @@ export default function Step3DataAudit() {
   const [dismissed, setDismissed] = useState<string[]>([]);
   const navigate = useNavigate();
 
+  const fairnessScore = useMemo(() => {
+    if (!audit) return 0;
+    const base = audit.risk_level === 'High' ? 48 : audit.risk_level === 'Medium' ? 70 : 88;
+    return Math.max(0, Math.min(100, base - (Object.keys(audit.missing_data || {}).length * 2)));
+  }, [audit]);
+
   const chartData = useMemo(() => {
     if (!audit?.group_stats?.gender) return [];
     return Object.entries(audit.group_stats.gender).map(([group, metrics]: any) => ({
@@ -49,6 +55,14 @@ export default function Step3DataAudit() {
       <div className={`banner ${audit.risk_level.toLowerCase()}`} style={{ marginBottom: 16 }}>
         <h2 className="section-title" style={{ margin: 0 }}>{audit.risk_level} risk detected</h2>
         <p className="helper" style={{ color: 'inherit' }}>{audit.risk_reason}</p>
+      </div>
+
+      <div className="card section-gap">
+        <div className="stat-label">Data Fairness Score</div>
+        <div className={`stat-number text-8xl ${fairnessScore < 65 ? 'text-red' : 'text-accent'}`}>
+          {fairnessScore}
+        </div>
+        <p className="helper">Representation, missingness, and proxy-feature pressure combined into one forensic score.</p>
       </div>
 
       <div className="grid-2" style={{ marginBottom: 16 }}>

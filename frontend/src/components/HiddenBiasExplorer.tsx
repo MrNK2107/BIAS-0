@@ -115,10 +115,10 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
   }
 
   return (
-    <div className="card" style={{ marginBottom: '24px', backgroundColor: '#fafafa' }}>
+    <div className="card" style={{ marginBottom: '24px' }}>
       <div style={{ marginBottom: '24px' }}>
         <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <TrendingDown size={20} color="#ef4444" />
+          <TrendingDown size={20} color="var(--warning)" />
           Hidden Bias Explorer
         </h3>
         <p className="helper">
@@ -137,8 +137,8 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
           }}
           transition={{ duration: 0.5, boxShadow: { duration: 2.5, repeat: Infinity } }}
           style={{ 
-            backgroundColor: '#fef2f2', 
-            border: '1px solid #fecaca', 
+            backgroundColor: 'rgba(188, 71, 73, 0.12)', 
+            border: '0.5px solid rgba(188, 71, 73, 0.5)', 
             borderRadius: '8px', 
             padding: '20px',
             marginBottom: '24px',
@@ -147,13 +147,13 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
             alignItems: 'flex-start'
           }}
         >
-          <AlertTriangle color="#ef4444" style={{ marginTop: '4px', flexShrink: 0 }} />
+          <AlertTriangle color="var(--warning)" style={{ marginTop: '4px', flexShrink: 0 }} />
           <div>
-            <div style={{ fontWeight: 600, color: '#991b1b', marginBottom: '4px' }}>Highest Intersectional Risk</div>
-            <div style={{ fontSize: '1.1rem', color: '#7f1d1d' }}>
+            <div style={{ fontWeight: 600, color: 'var(--warning)', marginBottom: '4px' }}>Highest Intersectional Risk</div>
+            <div style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>
               <strong>{worstSubgroup.definition}</strong> → {Math.abs(worstSubgroup.metricValue * 100).toFixed(0)}% lower {worstSubgroup.metricName.toLowerCase()}
             </div>
-            <div style={{ fontSize: '0.875rem', color: '#ef4444', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ fontSize: '0.875rem', color: 'var(--warning)', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Users size={14} /> Sample size: {worstSubgroup.sampleSize}
             </div>
           </div>
@@ -164,8 +164,8 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
       {availableAttributes.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <Filter size={16} color="#6b7280" />
-            <span style={{ fontSize: '0.9rem', fontWeight: 500, color: '#374151' }}>Filter by attributes:</span>
+            <Filter size={16} color="var(--text-secondary)" />
+            <span style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Filter by attributes:</span>
           </div>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {availableAttributes.map(attr => (
@@ -175,9 +175,9 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
                 style={{
                   padding: '4px 12px',
                   borderRadius: '16px',
-                  border: `1px solid ${selectedAttributes.includes(attr) ? '#3b82f6' : '#d1d5db'}`,
-                  backgroundColor: selectedAttributes.includes(attr) ? '#eff6ff' : '#ffffff',
-                  color: selectedAttributes.includes(attr) ? '#1d4ed8' : '#4b5563',
+                  border: `0.5px solid ${selectedAttributes.includes(attr) ? 'rgba(212,163,115,0.72)' : 'var(--border)'}`,
+                  backgroundColor: selectedAttributes.includes(attr) ? 'rgba(212,163,115,0.12)' : 'rgba(255,255,255,0.02)',
+                  color: selectedAttributes.includes(attr) ? 'var(--accent)' : 'var(--text-secondary)',
                   fontSize: '0.85rem',
                   cursor: 'pointer',
                   fontWeight: selectedAttributes.includes(attr) ? 600 : 400,
@@ -194,7 +194,7 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
                   padding: '4px 12px',
                   border: 'none',
                   backgroundColor: 'transparent',
-                  color: '#6b7280',
+                  color: 'var(--text-secondary)',
                   fontSize: '0.85rem',
                   cursor: 'pointer',
                   textDecoration: 'underline'
@@ -209,7 +209,7 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
 
       {/* Top 5 Rankings */}
       <div>
-        <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#374151', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Top 5 Most Biased Subgroups
         </div>
         
@@ -219,10 +219,10 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <th style={{ padding: '12px 8px', color: '#6b7280', fontWeight: 500 }}>Subgroup Definition</th>
-                  <th style={{ padding: '12px 8px', color: '#6b7280', fontWeight: 500 }}>Metric Difference</th>
-                  <th style={{ padding: '12px 8px', color: '#6b7280', fontWeight: 500 }}>Sample Size</th>
+                <tr style={{ borderBottom: '0.5px solid var(--border)' }}>
+                  <th style={{ padding: '12px 8px', color: 'var(--text-secondary)', fontWeight: 500 }}>Subgroup Definition</th>
+                  <th style={{ padding: '12px 8px', color: 'var(--text-secondary)', fontWeight: 500 }}>Metric Difference</th>
+                  <th style={{ padding: '12px 8px', color: 'var(--text-secondary)', fontWeight: 500 }}>Sample Size</th>
                 </tr>
               </thead>
               <tbody>
@@ -236,9 +236,9 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -10 }}
                         transition={{ duration: 0.2, delay: idx * 0.05 }}
-                        style={{ borderBottom: '1px solid #f3f4f6' }}
+                        style={{ borderBottom: '0.5px solid var(--border)' }}
                       >
-                        <td style={{ padding: '12px 8px', fontWeight: 500, color: '#111827' }}>
+                        <td style={{ padding: '12px 8px', fontWeight: 500, color: 'var(--text-primary)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ 
                               display: 'inline-flex', 
@@ -247,8 +247,8 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
                               width: '24px', 
                               height: '24px', 
                               borderRadius: '50%', 
-                              backgroundColor: idx === 0 ? '#fee2e2' : '#f3f4f6',
-                              color: idx === 0 ? '#ef4444' : '#6b7280',
+                              backgroundColor: idx === 0 ? 'rgba(188, 71, 73, 0.16)' : 'rgba(255,255,255,0.04)',
+                              color: idx === 0 ? 'var(--warning)' : 'var(--text-secondary)',
                               fontSize: '0.8rem',
                               fontWeight: 700
                             }}>
@@ -262,7 +262,7 @@ export default function HiddenBiasExplorer({ subgroups = mockSubgroups }: Hidden
                             {sg.metricDifference}
                           </span>
                         </td>
-                        <td style={{ padding: '12px 8px', color: '#6b7280' }}>
+                        <td style={{ padding: '12px 8px', color: 'var(--text-secondary)' }}>
                           {sg.sampleSize}
                         </td>
                       </motion.tr>

@@ -9,26 +9,26 @@ const S: Record<string, React.CSSProperties> = {
   header: { display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:16, marginBottom:22 },
   statsRow: { display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:24 },
   statCard: { padding:20, display:'flex', flexDirection:'column', gap:6 },
-  statLabel: { fontSize:'0.78rem', color:'#8b9ab3', textTransform:'uppercase', letterSpacing:'0.12em' },
+  statLabel: { fontSize:'0.78rem', color:'var(--text-secondary)', textTransform:'uppercase', letterSpacing:'0.12em' },
   statVal: { fontSize:'1.8rem', fontWeight:700, lineHeight:1.1 },
-  statSub: { fontSize:'0.82rem', color:'#8b9ab3', marginTop:2 },
+  statSub: { fontSize:'0.82rem', color:'var(--text-secondary)', marginTop:2 },
   mainGrid: { display:'grid', gridTemplateColumns:'1fr 380px', gap:24, alignItems:'start' },
   leftCol: { display:'flex', flexDirection:'column', gap:24 },
   tlCard: { maxHeight:780, overflowY:'auto', padding:'20px 16px' },
-  tlLine: { position:'relative', paddingLeft:28, marginLeft:14, borderLeft:'2px solid #2a3347' },
+  tlLine: { position:'relative', paddingLeft:28, marginLeft:14, borderLeft:'1px solid var(--border)' },
   tlNode: { position:'absolute', left:-37, top:0, width:24, height:24, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 0 0 4px var(--bg)' },
   tlContent: { cursor:'pointer', padding:'10px 14px', borderRadius:12, border:'1px solid transparent', transition:'all 0.2s' },
   tlContentSel: { backgroundColor:'rgba(79,142,247,0.06)', border:'1px solid rgba(79,142,247,0.2)' },
   tlTitle: { fontWeight:600, color:'#f0f4ff', fontSize:'0.92rem' },
-  tlDate: { fontSize:'0.78rem', color:'#6b7280' },
-  tlDesc: { fontSize:'0.85rem', color:'#8b9ab3', marginTop:4 },
-  detail: { marginTop:10, marginLeft:12, padding:16, backgroundColor:'rgba(255,255,255,0.03)', borderRadius:12, border:'1px solid #2a3347', fontSize:'0.88rem', color:'#c5d0ea', animation:'fadeIn 0.2s ease-out' },
-  detailRow: { display:'flex', justifyContent:'space-between', padding:'5px 0', borderBottom:'1px solid rgba(148,163,184,0.08)' },
+  tlDate: { fontSize:'0.78rem', color:'var(--text-secondary)' },
+  tlDesc: { fontSize:'0.85rem', color:'var(--text-secondary)', marginTop:4 },
+  detail: { marginTop:10, marginLeft:12, padding:16, backgroundColor:'rgba(255,255,255,0.03)', borderRadius:12, border:'0.5px solid var(--border)', fontSize:'0.88rem', color:'var(--text-primary)', animation:'fadeIn 0.2s ease-out' },
+  detailRow: { display:'flex', justifyContent:'space-between', padding:'5px 0', borderBottom:'0.5px solid var(--border)' },
   driftBox: { display:'flex', gap:16, alignItems:'flex-start' },
   badge: { display:'inline-flex', alignItems:'center', gap:4, padding:'3px 10px', borderRadius:999, fontSize:'0.72rem', fontWeight:600 },
 };
 
-const COLORS: Record<string, string> = { alert:'#ef4444', drift_alert:'#f59e0b', flag:'#8b5cf6', info:'#3b82f6' };
+const COLORS: Record<string, string> = { alert:'#BC4749', drift_alert:'#BC4749', flag:'#D4A373', info:'#D4A373' };
 const ICONS: Record<string, React.ReactNode> = {
   alert: <AlertTriangle size={13} color="#fff" />, drift_alert: <Activity size={13} color="#fff" />,
   flag: <Flag size={13} color="#fff" />, info: <Info size={13} color="#fff" />,
@@ -139,8 +139,8 @@ export default function Step9Monitoring() {
   const alertCount = timelineEvents.filter(e => e.type === 'alert').length;
   const driftCount = timelineEvents.filter(e => e.type === 'drift_alert').length;
 
-  const trendIcon = trend === 'improving' ? <TrendingUp size={16} color="#22c55e" /> : trend === 'declining' ? <TrendingDown size={16} color="#ef4444" /> : <Activity size={16} color="#f59e0b" />;
-  const trendColor = trend === 'improving' ? '#22c55e' : trend === 'declining' ? '#ef4444' : '#f59e0b';
+  const trendIcon = trend === 'improving' ? <TrendingUp size={16} color="var(--accent)" /> : trend === 'declining' ? <TrendingDown size={16} color="var(--warning)" /> : <Activity size={16} color="var(--text-secondary)" />;
+  const trendColor = trend === 'improving' ? 'var(--accent)' : trend === 'declining' ? 'var(--warning)' : 'var(--text-secondary)';
 
   return (
     <div>
@@ -165,7 +165,7 @@ export default function Step9Monitoring() {
       <div style={S.statsRow}>
         <div className="card" style={S.statCard}>
           <div style={S.statLabel}>Current Score</div>
-          <div style={{...S.statVal, color: current.fairness_score >= 70 ? '#22c55e' : current.fairness_score >= 50 ? '#f59e0b' : '#ef4444' }}>{current.fairness_score.toFixed(1)}</div>
+          <div style={{...S.statVal, color: current.fairness_score >= 70 ? 'var(--accent)' : 'var(--warning)' }}>{current.fairness_score.toFixed(1)}</div>
           <div style={S.statSub}>out of 100</div>
         </div>
         <div className="card" style={S.statCard}>
@@ -177,7 +177,7 @@ export default function Step9Monitoring() {
         </div>
         <div className="card" style={S.statCard}>
           <div style={S.statLabel}>Incidents</div>
-          <div style={{...S.statVal, color: alertCount > 0 ? '#ef4444' : '#22c55e' }}>{alertCount}</div>
+          <div style={{...S.statVal, color: alertCount > 0 ? 'var(--warning)' : 'var(--accent)' }}>{alertCount}</div>
           <div style={S.statSub}>{driftCount} drift warning{driftCount !== 1 ? 's' : ''}</div>
         </div>
         <div className="card" style={S.statCard}>
@@ -197,7 +197,7 @@ export default function Step9Monitoring() {
           <div className="card">
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
               <div className="section-title" style={{ marginBottom:0 }}>Fairness Score Over Time</div>
-              <div style={{ display:'flex', gap:4, background:'var(--surface-raised)', padding:4, borderRadius:8 }}>
+              <div style={{ display:'flex', gap:4, background:'var(--surface-raised)', padding:4, borderRadius:8, border: '0.5px solid var(--border)' }}>
                 {(['overall','group'] as const).map(m => (
                   <button key={m} className={`btn btn-small ${viewMode === m ? 'btn-primary' : ''}`}
                     style={{ padding:'6px 12px', fontSize:'0.82rem' }} onClick={() => setViewMode(m)}>
@@ -227,11 +227,11 @@ export default function Step9Monitoring() {
                 </button>
               </div>
               {driftReport && (
-                <div style={{ flex:1, padding:14, borderRadius:12, border:`1px solid ${driftReport.drift_alert ? 'rgba(245,158,11,0.3)' : 'rgba(34,197,94,0.3)'}`, background: driftReport.drift_alert ? 'rgba(245,158,11,0.06)' : 'rgba(34,197,94,0.06)' }}>
-                  <div style={{ fontWeight:600, marginBottom:6, color: driftReport.drift_alert ? '#f59e0b' : '#22c55e' }}>
+                <div style={{ flex:1, padding:14, borderRadius:12, border:`0.5px solid ${driftReport.drift_alert ? 'rgba(188,71,73,0.45)' : 'rgba(212,163,115,0.45)'}`, background: driftReport.drift_alert ? 'rgba(188,71,73,0.1)' : 'rgba(212,163,115,0.1)' }}>
+                  <div style={{ fontWeight:600, marginBottom:6, color: driftReport.drift_alert ? 'var(--warning)' : 'var(--accent)' }}>
                     {driftReport.drift_alert ? '⚠ Drift Detected' : '✓ No Significant Drift'}
                   </div>
-                  <div style={{ fontSize:'0.85rem', color:'#8b9ab3' }}>{driftReport.drift_message}</div>
+                  <div style={{ fontSize:'0.85rem', color:'var(--text-secondary)' }}>{driftReport.drift_message}</div>
                 </div>
               )}
             </div>
@@ -244,7 +244,7 @@ export default function Step9Monitoring() {
             <div className="section-title" style={{ marginBottom:0 }}>
               <Clock size={16} style={{ marginRight:6, verticalAlign:'middle' }} /> Event Timeline
             </div>
-            <span style={{ fontSize:'0.78rem', color:'#6b7280' }}>{filteredEvents.length} events</span>
+            <span style={{ fontSize:'0.78rem', color:'var(--text-secondary)' }}>{filteredEvents.length} events</span>
           </div>
 
           {/* Filters */}
@@ -252,8 +252,8 @@ export default function Step9Monitoring() {
             {[{k:'all',l:'All'},{k:'alert',l:'Incidents'},{k:'drift_alert',l:'Drift'},{k:'flag',l:'Flags'},{k:'info',l:'Checks'}].map(f => (
               <button key={f.k} onClick={() => setFilterType(f.k)}
                 style={{...S.badge, background: filterType === f.k ? 'rgba(79,142,247,0.15)' : 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${filterType === f.k ? 'rgba(79,142,247,0.4)' : 'rgba(148,163,184,0.12)'}`,
-                  color: filterType === f.k ? '#4f8ef7' : '#8b9ab3', cursor:'pointer' }}>
+                  border: `0.5px solid ${filterType === f.k ? 'rgba(212,163,115,0.65)' : 'var(--border)'}`,
+                  color: filterType === f.k ? 'var(--accent)' : 'var(--text-secondary)', cursor:'pointer' }}>
                 {f.l}
               </button>
             ))}
@@ -274,7 +274,7 @@ export default function Step9Monitoring() {
                         <div style={S.tlTitle}>{ev.title}</div>
                         <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                           <span style={S.tlDate}>{ev.dateStr}</span>
-                          {sel ? <ChevronUp size={14} color="#6b7280" /> : <ChevronDown size={14} color="#6b7280" />}
+                          {sel ? <ChevronUp size={14} color="var(--text-secondary)" /> : <ChevronDown size={14} color="var(--text-secondary)" />}
                         </div>
                       </div>
                       <div style={S.tlDesc}>{ev.description}</div>
@@ -309,7 +309,7 @@ export default function Step9Monitoring() {
                             <div style={{ fontWeight:600, marginBottom:8 }}>Group Breakdown:</div>
                             {Object.entries(ev.details).map(([attr, values]: [string, any]) => (
                               <div key={attr} style={{ marginBottom:12 }}>
-                                <div style={{ fontSize:'0.8rem', color:'#6b7280', marginBottom:4, textTransform:'uppercase' }}>{attr}</div>
+                                <div style={{ fontSize:'0.8rem', color:'var(--text-secondary)', marginBottom:4, textTransform:'uppercase' }}>{attr}</div>
                                 {Object.entries(values).map(([val, rate]: [string, any]) => (
                                   <div key={val} style={S.detailRow}>
                                     <span>{val}</span>

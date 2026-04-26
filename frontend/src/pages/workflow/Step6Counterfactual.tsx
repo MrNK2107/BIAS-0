@@ -99,19 +99,19 @@ export default function Step6Counterfactual() {
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <th style={{ padding: '12px 8px', color: '#6b7280', fontWeight: 500 }}>Record ID</th>
-                  <th style={{ padding: '12px 8px', color: '#6b7280', fontWeight: 500 }}>Original Prediction</th>
-                  <th style={{ padding: '12px 8px', color: '#6b7280', fontWeight: 500 }}>Counterfactual Prediction</th>
-                  <th style={{ padding: '12px 8px', color: '#6b7280', fontWeight: 500 }}>Changed Feature</th>
-                  <th style={{ padding: '12px 8px', color: '#6b7280', fontWeight: 500 }}>Action</th>
+                <tr style={{ borderBottom: '0.5px solid var(--border)' }}>
+                  <th style={{ padding: '12px 8px', color: 'var(--text-secondary)', fontWeight: 500 }}>Record ID</th>
+                  <th style={{ padding: '12px 8px', color: 'var(--text-secondary)', fontWeight: 500 }}>Original Prediction</th>
+                  <th style={{ padding: '12px 8px', color: 'var(--text-secondary)', fontWeight: 500 }}>Counterfactual Prediction</th>
+                  <th style={{ padding: '12px 8px', color: 'var(--text-secondary)', fontWeight: 500 }}>Changed Feature</th>
+                  <th style={{ padding: '12px 8px', color: 'var(--text-secondary)', fontWeight: 500 }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {(counterfactualResult.sample_flips || []).map((flip: any, i: number) => {
                   const isFlipped = flip.original_decision !== flip.flipped_decision;
                   return (
-                    <tr key={i} style={{ borderBottom: '1px solid #f3f4f6', backgroundColor: isFlipped ? '#fee2e2' : 'transparent' }}>
+                    <tr key={i} style={{ borderBottom: '0.5px solid var(--border)', backgroundColor: isFlipped ? 'rgba(188, 71, 73, 0.14)' : 'transparent' }}>
                       <td style={{ padding: '12px 8px', fontWeight: 500 }}>{flip.record_id}</td>
                       <td style={{ padding: '12px 8px' }}>
                         <span className="pill muted">{flip.original_decision}</span>
@@ -149,10 +149,10 @@ export default function Step6Counterfactual() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 32 }}>
         <button className="btn btn-secondary" onClick={() => navigate('/workflow/step-5')}>
-          ← Back
+          <ArrowLeft size={16} /> Back
         </button>
         <button className="btn btn-primary" onClick={() => navigate('/workflow/step-7')}>
-          Continue to Stress Test →
+          Continue to Stress Test <ArrowRight size={16} />
         </button>
       </div>
     </div>

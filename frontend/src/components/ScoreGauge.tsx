@@ -17,7 +17,7 @@ export default function ScoreGauge({ score, label = 'Fairness Score' }: ScoreGau
     color = 'var(--red)';
     riskLabel = 'High Risk';
   } else if (normalized < 75) {
-    color = 'var(--yellow)';
+    color = 'var(--text-secondary)';
     riskLabel = 'Moderate Risk';
   }
 

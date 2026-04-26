@@ -18,9 +18,8 @@ export default function AnimatedBarChart({
 
   const getBarColor = (value: number, defaultColor?: string) => {
     if (defaultColor) return defaultColor;
-    if (value < 40) return '#ef4444'; // Red
-    if (value < 60) return '#f59e0b'; // Amber
-    return '#10b981'; // Green
+    if (value < 55) return '#BC4749';
+    return '#D4A373';
   };
 
   return (
@@ -57,15 +56,15 @@ export default function AnimatedBarChart({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 10 }}
               style={{
-                background: '#1a1f2b',
+                background: '#1A1D23',
                 padding: '4px 8px',
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: 600,
-                color: '#fff',
+                color: 'var(--text-primary)',
                 marginBottom: '8px',
                 pointerEvents: 'none',
-                border: '1px solid rgba(148, 163, 184, 0.1)',
+                border: '0.5px solid var(--border)',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
               }}
             >
@@ -82,7 +81,11 @@ export default function AnimatedBarChart({
                 maxWidth: '48px',
                 backgroundColor: color,
                 borderRadius: '6px 6px 0 0',
-                boxShadow: isHovered ? `0 0 16px ${color}40` : 'none',
+                boxShadow: isHovered
+                  ? (color === '#BC4749'
+                    ? '0 0 16px rgba(188,71,73,0.55)'
+                    : '0 0 16px rgba(212,163,115,0.55)')
+                  : 'none',
                 position: 'relative',
                 overflow: 'hidden'
               }}
@@ -102,7 +105,7 @@ export default function AnimatedBarChart({
             <div style={{ 
               marginTop: '12px', 
               fontSize: '0.75rem', 
-              color: '#8b9ab3', 
+              color: 'var(--text-secondary)',
               fontWeight: 500,
               textAlign: 'center',
               textOverflow: 'ellipsis',

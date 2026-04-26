@@ -28,10 +28,11 @@ def run_model_bias_analysis(
     prepared = prepare_split(df, target_col)
     if model is not None:
         model_used = "shared_pipeline"
+        # Do NOT re-fit a pre-trained model.
     elif model_path:
         model = joblib.load(model_path)
         model_used = "user_provided"
-        model.fit(prepared.X_train, prepared.y_train)
+        # Do NOT refit — assume the loaded model is already trained.
     else:
         model = build_classifier(prepared.X_train, model_type="rf")
         model.fit(prepared.X_train, prepared.y_train)
@@ -73,10 +74,14 @@ def run_model_bias_analysis(
             y_pred=y_pred,
             sensitive_features=sensitive_features,
         )
+        # Cast pandas/numpy values to native Python types for JSON safety
+        def _to_native(d: dict) -> dict:
+            return {str(k): float(v) for k, v in d.items()}
+
         fairlearn_metrics[sensitive] = {
-            "by_group": mf.by_group.to_dict(),
-            "overall": mf.overall.to_dict(),
-            "difference": mf.difference().to_dict(),
+            "by_group": {metric: _to_native(vals) for metric, vals in mf.by_group.to_dict().items()},
+            "overall": {metric: float(val) for metric, val in mf.overall.to_dict().items()},
+            "difference": {metric: float(val) for metric, val in mf.difference().to_dict().items()},
         }
 
     return {

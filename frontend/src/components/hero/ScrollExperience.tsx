@@ -15,8 +15,8 @@ export default function ScrollExperience() {
         camera={{ position: [0, 0, 5], fov: 35 }}
         dpr={[1, 2]}
       >
-        <color attach="background" args={['#020617']} />
-        <fog attach="fog" args={['#020617', 5, 25]} />
+        <color attach="background" args={['#0F1115']} />
+        <fog attach="fog" args={['#0F1115', 5, 25]} />
         
         <Suspense fallback={null}>
           <ScrollControls pages={5} damping={0.18} infinite={false}>

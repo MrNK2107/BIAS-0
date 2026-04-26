@@ -101,9 +101,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
       fd.append('target_col', targetCol);
       fd.append('project_id', projectId);
       fd.append('metric_priority', metricPriority);
+      fd.append('domain', domain);
 
-      const res = await formApi.post('/pipeline/run-all', fd, { timeout: 180000 });
-      const data = res.data;
+      // Kick off background task — immediately returns { task_id, status }
+      const kickoff = await formApi.post('/pipeline/run-all', fd, { timeout: 15000 });
+      const { task_id } = kickoff.data as { task_id: string; status: string };
+
+      // Poll /pipeline/status/{task_id} every 2 s until done or error
+      const data = await new Promise<any>((resolve, reject) => {
+        const interval = setInterval(async () => {
+          try {
+            const poll = await api.get(`/pipeline/status/${task_id}`, { timeout: 10000 });
+            const { status, result, error } = poll.data;
+            if (status === 'complete') {
+              clearInterval(interval);
+              resolve(result);
+            } else if (status === 'error') {
+              clearInterval(interval);
+              reject(new Error(error || 'Pipeline failed'));
+            }
+            // status === 'queued' | 'processing' → keep polling
+          } catch (pollErr) {
+            clearInterval(interval);
+            reject(pollErr);
+          }
+        }, 2000);
+      });
 
       // Unpack into individual context slices for backward compatibility
       setAuditResult(data.data_audit);
@@ -114,13 +137,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCounterfactualResult(data.counterfactual);
       setStressResult(data.stress);
       setRecommendResult(data.recommendations);
-
       setPipelineResults(data);
+
     } catch (err: any) {
       const isTimeout = err?.code === 'ECONNABORTED';
       const isNetworkIssue = err?.message?.includes('Network Error');
       const message = isTimeout
-        ? 'Analysis timed out after 3 minutes. The backend may be overloaded or unreachable. Please retry.'
+        ? 'Could not reach the backend to start analysis. Please make sure the server is running.'
         : isNetworkIssue
           ? 'Cannot reach backend API. Please make sure the backend server is running.'
           : err?.response?.data?.detail || err?.message || 'Analysis failed. Please try again.';

@@ -53,7 +53,7 @@ function AnalysisLoadingScreen({ error, onRetry }: { error: string | null; onRet
       <div className="analysis-card">
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div className="analysis-spinner-ring">
-            <Loader size={22} color="white" style={{ animation: 'spin 1.2s linear infinite' }} />
+            <Loader size={22} color="var(--text-primary)" style={{ animation: 'spin 1.2s linear infinite' }} />
           </div>
           <h2 style={{ margin: 0, marginBottom: 8, fontSize: '1.4rem', color: 'var(--text-primary)' }}>
             {showFinalizing ? 'Finalizing Results…' : 'Running Full Analysis'}
@@ -101,7 +101,7 @@ function AnalysisLoadingScreen({ error, onRetry }: { error: string | null; onRet
 
           {showFinalizing && (
             <div className="analysis-stage analysis-stage-finalizing">
-              <Loader size={16} color="#a78bfa" className="analysis-stage-icon analysis-stage-icon-spinning" />
+              <Loader size={16} color="var(--accent)" className="analysis-stage-icon analysis-stage-icon-spinning" />
               <span className="analysis-stage-label analysis-stage-label-finalizing">
                 Persisting results &amp; preparing insights…
               </span>
@@ -277,7 +277,10 @@ export default function Step2Config() {
         <div className="card" style={{ marginTop: 16 }}>
           <div className="section-title">Model upload (Optional)</div>
           <div className="helper">Upload a .pkl or .joblib file. If skipped, we will train a default RF model automatically.</div>
-          <input className="input" type="file" accept=".pkl,.joblib" style={{ marginTop: 12 }} />
+          <input id="model-upload" className="input" type="file" accept=".pkl,.joblib" style={{ display: 'none' }} />
+          <label htmlFor="model-upload" className="btn btn-secondary" style={{ marginTop: 12, cursor: 'pointer' }}>
+            Browse Files
+          </label>
         </div>
       )}
 

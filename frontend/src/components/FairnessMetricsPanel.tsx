@@ -41,10 +41,10 @@ const MetricCard: React.FC<MetricItemProps> = ({ title, value, description, thre
 
   const getSeverityColor = (sev: string) => {
     switch (sev) {
-      case 'green': return '#10b981';
-      case 'amber': return '#f59e0b';
-      case 'red': return '#ef4444';
-      default: return '#9ca3af';
+      case 'green': return 'var(--accent)';
+      case 'amber': return 'var(--accent)';
+      case 'red': return 'var(--warning)';
+      default: return 'var(--text-secondary)';
     }
   };
 
@@ -88,7 +88,7 @@ export default function FairnessMetricsPanel({ biasResult, counterfactualResult 
     <div style={{ marginBottom: '24px' }}>
       <div style={{ marginBottom: '16px' }}>
         <h3 className="section-title" style={{ marginBottom: '4px' }}>Multi-Metric Fairness Analysis</h3>
-        <p style={{ color: '#6b7280', margin: 0, fontSize: '0.95rem' }}>
+        <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.95rem' }}>
           Fairness cannot be reduced to a single number. These metrics show different perspectives of model behavior across groups.
         </p>
       </div>

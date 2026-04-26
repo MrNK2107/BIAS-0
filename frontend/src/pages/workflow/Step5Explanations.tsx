@@ -51,8 +51,8 @@ export default function Step5Explanations() {
       </div>
 
       <div style={{
-        backgroundColor: '#fffbeb',
-        border: '1px solid #fcd34d',
+        backgroundColor: 'rgba(188, 71, 73, 0.1)',
+        border: '0.5px solid rgba(188, 71, 73, 0.5)',
         borderRadius: '8px',
         padding: '16px',
         marginBottom: '24px',
@@ -60,17 +60,17 @@ export default function Step5Explanations() {
         gap: '12px',
         alignItems: 'flex-start'
       }}>
-        <AlertTriangle color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} size={20} />
+        <AlertTriangle color="var(--warning)" style={{ flexShrink: 0, marginTop: '2px' }} size={20} />
         <div>
-          <div style={{ fontWeight: 600, color: '#92400e', marginBottom: '4px' }}>Model explanations do not imply fairness</div>
-          <div style={{ fontSize: '0.95rem', color: '#b45309' }}>
+          <div style={{ fontWeight: 600, color: 'var(--warning)', marginBottom: '4px' }}>Model explanations do not imply fairness</div>
+          <div style={{ fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
             An explainable decision may still be a biased decision. SHAP values only tell us what the model learned, not whether what it learned is fair.
           </div>
         </div>
       </div>
 
       {explainSummary && (
-        <div className="card" style={{ marginBottom: 16, borderLeft: '4px solid var(--accent)', background: 'rgba(79, 142, 247, 0.05)' }}>
+        <div className="card card-primary" style={{ marginBottom: 16 }}>
           <div className="section-title" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span>Manager Summary</span>
           </div>
@@ -92,7 +92,7 @@ export default function Step5Explanations() {
 
             return (
               <div className="card" key={item.record_id} style={{ padding: '24px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #f3f4f6', paddingBottom: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '0.5px solid var(--border)', paddingBottom: '12px' }}>
                   <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>
                     Record {item.record_id} <span className="pill muted" style={{ marginLeft: '8px' }}>{item.decision}</span>
                   </div>
@@ -101,8 +101,8 @@ export default function Step5Explanations() {
 
                 <div className="grid-2" style={{ gap: '24px' }}>
                   {/* Section 1: Model Decision (SHAP) */}
-                  <div style={{ borderRight: '1px solid #f3f4f6', paddingRight: '24px' }}>
-                    <div style={{ fontWeight: 600, marginBottom: '16px', color: '#374151' }}>
+                  <div style={{ borderRight: '0.5px solid var(--border)', paddingRight: '24px' }}>
+                    <div style={{ fontWeight: 600, marginBottom: '16px', color: 'var(--text-primary)' }}>
                       Why the model made this decision
                     </div>
                     <div className="helper" style={{ marginBottom: '16px', fontSize: '0.85rem' }}>
@@ -121,8 +121,8 @@ export default function Step5Explanations() {
                               style={{
                                 width: `${Math.min(Math.abs(reason.shap_value) * 100, 100)}%`,
                                 background: reason.is_proxy_risk
-                                  ? 'linear-gradient(90deg, #f59e0b, #ef4444)'
-                                  : 'linear-gradient(90deg, #3550c8, #4f8ef7)'
+                                  ? 'linear-gradient(90deg, var(--warning), #e77b7d)'
+                                  : 'linear-gradient(90deg, var(--accent), #e9be95)'
                               }}
                             />
                           </div>
@@ -133,21 +133,21 @@ export default function Step5Explanations() {
 
                   {/* Section 2: Fairness Assessment */}
                   <div>
-                    <div style={{ fontWeight: 600, marginBottom: '16px', color: '#b91c1c' }}>
+                    <div style={{ fontWeight: 600, marginBottom: '16px', color: 'var(--warning)' }}>
                       Why this may be unfair
                     </div>
-                    <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
-                      <div style={{ fontSize: '0.95rem', lineHeight: 1.5, color: '#374151' }}>
+                    <div style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '0.5px solid var(--border)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                      <div style={{ fontSize: '0.95rem', lineHeight: 1.5, color: 'var(--text-primary)' }}>
                         {item.human_explanation}
                       </div>
                     </div>
 
                     {proxyReasons.length > 0 && (
                       <div style={{ marginBottom: '16px' }}>
-                        <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#991b1b', marginBottom: '8px' }}>
+                        <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--warning)', marginBottom: '8px' }}>
                           Proxy Feature Warnings
                         </div>
-                        <ul style={{ paddingLeft: '20px', margin: 0, fontSize: '0.9rem', color: '#7f1d1d' }}>
+                        <ul style={{ paddingLeft: '20px', margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                           {proxyReasons.map((pr: any) => (
                             <li key={pr.feature} style={{ marginBottom: '4px' }}>
                               The feature <strong>{pr.feature}</strong> is highly correlated with the sensitive attribute and is driving this decision.
@@ -160,7 +160,7 @@ export default function Step5Explanations() {
                     <div style={{ marginTop: '24px' }}>
                       <button
                         className="btn btn-small"
-                        style={{ backgroundColor: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5' }}
+                        style={{ backgroundColor: 'rgba(188,71,73,0.14)', color: 'var(--warning)', border: '0.5px solid rgba(188,71,73,0.6)' }}
                         onClick={() => {
                           const reason = window.prompt('Enter reason for flagging this decision:');
                           if (reason) {

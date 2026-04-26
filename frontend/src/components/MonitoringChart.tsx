@@ -26,8 +26,8 @@ const CustomDot = (props: any) => {
   if (!payload.alert) return null;
   return (
     <g onClick={() => onDotClick?.(payload)} style={{ cursor: 'pointer' }}>
-      <circle cx={cx} cy={cy} r={8} fill="rgba(239,68,68,0.25)" stroke="none" />
-      <circle cx={cx} cy={cy} r={4} fill="#ef4444" stroke="#fff" strokeWidth={1.5} />
+      <circle cx={cx} cy={cy} r={10} fill="rgba(188,71,73,0.22)" stroke="none" />
+      <circle cx={cx} cy={cy} r={4} fill="#BC4749" stroke="#F1F1F1" strokeWidth={1.5} />
     </g>
   );
 };
@@ -48,7 +48,7 @@ export default function MonitoringChart({ events, viewMode, incidents = [], onDo
     return point;
   });
 
-  const colors = ['#4f8ef7', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e'];
+  const colors = ['#D4A373', '#BC4749', '#E8C6A0', '#A56C40', '#9F3E40', '#F1F1F1', '#CDA47A', '#7F848A'];
 
   // Find alert zones (consecutive alerts)
   const alertZones: { start: string; end: string }[] = [];
@@ -68,12 +68,12 @@ export default function MonitoringChart({ events, viewMode, incidents = [], onDo
         <ComposedChart data={viewMode === 'overall' ? events : transformedData}>
           <defs>
             <linearGradient id="monitorGradient" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#4f8ef7" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="#4f8ef7" stopOpacity={0.05} />
+              <stop offset="0%" stopColor="#D4A373" stopOpacity={0.35} />
+              <stop offset="100%" stopColor="#D4A373" stopOpacity={0.05} />
             </linearGradient>
             <linearGradient id="alertZoneGradient" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#ef4444" stopOpacity={0.12} />
-              <stop offset="100%" stopColor="#ef4444" stopOpacity={0.03} />
+              <stop offset="0%" stopColor="#BC4749" stopOpacity={0.14} />
+              <stop offset="100%" stopColor="#BC4749" stopOpacity={0.03} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.12)" />
@@ -91,22 +91,22 @@ export default function MonitoringChart({ events, viewMode, incidents = [], onDo
 
           {/* Alert zones */}
           {viewMode === 'overall' && alertZones.map((zone, i) => (
-            <ReferenceArea key={`zone-${i}`} x1={zone.start} x2={zone.end} fill="rgba(239,68,68,0.08)" stroke="none" />
+            <ReferenceArea key={`zone-${i}`} x1={zone.start} x2={zone.end} fill="rgba(188,71,73,0.1)" stroke="none" />
           ))}
 
           {/* Incident reference lines */}
           {viewMode === 'overall' && incidents.filter(m => m.type === 'incident').map((m, i) => (
-            <ReferenceLine key={`inc-${i}`} x={m.timestamp} stroke="#ef4444" strokeDasharray="6 4" strokeWidth={1.5} label={{ value: '⚠', position: 'top', fill: '#ef4444', fontSize: 14 }} />
+            <ReferenceLine key={`inc-${i}`} x={m.timestamp} stroke="#BC4749" strokeDasharray="6 4" strokeWidth={1.5} label={{ value: '⚠', position: 'top', fill: '#BC4749', fontSize: 14 }} />
           ))}
 
           {/* Drift reference lines */}
           {viewMode === 'overall' && incidents.filter(m => m.type === 'drift').map((m, i) => (
-            <ReferenceLine key={`drift-${i}`} x={m.timestamp} stroke="#f59e0b" strokeDasharray="4 4" strokeWidth={1.5} label={{ value: '↕', position: 'top', fill: '#f59e0b', fontSize: 14 }} />
+            <ReferenceLine key={`drift-${i}`} x={m.timestamp} stroke="#BC4749" strokeDasharray="4 4" strokeWidth={1.5} label={{ value: '↕', position: 'top', fill: '#BC4749', fontSize: 14 }} />
           ))}
 
           {/* Threshold line */}
           {viewMode === 'overall' && (
-            <ReferenceLine y={70} stroke="rgba(34,197,94,0.4)" strokeDasharray="8 6" label={{ value: 'Fair threshold', position: 'right', fill: '#22c55e', fontSize: 11 }} />
+            <ReferenceLine y={70} stroke="rgba(212,163,115,0.45)" strokeDasharray="8 6" label={{ value: 'Fair threshold', position: 'right', fill: '#D4A373', fontSize: 11 }} />
           )}
 
           {viewMode === 'overall' ? (
@@ -116,10 +116,10 @@ export default function MonitoringChart({ events, viewMode, incidents = [], onDo
                 name="Overall Fairness"
                 type="monotone"
                 dataKey="fairness_score"
-                stroke="#4f8ef7"
+                stroke="#D4A373"
                 strokeWidth={3}
                 dot={<CustomDot onDotClick={onDotClick} />}
-                activeDot={{ r: 6, fill: '#4f8ef7', stroke: '#fff', strokeWidth: 2 }}
+                activeDot={{ r: 7, fill: '#D4A373', stroke: '#F1F1F1', strokeWidth: 2 }}
               />
             </>
           ) : (

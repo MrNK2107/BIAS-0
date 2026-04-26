@@ -24,10 +24,10 @@ export const cardVariants: any = {
 
 const getSeverityColor = (sev: string) => {
   switch (sev) {
-    case 'green': return '#10b981';
-    case 'amber': return '#f59e0b';
-    case 'red': return '#ef4444';
-    default: return '#9ca3af';
+    case 'green': return '#D4A373';
+    case 'amber': return '#D4A373';
+    case 'red': return '#BC4749';
+    default: return 'rgba(212, 163, 115, 0.25)';
   }
 };
 

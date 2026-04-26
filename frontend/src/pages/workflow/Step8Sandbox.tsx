@@ -74,34 +74,34 @@ export default function Step8Sandbox() {
     if (!fixes || fixes.length === 0) return null;
     return (
       <div style={{ marginBottom: 32 }}>
-        <h3 style={{ borderBottom: '2px solid #e5e7eb', paddingBottom: 8, marginBottom: 16, color: '#374151' }}>{title}</h3>
+        <h3 style={{ borderBottom: '0.5px solid var(--border)', paddingBottom: 8, marginBottom: 16, color: 'var(--text-primary)' }}>{title}</h3>
         <div className="grid-2">
           {fixes.map(fix => {
             const isApplied = selected.includes(fix.fix_id);
             const rationale = fix.mitigation_options?.[0]?.rationale || 'Addresses identified bias patterns directly.';
             
             return (
-              <div className="card" key={fix.fix_id} style={{ display: 'flex', flexDirection: 'column', height: '100%', border: isApplied ? '2px solid var(--accent)' : '1px solid var(--border)' }}>
+              <div className="card" key={fix.fix_id} style={{ display: 'flex', flexDirection: 'column', height: '100%', border: isApplied ? '0.5px solid rgba(212,163,115,0.72)' : '0.5px solid var(--border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                     {fix.fix_type.replace(/_/g, ' ').toUpperCase()}
                   </div>
                   {isApplied && <span className="pill green">Active</span>}
                 </div>
                 
                 <div style={{ marginBottom: 12, fontSize: '0.95rem' }}>
-                  <strong style={{ color: '#4b5563' }}>What to do:</strong>
-                  <div style={{ color: '#1f2937', marginTop: 4 }}>{fix.description}</div>
+                  <strong style={{ color: 'var(--text-secondary)' }}>What to do:</strong>
+                  <div style={{ color: 'var(--text-primary)', marginTop: 4 }}>{fix.description}</div>
                 </div>
 
                 <div style={{ marginBottom: 12, fontSize: '0.95rem' }}>
-                  <strong style={{ color: '#4b5563' }}>Why it helps:</strong>
-                  <div style={{ color: '#1f2937', marginTop: 4 }}>{rationale}</div>
+                  <strong style={{ color: 'var(--text-secondary)' }}>Why it helps:</strong>
+                  <div style={{ color: 'var(--text-primary)', marginTop: 4 }}>{rationale}</div>
                 </div>
 
                 <div style={{ marginBottom: 24, fontSize: '0.95rem', flexGrow: 1 }}>
-                  <strong style={{ color: '#4b5563' }}>Expected impact:</strong>
-                  <div style={{ color: '#059669', marginTop: 4, fontWeight: 500 }}>{fix.estimated_impact}</div>
+                  <strong style={{ color: 'var(--text-secondary)' }}>Expected impact:</strong>
+                  <div style={{ color: 'var(--accent)', marginTop: 4, fontWeight: 500 }}>{fix.estimated_impact}</div>
                 </div>
 
                 <button 
@@ -158,10 +158,10 @@ export default function Step8Sandbox() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 32 }}>
         <button className="btn btn-secondary" onClick={() => navigate('/workflow/step-7')}>
-          ← Back
+          Back
         </button>
         <button className="btn btn-primary" onClick={() => navigate('/workflow/step-9')}>
-          Continue to Monitoring Setup →
+          Continue to Monitoring Setup
         </button>
       </div>
     </div>

@@ -36,17 +36,17 @@ export default function ExperienceScene() {
   }, []);
 
   const tmpColor = useMemo(() => new THREE.Color(), []);
-  const trustTeal = useMemo(() => new THREE.Color('#2dd4bf'), []);
-  const warningRed = useMemo(() => new THREE.Color('#f43f5e'), []);
-  const neutralA = useMemo(() => new THREE.Color('#94a3b8'), []);
-  const neutralB = useMemo(() => new THREE.Color('#334155'), []);
+  const trustCopper = useMemo(() => new THREE.Color('#D4A373'), []);
+  const warningRed = useMemo(() => new THREE.Color('#BC4749'), []);
+  const neutralA = useMemo(() => new THREE.Color('#F1F1F1'), []);
+  const neutralB = useMemo(() => new THREE.Color('#8E9196'), []);
 
   const particleCount = isMobile ? 1800 : MAX_PARTICLES;
 
-  const { chaoticPositions, clusterPositions, matrixPositions, biasedMask, baseColors } = useMemo(() => {
+  const { chaoticPositions, clusterPositions, torusPositions, biasedMask, baseColors } = useMemo(() => {
     const chaotic = new Float32Array(particleCount * 3);
     const cluster = new Float32Array(particleCount * 3);
-    const matrix = new Float32Array(particleCount * 3);
+    const torus = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
     const mask = new Uint8Array(particleCount);
 
@@ -56,9 +56,6 @@ export default function ExperienceScene() {
       new THREE.Vector3(-1.6, -1.5, 2.5),
       new THREE.Vector3(2.1, 1.4, 2.2),
     ];
-
-    const gridSide = Math.ceil(Math.cbrt(particleCount));
-    const spacing = isMobile ? 0.27 : 0.24;
 
     for (let i = 0; i < particleCount; i++) {
       const u = Math.random();
@@ -80,13 +77,14 @@ export default function ExperienceScene() {
       cluster[i * 3 + 1] = c.y + (Math.random() - 0.5) * 1.6;
       cluster[i * 3 + 2] = c.z + (Math.random() - 0.5) * 1.6;
 
-      const gx = i % gridSide;
-      const gy = Math.floor(i / gridSide) % gridSide;
-      const gz = Math.floor(i / (gridSide * gridSide));
-
-      matrix[i * 3] = (gx - gridSide / 2) * spacing;
-      matrix[i * 3 + 1] = (gy - gridSide / 2) * spacing;
-      matrix[i * 3 + 2] = (gz - gridSide / 2) * spacing;
+      const majorRadius = isMobile ? 2.2 : 2.7;
+      const minorRadius = isMobile ? 0.58 : 0.72;
+      const a = (i / particleCount) * Math.PI * 2;
+      const b = ((i * 1.618) % particleCount) / particleCount * Math.PI * 2;
+      const r = majorRadius + minorRadius * Math.cos(b);
+      torus[i * 3] = r * Math.cos(a);
+      torus[i * 3 + 1] = r * Math.sin(a);
+      torus[i * 3 + 2] = minorRadius * Math.sin(b);
 
       const base = neutralA.clone().lerp(neutralB, Math.random() * 0.55);
       colors[i * 3] = base.r;
@@ -98,7 +96,7 @@ export default function ExperienceScene() {
     return {
       chaoticPositions: chaotic,
       clusterPositions: cluster,
-      matrixPositions: matrix,
+      torusPositions: torus,
       biasedMask: mask,
       baseColors: colors,
     };
@@ -147,9 +145,9 @@ export default function ExperienceScene() {
           y = THREE.MathUtils.lerp(chaoticPositions[idx + 1], clusterPositions[idx + 1], phase2);
           z = THREE.MathUtils.lerp(chaoticPositions[idx + 2], clusterPositions[idx + 2], phase2);
         } else if (offset >= 0.6) {
-          x = THREE.MathUtils.lerp(clusterPositions[idx], matrixPositions[idx], phase3);
-          y = THREE.MathUtils.lerp(clusterPositions[idx + 1], matrixPositions[idx + 1], phase3);
-          z = THREE.MathUtils.lerp(clusterPositions[idx + 2], matrixPositions[idx + 2], phase3);
+          x = THREE.MathUtils.lerp(clusterPositions[idx], torusPositions[idx], phase3);
+          y = THREE.MathUtils.lerp(clusterPositions[idx + 1], torusPositions[idx + 1], phase3);
+          z = THREE.MathUtils.lerp(clusterPositions[idx + 2], torusPositions[idx + 2], phase3);
         }
 
         positions[idx] = x;
@@ -165,7 +163,7 @@ export default function ExperienceScene() {
           }
         }
         if (offset >= 0.6) {
-          tmpColor.lerp(trustTeal, phase3);
+          tmpColor.lerp(trustCopper, phase3);
         }
 
         colors[idx] = tmpColor.r;
@@ -180,8 +178,8 @@ export default function ExperienceScene() {
   return (
     <group ref={sceneRef}>
       <ambientLight intensity={0.75} />
-      <pointLight position={[6, 5, 8]} intensity={2.2} color="#93c5fd" />
-      <pointLight position={[-7, -5, -7]} intensity={1.3} color="#2dd4bf" />
+      <pointLight position={[6, 5, 8]} intensity={2.2} color="#F1F1F1" />
+      <pointLight position={[-7, -5, -7]} intensity={1.3} color="#D4A373" />
 
       <points ref={pointsRef}>
         <bufferGeometry>
