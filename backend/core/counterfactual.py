@@ -17,7 +17,8 @@ def run_counterfactual_test(
 ) -> dict[str, Any]:
     prepared = prepare_split(df, target_col)
     pipeline = model or build_classifier(prepared.X_train, model_type="rf")
-    pipeline.fit(prepared.X_train, prepared.y_train)
+    if model is None:
+        pipeline.fit(prepared.X_train, prepared.y_train)
     y_pred = pd.Series(pipeline.predict(prepared.X_test), index=prepared.y_test.index)
     baseline_accuracy = float(accuracy_score(prepared.y_test, y_pred))
     baseline_gaps = fairness_gaps(y_pred, prepared.y_test, df.loc[prepared.y_test.index, sensitive_col]) if sensitive_col in df.columns else {"demographic_parity_difference": 0.0, "equal_opportunity_difference": 0.0, "fpr_gap": 0.0}

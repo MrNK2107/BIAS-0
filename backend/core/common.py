@@ -107,7 +107,7 @@ def build_classifier(X_train: pd.DataFrame, model_type: str = "rf") -> Pipeline:
     if model_type == "linear":
         estimator = LogisticRegression(max_iter=1000)
     else:
-        estimator = RandomForestClassifier(n_estimators=100, random_state=42)
+        estimator = RandomForestClassifier(n_estimators=50, random_state=42, n_jobs=-1)
     return Pipeline(steps=[("preprocessor", preprocessor), ("model", estimator)])
 
 

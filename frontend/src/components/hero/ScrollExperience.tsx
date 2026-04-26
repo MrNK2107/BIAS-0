@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
 import { ScrollControls, Scroll } from '@react-three/drei';
 import { Suspense } from 'react';
@@ -10,7 +9,7 @@ export default function ScrollExperience() {
   const navigate = useNavigate();
   
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#020617' }}>
+    <div className="hero-viewport">
       <Canvas
         shadows
         camera={{ position: [0, 0, 5], fov: 35 }}
@@ -20,7 +19,7 @@ export default function ScrollExperience() {
         <fog attach="fog" args={['#020617', 5, 25]} />
         
         <Suspense fallback={null}>
-          <ScrollControls pages={10} damping={0.15} infinite={false}>
+          <ScrollControls pages={5} damping={0.18} infinite={false}>
             <ExperienceScene />
             
             <Scroll html style={{ width: '100%' }}>

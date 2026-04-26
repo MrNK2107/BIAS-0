@@ -11,6 +11,7 @@ interface AppState {
   apiUrl: string;
   requestFormat: string;
   metricPriority: string;
+  // Individual result slices (populated by runFullAnalysis)
   auditResult: any;
   proxyResult: any;
   biasResult: any;
@@ -21,6 +22,10 @@ interface AppState {
   recommendResult: any;
   sandboxResult: any;
   monitoringResult: any;
+  // Unified pipeline state
+  pipelineResults: any;
+  isAnalyzing: boolean;
+  analyzeError: string | null;
 }
 
 interface AppContextType extends AppState {
@@ -43,10 +48,11 @@ interface AppContextType extends AppState {
   setSandboxResult: (val: any) => void;
   setMonitoringResult: (val: any) => void;
 
-  // Pipeline methods
-  runDataAudit: () => Promise<void>;
+  // Unified pipeline
+  runFullAnalysis: () => Promise<void>;
+
+  // Legacy individual methods (kept for sandbox + monitoring + custom stress)
   runModelBias: (customStressScenarios?: any[]) => Promise<void>;
-  runCounterfactualAnalysis: () => Promise<void>;
   runRecommendFixes: () => Promise<void>;
   runSandboxSimulation: (fixes: string[]) => Promise<void>;
   runMonitoringSimulation: () => Promise<void>;
@@ -77,6 +83,55 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [sandboxResult, setSandboxResult] = useState<any>(null);
   const [monitoringResult, setMonitoringResult] = useState<any>(null);
 
+  // Unified pipeline state
+  const [pipelineResults, setPipelineResults] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+
+  // ── Unified pipeline ────────────────────────────────────────────────────────
+  const runFullAnalysis = async () => {
+    if (!file) return;
+    setIsAnalyzing(true);
+    setAnalyzeError(null);
+
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('sensitive_cols', sensitiveCols.join(','));
+      fd.append('target_col', targetCol);
+      fd.append('project_id', projectId);
+      fd.append('metric_priority', metricPriority);
+
+      const res = await formApi.post('/pipeline/run-all', fd, { timeout: 180000 });
+      const data = res.data;
+
+      // Unpack into individual context slices for backward compatibility
+      setAuditResult(data.data_audit);
+      setProxyResult(data.proxy);
+      setBiasResult(data.model_bias);
+      setExplainResult(data.explanations);
+      setExplainSummary(data.explain_summary);
+      setCounterfactualResult(data.counterfactual);
+      setStressResult(data.stress);
+      setRecommendResult(data.recommendations);
+
+      setPipelineResults(data);
+    } catch (err: any) {
+      const isTimeout = err?.code === 'ECONNABORTED';
+      const isNetworkIssue = err?.message?.includes('Network Error');
+      const message = isTimeout
+        ? 'Analysis timed out after 3 minutes. The backend may be overloaded or unreachable. Please retry.'
+        : isNetworkIssue
+          ? 'Cannot reach backend API. Please make sure the backend server is running.'
+          : err?.response?.data?.detail || err?.message || 'Analysis failed. Please try again.';
+      setAnalyzeError(message);
+      throw err;
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  // ── Legacy helpers (kept for interactive steps) ─────────────────────────────
   const getFormData = () => {
     const fd = new FormData();
     fd.append('project_id', projectId);
@@ -87,36 +142,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return fd;
   };
 
-  const getFormDataForProxy = () => {
-    const fd = new FormData();
-    fd.append('sensitive_cols', sensitiveCols.join(','));
-    if (file) fd.append('file', file);
-    return fd;
-  };
-  
-  const getFormDataForCounterfactual = () => {
-    const fd = new FormData();
-    // Assuming the first sensitive col is what we test against
-    fd.append('sensitive_col', sensitiveCols[0] || '');
-    fd.append('target_col', targetCol);
-    fd.append('metric_priority', metricPriority);
-    if (file) fd.append('file', file);
-    return fd;
-  };
-
-  const runDataAudit = async () => {
-    if (!file) return;
-    const auditRes = await formApi.post('/audit/data', getFormData());
-    setAuditResult(auditRes.data);
-
-    const proxyRes = await formApi.post('/audit/proxy', getFormDataForProxy());
-    setProxyResult(proxyRes.data);
-  };
-
+  // Used by Step 7 custom scenario re-runs
   const runModelBias = async (customStressScenarios?: any[]) => {
     if (!file) return;
-    
-    let biasRes;
+
     const fd = getFormData();
     if (customStressScenarios) {
       fd.append('custom_scenarios', JSON.stringify(customStressScenarios));
@@ -136,33 +165,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (customStressScenarios) {
         apiFd.append('custom_scenarios', JSON.stringify(customStressScenarios));
       }
-      biasRes = await formApi.post('/bias/model-from-api', apiFd);
+      const biasRes = await formApi.post('/bias/model-from-api', apiFd);
+      setBiasResult(biasRes.data);
     } else {
-      biasRes = await formApi.post('/bias/model', fd);
+      const biasRes = await formApi.post('/bias/model', fd);
+      setBiasResult(biasRes.data);
     }
-    setBiasResult(biasRes.data);
-
-    const explainRes = await formApi.post('/bias/explain', fd);
-    setExplainResult(explainRes.data);
-
-    const summaryRes = await api.post('/bias/explain-summary', {
-      flagged_list: explainRes.data,
-      sensitive_cols: sensitiveCols,
-      domain: domain
-    });
-    setExplainSummary(summaryRes.data.summary);
-
-    const cfRes = await formApi.post('/bias/counterfactual', getFormDataForCounterfactual());
-    setCounterfactualResult(cfRes.data);
 
     const stressRes = await formApi.post('/bias/stress', fd);
     setStressResult(stressRes.data);
-  };
-
-  const runCounterfactualAnalysis = async () => {
-    if (!file) return;
-    const cfRes = await formApi.post('/bias/counterfactual', getFormDataForCounterfactual());
-    setCounterfactualResult(cfRes.data);
   };
 
   const runRecommendFixes = async () => {
@@ -187,13 +198,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     fd.append('audit_result', JSON.stringify(auditResult));
     fd.append('proxy_result', JSON.stringify(proxyResult));
     fd.append('bias_result', JSON.stringify(biasResult));
-    
+
     const res = await formApi.post('/fixes/sandbox', fd);
     setSandboxResult(res.data);
   };
 
   const runMonitoringSimulation = async () => {
-    // projectId is '1' by default in the state
     const res = await api.post(`/monitoring/${projectId}/simulate`);
     setMonitoringResult(res.data);
   };
@@ -208,13 +218,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       file, setFile, sensitiveCols, setSensitiveCols, targetCol, setTargetCol, domain, setDomain, projectId,
       modelType, setModelType, apiUrl, setApiUrl, requestFormat, setRequestFormat,
       metricPriority, setMetricPriority,
-      auditResult, setAuditResult, proxyResult, setProxyResult, biasResult, setBiasResult, 
-      explainResult, setExplainResult, explainSummary, setExplainSummary, 
+      auditResult, setAuditResult, proxyResult, setProxyResult, biasResult, setBiasResult,
+      explainResult, setExplainResult, explainSummary, setExplainSummary,
       counterfactualResult, setCounterfactualResult,
       stressResult, setStressResult, recommendResult, setRecommendResult,
       sandboxResult, setSandboxResult, monitoringResult, setMonitoringResult,
-      runDataAudit, runModelBias, runCounterfactualAnalysis, runRecommendFixes, runSandboxSimulation,
-      runMonitoringSimulation, getMonitoringData
+      pipelineResults, isAnalyzing, analyzeError,
+      runFullAnalysis,
+      runModelBias, runRecommendFixes, runSandboxSimulation,
+      runMonitoringSimulation, getMonitoringData,
     }}>
       {children}
     </AppContext.Provider>

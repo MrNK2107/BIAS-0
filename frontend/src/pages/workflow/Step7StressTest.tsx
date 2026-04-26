@@ -1,12 +1,13 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import { motion } from 'framer-motion';
 import AnimatedNumber from '../../components/animations/AnimatedNumber';
 import ScanningSkeleton from '../../components/animations/ScanningSkeleton';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Step7StressTest() {
-  const { file, stressResult, biasResult, runModelBias } = useAppContext();
+  const { pipelineResults, stressResult, biasResult, runModelBias } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [customScenarios, setCustomScenarios] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -29,31 +30,38 @@ export default function Step7StressTest() {
     return groups;
   }, [biasResult]);
 
-  useEffect(() => {
-    if (file && !stressResult && !loading) {
-      setLoading(true);
-      runModelBias().finally(() => setLoading(false));
-    }
-  }, [file, stressResult, loading, runModelBias]);
-
-  if (!file) {
+  if (!pipelineResults || !stressResult) {
     return (
-      <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-        <h2 style={{ marginBottom: 16 }}>No dataset uploaded</h2>
-        <p className="helper" style={{ marginBottom: 24 }}>Please go back and upload a dataset to begin.</p>
-        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-1')}>Go to Upload</button>
+      <div>
+        <div className="page-header">
+          <div>
+            <div className="kicker">Step 7 of 9</div>
+            <h1 className="page-title">Stress Testing</h1>
+          </div>
+        </div>
+        <div className="card" style={{ padding: 40, textAlign: 'center' }}>
+          <p className="helper" style={{ marginBottom: 24 }}>No analysis data yet. Please run the analysis first.</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
+            <button className="btn" onClick={() => navigate('/workflow/step-6')}>
+              <ArrowLeft size={16} /> Back
+            </button>
+            <button className="btn btn-primary" onClick={() => navigate('/workflow/step-2')}>
+              Go to Configuration <ArrowRight size={16} />
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (loading || !stressResult) {
+  if (loading) {
     return (
       <div className="card" style={{ padding: 40, textAlign: 'center' }}>
         <ScanningSkeleton height="40px" width="60%" borderRadius="8px" />
         <div style={{ marginTop: '24px' }}>
           <ScanningSkeleton height="16px" width="40%" borderRadius="4px" />
         </div>
-        <p className="helper" style={{ marginTop: '16px' }}>Probing model fairness fragility under various perturbations.</p>
+        <p className="helper" style={{ marginTop: '16px' }}>Running custom stress scenarios...</p>
       </div>
     );
   }
@@ -72,23 +80,24 @@ export default function Step7StressTest() {
         </div>
       </div>
 
+      {/* Custom Scenario Builder — still interactive, runs targeted bias/stress API */}
       <div className="card" style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <div className="section-title">Custom Scenario Builder</div>
             <div className="helper" style={{ marginBottom: 16 }}>Create custom perturbations to test specific vulnerabilities.</div>
           </div>
-          <button 
-            className="btn btn-primary" 
-            onClick={() => { 
-              setLoading(true); 
-              runModelBias(customScenarios.length > 0 ? customScenarios : undefined).finally(() => setLoading(false)); 
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              setLoading(true);
+              runModelBias(customScenarios.length > 0 ? customScenarios : undefined).finally(() => setLoading(false));
             }}
           >
             {customScenarios.length > 0 ? 'Run Custom Stress Tests' : 'Re-run Default Stress Tests'}
           </button>
         </div>
-        
+
         <div className="grid-3">
           <div>
             <label className="helper">Type</label>
@@ -117,8 +126,8 @@ export default function Step7StressTest() {
         </div>
         <div style={{ marginTop: 16, display: 'flex', gap: 12, alignItems: 'flex-end' }}>
           <div style={{ flex: 1 }}>
-             <label className="helper">Scenario Name</label>
-             <input className="input" placeholder="e.g. Severe Stress on Minority" value={newScenario.name} onChange={e => setNewScenario({ ...newScenario, name: e.target.value })} />
+            <label className="helper">Scenario Name</label>
+            <input className="input" placeholder="e.g. Severe Stress on Minority" value={newScenario.name} onChange={e => setNewScenario({ ...newScenario, name: e.target.value })} />
           </div>
           <button className="btn" onClick={() => {
             if (!newScenario.name || !newScenario.target_group) return;
@@ -133,7 +142,7 @@ export default function Step7StressTest() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
               {customScenarios.map((s, i) => (
                 <div key={i} className="pill" style={{ background: 'var(--surface-raised)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center' }}>
-                  {s.name} ({s.type}) 
+                  {s.name} ({s.type})
                   <button style={{ background: 'none', border: 'none', color: 'var(--red)', cursor: 'pointer', marginLeft: 8, fontSize: '1.2rem', padding: 0 }} onClick={() => setCustomScenarios(customScenarios.filter((_, idx) => idx !== i))}>×</button>
                 </div>
               ))}
@@ -186,36 +195,23 @@ export default function Step7StressTest() {
                 </div>
               </div>
 
-              {/* Visual Bar Comparison */}
               <div style={{ marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '6px', color: '#6b7280' }}>
                   <span>0.0</span>
                   <span>1.0</span>
                 </div>
                 <div style={{ position: 'relative', height: '16px', backgroundColor: '#e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
-                  {/* Baseline Bar */}
-                  <motion.div 
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.max(0, Math.min(100, scenario.baseline_fairness_score * 100))}%` }}
                     transition={{ duration: 0.8, ease: 'easeOut' }}
-                    style={{ 
-                      position: 'absolute', 
-                      top: 0, bottom: 0, left: 0, 
-                      backgroundColor: '#9ca3af',
-                      opacity: 0.4
-                    }} 
+                    style={{ position: 'absolute', top: 0, bottom: 0, left: 0, backgroundColor: '#9ca3af', opacity: 0.4 }}
                   />
-                  {/* Scenario Bar */}
-                  <motion.div 
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.max(0, Math.min(100, scenario.fairness_score * 100))}%` }}
                     transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-                    style={{ 
-                      position: 'absolute', 
-                      top: 4, bottom: 4, left: 0, 
-                      backgroundColor: isNegative ? '#ef4444' : '#3b82f6',
-                      borderRadius: '0 4px 4px 0'
-                    }} 
+                    style={{ position: 'absolute', top: 4, bottom: 4, left: 0, backgroundColor: isNegative ? '#ef4444' : '#3b82f6', borderRadius: '0 4px 4px 0' }}
                   />
                 </div>
                 <div className="helper" style={{ marginTop: '8px', textAlign: 'center', fontSize: '0.85rem' }}>

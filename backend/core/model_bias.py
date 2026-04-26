@@ -21,11 +21,14 @@ def run_model_bias_analysis(
     df: pd.DataFrame,
     sensitive_cols: list[str],
     target_col: str,
+    model=None,
     model_path: str | None = None,
     metric_weights: dict[str, float] | None = None,
 ) -> dict[str, Any]:
     prepared = prepare_split(df, target_col)
-    if model_path:
+    if model is not None:
+        model_used = "shared_pipeline"
+    elif model_path:
         model = joblib.load(model_path)
         model_used = "user_provided"
         model.fit(prepared.X_train, prepared.y_train)

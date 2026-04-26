@@ -4,7 +4,6 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-import shap
 
 from .common import build_classifier, prepare_split
 from .feature_intelligence import detect_proxy_features
@@ -20,24 +19,41 @@ def explain_flagged_decisions(df: pd.DataFrame, model, sensitive_cols: list[str]
         pipeline.fit(prepared.X_train, prepared.y_train)
     else:
         pipeline = model
-        if hasattr(pipeline, "fit"):
-            pipeline.fit(prepared.X_train, prepared.y_train)
 
-    test_features = prepared.X_test.reset_index(drop=True)
+    sample_limit = min(len(prepared.X_test), max(n_samples * 2, 10))
+    test_features = prepared.X_test.reset_index(drop=True).iloc[:sample_limit].copy()
     predictions = pd.Series(pipeline.predict(test_features))
     flagged: list[dict[str, Any]] = []
 
-    explainer = None
     model_step = getattr(pipeline, "named_steps", {}).get("model") if hasattr(pipeline, "named_steps") else pipeline
-    if hasattr(model_step, "estimators_"):
-        explainer = shap.TreeExplainer(model_step)
-    elif hasattr(model_step, "coef_"):
-        explainer = shap.LinearExplainer(model_step, test_features, feature_perturbation="interventional")
 
-    transformed = pipeline.named_steps["preprocessor"].transform(test_features) if hasattr(pipeline, "named_steps") else test_features
-    shap_values = None
-    if explainer is not None:
-        shap_values = explainer.shap_values(transformed)
+    feature_scores: dict[str, float] = {}
+    if hasattr(pipeline, "named_steps"):
+        feature_names = pipeline.named_steps["preprocessor"].get_feature_names_out()
+        if hasattr(model_step, "feature_importances_"):
+            importances = getattr(model_step, "feature_importances_", [])
+            feature_scores = {str(name): float(score) for name, score in zip(feature_names, importances)}
+        elif hasattr(model_step, "coef_"):
+            coefficients = np.abs(getattr(model_step, "coef_", []))
+            coefficients = coefficients[0] if getattr(coefficients, "ndim", 1) > 1 else coefficients
+            feature_scores = {str(name): float(score) for name, score in zip(feature_names, coefficients)}
+
+    ranked_features = sorted(feature_scores.items(), key=lambda item: item[1], reverse=True)[:3]
+
+    def build_reasons() -> list[dict[str, Any]]:
+        if ranked_features:
+            return [
+                {
+                    "feature": feature_name.split("__")[-1],
+                    "shap_value": round(score, 4),
+                    "is_proxy_risk": feature_name.split("__")[-1] in proxy_features,
+                }
+                for feature_name, score in ranked_features
+            ]
+        return [
+            {"feature": feature_name, "shap_value": 0.0, "is_proxy_risk": feature_name in proxy_features}
+            for feature_name in list(test_features.columns)[:3]
+        ]
 
     for idx in range(min(len(test_features), n_samples * 2)):
         row = test_features.iloc[idx]
@@ -47,27 +63,14 @@ def explain_flagged_decisions(df: pd.DataFrame, model, sensitive_cols: list[str]
         diffs = other_rows.drop(columns=[col for col in sensitive_cols if col in other_rows.columns], errors="ignore")
         if diffs.empty:
             continue
-        distances = diffs.select_dtypes(include=[np.number]).sub(row.select_dtypes(include=[np.number]), axis=1).pow(2).sum(axis=1)
+        numeric_columns = diffs.select_dtypes(include=[np.number]).columns
+        if len(numeric_columns) == 0:
+            continue
+        distances = diffs[numeric_columns].sub(row[numeric_columns], axis=1).pow(2).sum(axis=1)
         nearest = int(distances.idxmin()) if not distances.empty else idx
         if predictions.iloc[idx] == predictions.iloc[nearest]:
             continue
-        top_reasons: list[dict[str, Any]] = []
-        if shap_values is not None:
-            values = shap_values[0][idx] if isinstance(shap_values, list) else shap_values[idx]
-            feature_names = pipeline.named_steps["preprocessor"].get_feature_names_out()
-            ranked = sorted(zip(feature_names, values), key=lambda item: abs(item[1]), reverse=True)[:3]
-            for feature_name, shap_value in ranked:
-                base_feature = feature_name.split("__")[-1]
-                top_reasons.append(
-                    {
-                        "feature": base_feature,
-                        "shap_value": float(shap_value),
-                        "is_proxy_risk": base_feature in proxy_features,
-                    }
-                )
-        else:
-            for feature_name in list(test_features.columns)[:3]:
-                top_reasons.append({"feature": feature_name, "shap_value": 0.0, "is_proxy_risk": feature_name in proxy_features})
+        top_reasons = build_reasons()
 
         explanation = "This decision differs from a very similar record; proxy features may be influencing the result." if any(reason["is_proxy_risk"] for reason in top_reasons) else "The model treats this near-identical case differently, indicating potential bias or threshold sensitivity."
         flagged.append(
@@ -86,27 +89,7 @@ def explain_flagged_decisions(df: pd.DataFrame, model, sensitive_cols: list[str]
     if len(flagged) == 0:
         for idx in range(min(len(test_features), n_samples, 10)):
             row = test_features.iloc[idx]
-            top_reasons: list[dict[str, Any]] = []
-            if shap_values is not None:
-                values = shap_values[0][idx] if isinstance(shap_values, list) else shap_values[idx]
-                feature_names = (
-                    pipeline.named_steps["preprocessor"].get_feature_names_out()
-                    if hasattr(pipeline, "named_steps")
-                    else test_features.columns
-                )
-                ranked = sorted(zip(feature_names, values), key=lambda item: abs(item[1]), reverse=True)[:3]
-                for feature_name, shap_value in ranked:
-                    base_feature = feature_name.split("__")[-1]
-                    top_reasons.append(
-                        {
-                            "feature": base_feature,
-                            "shap_value": float(shap_value),
-                            "is_proxy_risk": base_feature in proxy_features,
-                        }
-                    )
-            else:
-                for feature_name in list(test_features.columns)[:3]:
-                    top_reasons.append({"feature": feature_name, "shap_value": 0.0, "is_proxy_risk": feature_name in proxy_features})
+            top_reasons = build_reasons()
 
             flagged.append(
                 {

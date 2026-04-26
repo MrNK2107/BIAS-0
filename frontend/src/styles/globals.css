@@ -427,6 +427,250 @@ button, input, select, textarea { font: inherit; }
 .stack-md { gap: var(--sp-md); }
 .stack-lg { gap: var(--sp-lg); }
 
+/* --- 12B. WORKFLOW SHELL --------------------------------------- */
+.workflow-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% -12%, rgba(45, 212, 191, 0.18), transparent 60%),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.82), rgba(2, 6, 23, 0.94));
+}
+
+.workflow-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-lg);
+  padding: 18px var(--sp-xl) 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(22px);
+}
+
+.workflow-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.workflow-brand-badge {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0f172a, var(--accent));
+  box-shadow: 0 14px 32px rgba(45, 212, 191, 0.18);
+  font-size: 1rem;
+}
+
+.workflow-brand-text strong,
+.workflow-brand-text span {
+  display: block;
+}
+
+.workflow-brand-text strong {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.workflow-brand-text span {
+  margin-top: 2px;
+  color: var(--text-tertiary);
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.workflow-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  max-width: 680px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+}
+
+.workflow-breadcrumb-kicker {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.workflow-breadcrumb-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.workflow-breadcrumb-meta {
+  white-space: nowrap;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+}
+
+.workflow-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.workflow-progress-rail {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.workflow-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), #a78bfa);
+  box-shadow: 0 0 24px rgba(45, 212, 191, 0.26);
+  transition: width 240ms ease;
+}
+
+.workflow-main {
+  flex: 1;
+  padding: var(--sp-xl);
+}
+
+.workflow-frame {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+}
+
+.analysis-screen {
+  min-height: 80vh;
+  display: grid;
+  place-items: center;
+  padding: 40px;
+}
+
+.analysis-card {
+  width: 100%;
+  max-width: 560px;
+  padding: 40px 44px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)), var(--surface);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+  animation: fadeIn 240ms ease-out;
+}
+
+.analysis-spinner-ring {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  box-shadow: 0 0 32px rgba(45, 212, 191, 0.3);
+}
+
+.analysis-progress-track {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.analysis-progress-fill,
+.analysis-progress-indeterminate {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.analysis-progress-fill {
+  background: linear-gradient(90deg, var(--accent), #a78bfa);
+  transition: width 420ms ease;
+}
+
+.analysis-progress-indeterminate {
+  width: 46%;
+  background: linear-gradient(90deg, transparent, var(--accent), #a78bfa, transparent);
+  animation: indeterminateSweep 1.6s ease-in-out infinite;
+}
+
+.analysis-stage {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.38;
+  transition: opacity 220ms ease, transform 220ms ease, color 220ms ease;
+}
+
+.analysis-stage.is-active,
+.analysis-stage.is-complete,
+.analysis-stage-finalizing {
+  opacity: 1;
+}
+
+.analysis-stage.is-active {
+  transform: translateX(1px);
+}
+
+.analysis-stage-icon {
+  flex-shrink: 0;
+}
+
+.analysis-stage-icon-spinning {
+  animation: spin 1.2s linear infinite;
+}
+
+.analysis-stage-label {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  transition: color 220ms ease, font-weight 220ms ease;
+}
+
+.analysis-stage-label.is-active {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.analysis-stage-label.is-complete {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.analysis-stage-label-finalizing {
+  font-weight: 600;
+  color: #a78bfa;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes indeterminateSweep {
+  0% { transform: translateX(-35%); }
+  50% { transform: translateX(85%); }
+  100% { transform: translateX(220%); }
+}
+
 /* --- 13. PROGRESS ---------------------------------------------- */
 .progress-track {
   width: 100%;
@@ -498,13 +742,20 @@ button, input, select, textarea { font: inherit; }
 
 /* --- 18. RESPONSIVE -------------------------------------------- */
 @media (max-width: 1100px) {
-  .app-shell { grid-template-columns: 1fr; }
+  .app-shell { display: block; }
   .sidebar { position: relative; height: auto; }
+  .workflow-topbar { flex-wrap: wrap; }
+  .workflow-breadcrumb { order: 3; flex-basis: 100%; max-width: none; }
 }
 @media (max-width: 820px) {
   .grid-2, .grid-3, .grid-4, .grid-6, .card-grid { grid-template-columns: 1fr; }
   .main-content { padding: var(--sp-md); }
   .page-header { flex-direction: column; }
+  .workflow-topbar,
+  .workflow-main { padding-left: var(--sp-md); padding-right: var(--sp-md); }
+  .workflow-main { padding-top: var(--sp-lg); }
+  .analysis-screen { padding: var(--sp-lg); }
+  .analysis-card { padding: 32px 24px; }
 }
 
 /* --- 19. SCROLLBAR --------------------------------------------- */

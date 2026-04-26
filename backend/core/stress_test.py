@@ -16,7 +16,8 @@ def _minority_group(series: pd.Series) -> str:
 def run_stress_tests(df: pd.DataFrame, model, sensitive_cols: list[str], target_col: str, custom_scenarios: list[dict] | None = None) -> dict[str, Any]:
     prepared = prepare_split(df, target_col)
     pipeline = model or build_classifier(prepared.X_train, model_type="rf")
-    pipeline.fit(prepared.X_train, prepared.y_train)
+    if model is None:
+        pipeline.fit(prepared.X_train, prepared.y_train)
     baseline_pred = pd.Series(pipeline.predict(prepared.X_test), index=prepared.y_test.index)
     baseline_accuracy = float(accuracy_score(prepared.y_test, baseline_pred))
     baseline_gaps = fairness_gaps(baseline_pred, prepared.y_test, df.loc[prepared.y_test.index, sensitive_cols[0]]) if sensitive_cols else {"demographic_parity_difference": 0.0, "equal_opportunity_difference": 0.0, "fpr_gap": 0.0}

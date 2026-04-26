@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from models.db import Base, Project, SessionLocal, engine
-from routers import audit, bias, fixes, monitoring, sandbox, upload
+from routers import audit, bias, fixes, monitoring, pipeline, sandbox, upload
 
 app = FastAPI(title="Unbiased AI Decision Platform")
 
@@ -22,6 +22,7 @@ app.include_router(bias.router)
 app.include_router(fixes.router)
 app.include_router(sandbox.router)
 app.include_router(monitoring.router)
+app.include_router(pipeline.router)
 
 
 @app.on_event("startup")

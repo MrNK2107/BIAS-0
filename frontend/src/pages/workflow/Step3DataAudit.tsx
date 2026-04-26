@@ -1,38 +1,23 @@
-import { useMemo, useState, useEffect } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { useMemo, useState } from 'react';
 import AnimatedBarChart from '../../components/animations/AnimatedBarChart';
-import ScanningSkeleton from '../../components/animations/ScanningSkeleton';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Step3DataAudit() {
-  const { file, auditResult: audit, proxyResult: proxy, runDataAudit } = useAppContext();
+  const { pipelineResults, auditResult: audit, proxyResult: proxy } = useAppContext();
   const [dismissed, setDismissed] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!file) {
-      navigate('/workflow/step-1');
-      return;
-    }
-    
-    if (!audit && !loading) {
-      setLoading(true);
-      runDataAudit().finally(() => setLoading(false));
-    }
-  }, [file, audit, loading, runDataAudit, navigate]);
 
   const chartData = useMemo(() => {
     if (!audit?.group_stats?.gender) return [];
-    return Object.entries(audit.group_stats.gender).map(([group, metrics]: any) => ({ 
-      label: group, 
-      value: Math.round((metrics.positive_rate || 0) * 100) 
+    return Object.entries(audit.group_stats.gender).map(([group, metrics]: any) => ({
+      label: group,
+      value: Math.round((metrics.positive_rate || 0) * 100)
     }));
   }, [audit]);
 
-  if (loading) {
+  if (!pipelineResults || !audit || !proxy) {
     return (
       <div>
         <div className="page-header">
@@ -42,17 +27,14 @@ export default function Step3DataAudit() {
           </div>
         </div>
         <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-          <ScanningSkeleton height="40px" width="60%" borderRadius="8px" />
-          <div style={{ marginTop: '24px' }}>
-            <ScanningSkeleton height="16px" width="40%" borderRadius="4px" />
-          </div>
-          <p className="helper" style={{ marginTop: '16px' }}>Running data audit... Checking for representation and proxy leakage.</p>
+          <p className="helper" style={{ marginBottom: 24 }}>No analysis data yet. Please run the analysis first.</p>
+          <button className="btn btn-primary" onClick={() => navigate('/workflow/step-2')}>
+            Go to Configuration <ArrowRight size={16} />
+          </button>
         </div>
       </div>
     );
   }
-
-  if (!audit || !proxy) return null;
 
   return (
     <div>

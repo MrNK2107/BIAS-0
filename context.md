@@ -219,6 +219,7 @@ backend/core/common.py centralizes:
 Routes in frontend/src/App.tsx:
 - /
 	- Dashboard summary and navigation hub
+	- Features a new immersive, narrative-led 3D landing experience (BiasNetworkHero & ScrollExperience) using React Three Fiber and Framer Motion
 - /upload
 	- CSV upload and pipeline setup
 - /audit-report
@@ -261,10 +262,11 @@ frontend/vite.config.ts:
 
 ### 5.4 UI design system characteristics
 frontend/src/styles/globals.css defines:
-- Dark, high-contrast visual theme
+- Dark, high-contrast visual theme ("Dark Iris & Neon Mint" aesthetic)
 - CSS variables for semantic colors and typography
 - Sidebar + content shell layout
 - Reusable card, table, banner, pill, and button primitives
+- Immersive 3D interactive hero components and scroll-based narrative animations.
 
 ## 6) Data Assets and Synthetic Bias Design
 

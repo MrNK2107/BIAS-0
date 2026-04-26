@@ -1,62 +1,35 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CounterfactualFlip from '../../components/CounterfactualFlip';
 import ScoreGauge from '../../components/ScoreGauge';
 import { useAppContext } from '../../context/AppContext';
 import { formApi } from '../../api/client';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Step6Counterfactual() {
-  const { file, sensitiveCols, counterfactualResult, runCounterfactualAnalysis, projectId } = useAppContext();
+  const { pipelineResults, sensitiveCols, counterfactualResult, projectId } = useAppContext();
   const [sensitiveCol, setSensitiveCol] = useState(sensitiveCols[0] || 'gender');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // We no longer automatically run the analysis on mount.
-  // The user must click the CTA to run it.
-
-  if (!file) {
-    return (
-      <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-        <h2 style={{ marginBottom: 16 }}>No dataset uploaded</h2>
-        <p className="helper" style={{ marginBottom: 24 }}>Please go back and upload a dataset to begin.</p>
-        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-1')}>Go to Upload</button>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-        <h2>Running Counterfactual Analysis...</h2>
-        <p className="helper">This process evaluates if model decisions change when only the sensitive attribute is modified.</p>
-      </div>
-    );
-  }
-
-  if (!counterfactualResult) {
+  if (!pipelineResults || !counterfactualResult) {
     return (
       <div>
         <div className="page-header">
           <div>
             <div className="kicker">Step 6 of 9</div>
             <h1 className="page-title">Counterfactual Testing</h1>
-            <p className="page-subtitle">Counterfactual testing checks if changing sensitive attributes changes decisions.</p>
           </div>
         </div>
         <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-          <h2 style={{ marginBottom: 16 }}>No Analysis Data</h2>
-          <p className="helper" style={{ marginBottom: 24, fontSize: '1.1rem' }}>
-            Run the counterfactual analysis to evaluate the robustness of your model's decisions against sensitive attribute changes.
-          </p>
-          <button 
-            className="btn btn-primary" 
-            onClick={() => {
-              setLoading(true);
-              runCounterfactualAnalysis().finally(() => setLoading(false));
-            }}
-          >
-            Run Counterfactual Analysis
-          </button>
+          <p className="helper" style={{ marginBottom: 24 }}>No analysis data yet. Please run the analysis first.</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
+            <button className="btn" onClick={() => navigate('/workflow/step-5')}>
+              <ArrowLeft size={16} /> Back
+            </button>
+            <button className="btn btn-primary" onClick={() => navigate('/workflow/step-2')}>
+              Go to Configuration <ArrowRight size={16} />
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -96,7 +69,7 @@ export default function Step6Counterfactual() {
         </div>
         <div className="card" style={{ display: 'grid', placeItems: 'center' }}>
           <ScoreGauge score={100 - (flip_rate * 100)} />
-          <div className="helper" style={{marginTop: 8}}>Counterfactual Fairness</div>
+          <div className="helper" style={{ marginTop: 8 }}>Counterfactual Fairness</div>
         </div>
       </div>
 

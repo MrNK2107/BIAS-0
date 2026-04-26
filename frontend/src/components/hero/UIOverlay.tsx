@@ -1,10 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const Section = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
-  <section className={`h-screen flex flex-col justify-center px-12 md:px-24 ${className}`}>
-    {children}
-  </section>
+const Section = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+  <section className={`hero-section h-screen ${className}`}>{children}</section>
 );
 
 interface UIOverlayProps {
@@ -13,167 +11,100 @@ interface UIOverlayProps {
 
 export default function UIOverlay({ navigate }: UIOverlayProps) {
   return (
-    <div className="w-full text-white pointer-events-none">
-      {/* 1. HERO */}
-      <Section className="items-center text-center">
+    <div className="hero-overlay pointer-events-none">
+      <Section className="hero-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: false, amount: 0.45 }}
+          className="hero-copy max-center hero-panel"
         >
-          <h1 className="font-display text-7xl md:text-9xl mb-6 tracking-tighter">
-            EVERY DECISION<br />
-            <span className="text-teal-400">MATTERS.</span>
-          </h1>
-          <p className="font-sans text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto">
-            Decisions are not neutral. They are the sum of patterns hidden in plain sight.
+          <h1 className="hero-title">INTEGRITY AT SCALE.</h1>
+          <p className="hero-brief">
+            AI is a mirror of your data. We ensure that mirror isn&apos;t distorted. Audit,
+            explain, and correct algorithmic bias in real-time.
           </p>
+          <div className="cta-wrapper pointer-events-auto z-50">
+            <button
+              type="button"
+              onClick={() => navigate('/workflow/step-1')}
+              className="cta-enter"
+            >
+              ENTER PLATFORM
+            </button>
+          </div>
         </motion.div>
       </Section>
 
-      {/* 2. THE PROBLEM */}
-      <Section className="items-start">
+      <Section className="hero-left">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-xl"
+          transition={{ duration: 0.7 }}
+          viewport={{ once: false, amount: 0.4 }}
+          className="hero-copy max-wide hero-panel"
         >
-          <h2 className="font-display text-5xl mb-4">HIDDEN BIAS.</h2>
-          <p className="font-sans text-lg text-slate-400">
-            Bias doesn’t announce itself. It hides in clusters, patterns, and historical echoes.
-            See how a single attribute can ripple through a system.
+          <h2 className="hero-title">THE SILENT DRIFT.</h2>
+          <p className="hero-brief">
+            Bias doesn&apos;t announce itself. It hides in proxy variables, ZIP codes,
+            browsing habits, and historical echoes that models silently learn as prejudice.
           </p>
         </motion.div>
       </Section>
 
-      {/* 3. DATA AUDIT */}
-      <Section className="items-end text-right">
+      <Section className="hero-right">
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-xl"
+          transition={{ duration: 0.7 }}
+          viewport={{ once: false, amount: 0.4 }}
+          className="hero-copy max-wide hero-copy-right"
         >
-          <h2 className="font-display text-5xl mb-4">DATA AUDIT.</h2>
-          <p className="font-sans text-lg text-slate-400">
-            We surface what's buried. Group disparities, missing features, and representation gaps.
-            Visualizing the architecture of unfairness.
-          </p>
+          <div className="hero-panel">
+            <h2 className="hero-title">FORENSIC TRANSPARENCY.</h2>
+            <p className="hero-brief">
+              Break open the black box. We surface representation gaps and map the exact
+              architecture of unfairness across deep neural layers.
+            </p>
+          </div>
         </motion.div>
       </Section>
 
-      {/* 4. MODEL BIAS */}
-      <Section className="items-start">
+      <Section className="hero-center">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-xl"
-        >
-          <h2 className="font-display text-5xl mb-4">MODEL BIAS.</h2>
-          <p className="font-sans text-lg text-slate-400">
-            Even with "fair" data, models can learn prejudice. 
-            Watch how decision engines amplify subtle signals into systemic rejection.
-          </p>
-        </motion.div>
-      </Section>
-
-      {/* 5. EXPLAINABILITY */}
-      <Section className="items-center text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="max-w-3xl"
+          transition={{ duration: 0.75 }}
+          viewport={{ once: false, amount: 0.45 }}
+          className="hero-copy max-center hero-panel"
         >
-          <h2 className="font-display text-6xl mb-6">WHY IT HAPPENED.</h2>
-          <p className="font-sans text-xl text-slate-400">
-            Proxy features like ZIP codes or browsing habits can become stand-ins for protected groups.
-            We break the black box.
+          <h2 className="hero-title hero-title-solution">AUTOMATED EQUITY.</h2>
+          <p className="hero-brief">
+            Real-time mitigation engines that rebalance logic and tune thresholds without
+            compromising your model&apos;s predictive performance.
           </p>
         </motion.div>
       </Section>
 
-      {/* 6. COUNTERFACTUAL */}
-      <Section className="items-start">
+      <Section className="hero-center final-cta-section">
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-xl"
+          initial={{ opacity: 0, scale: 0.92, y: 30 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.85, ease: 'easeOut' }}
+          viewport={{ once: false, amount: 0.5 }}
+          className="hero-copy max-center hero-panel"
         >
-          <h2 className="font-display text-5xl mb-4">FLIP REALITY.</h2>
-          <p className="font-sans text-lg text-slate-400">
-            Change the attribute. Change the outcome. 
-            Observe how the system treats identical individuals differently based on sensitive traits.
-          </p>
-        </motion.div>
-      </Section>
-
-      {/* 7. STRESS TEST */}
-      <Section className="items-end text-right">
-        <motion.div
-          initial={{ opacity: 0, rotate: -2 }}
-          whileInView={{ opacity: 1, rotate: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-xl"
-        >
-          <h2 className="font-display text-5xl mb-4 text-red-500">SYSTEM FRAGILITY.</h2>
-          <p className="font-sans text-lg text-slate-400">
-            Fairness is fragile. We perturb the system, inject noise, and shift data distributions
-            to see when the logic breaks down.
-          </p>
-        </motion.div>
-      </Section>
-
-      {/* 8. MITIGATION */}
-      <Section className="items-start">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-xl"
-        >
-          <h2 className="font-display text-5xl mb-4 text-teal-400">FIXING BIAS.</h2>
-          <p className="font-sans text-lg text-slate-400">
-            Threshold tuning. Feature removal. Rebalancing. 
-            Watch the system shift from red to green as fairness is restored.
-          </p>
-        </motion.div>
-      </Section>
-
-      {/* 9. MONITORING */}
-      <Section className="items-center text-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="max-w-3xl"
-        >
-          <h2 className="font-display text-6xl mb-6">LIVE SYSTEM.</h2>
-          <p className="font-sans text-xl text-slate-400">
-            Fairness isn’t a one-time check. It’s continuous. 
-            Real-time monitoring of every decision, every drift, every alert.
-          </p>
-        </motion.div>
-      </Section>
-
-      {/* 10. FINAL CTA */}
-      <Section className="items-center text-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="max-w-3xl"
-        >
-          <h1 className="font-display text-8xl mb-8">AUDIT.<br />UNDERSTAND.<br />CORRECT.</h1>
-          <button 
-            onClick={() => navigate('/workflow/step-1')}
-            className="pointer-events-auto bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold px-12 py-5 rounded-full text-2xl transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(45,212,191,0.3)]"
-          >
-            START YOUR ANALYSIS
-          </button>
+          <h2 className="hero-title">READY TO AUDIT?</h2>
+          <div className="cta-wrapper pointer-events-auto z-50">
+            <button
+              type="button"
+              onClick={() => navigate('/workflow/step-1')}
+              className="cta-primary cta-analysis"
+            >
+              START YOUR ANALYSIS
+            </button>
+          </div>
         </motion.div>
       </Section>
     </div>

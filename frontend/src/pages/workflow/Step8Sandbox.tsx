@@ -4,19 +4,13 @@ import SandboxComparison from '../../components/SandboxComparison';
 import { useAppContext } from '../../context/AppContext';
 
 export default function Step8Sandbox() {
-  const { file, recommendResult, runRecommendFixes, runSandboxSimulation, sandboxResult } = useAppContext();
+  const { file, pipelineResults, recommendResult, runSandboxSimulation, sandboxResult } = useAppContext();
   const [selected, setSelected] = useState<string[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [scenarioLoading, setScenarioLoading] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (file && !recommendResult && !loading) {
-      setLoading(true);
-      runRecommendFixes().finally(() => setLoading(false));
-    }
-  }, [file, recommendResult, loading, runRecommendFixes]);
 
   // Pre-select the first 2 fixes when recommendations are available
   useEffect(() => {
@@ -56,7 +50,7 @@ export default function Step8Sandbox() {
     );
   }
 
-  if (loading || !recommendResult) {
+  if (loading || !pipelineResults || !recommendResult) {
     return (
       <div className="card" style={{ padding: 40, textAlign: 'center' }}>
         <h2>Generating fix recommendations...</h2>

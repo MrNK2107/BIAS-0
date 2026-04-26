@@ -1,27 +1,13 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { formApi } from '../../api/client';
 import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, ArrowLeft, AlertTriangle } from 'lucide-react';
+import { formApi } from '../../api/client';
 
 export default function Step5Explanations() {
-  const { file, explainResult, explainSummary, runModelBias, projectId } = useAppContext();
-  const [loading, setLoading] = useState(false);
+  const { pipelineResults, explainResult, explainSummary, projectId } = useAppContext();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!file) {
-      navigate('/workflow/step-1');
-      return;
-    }
-    
-    if (!explainResult && !loading) {
-      setLoading(true);
-      runModelBias().finally(() => setLoading(false));
-    }
-  }, [file, explainResult, loading, runModelBias, navigate]);
-
-  if (loading) {
+  if (!pipelineResults || !explainResult || explainResult.length === 0) {
     return (
       <div>
         <div className="page-header">
@@ -31,13 +17,28 @@ export default function Step5Explanations() {
           </div>
         </div>
         <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-          Generating explainability reports. Please wait...
+          <p className="helper" style={{ marginBottom: 8 }}>
+            {pipelineResults
+              ? 'No flagged decisions were found for explanation.'
+              : 'No analysis data yet. Please run the analysis first.'}
+          </p>
+          {!pipelineResults && (
+            <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => navigate('/workflow/step-2')}>
+              Go to Configuration <ArrowRight size={16} />
+            </button>
+          )}
+          <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', gap: 16 }}>
+            <button className="btn" onClick={() => navigate('/workflow/step-4')}>
+              <ArrowLeft size={16} /> Back
+            </button>
+            <button className="btn btn-primary" onClick={() => navigate('/workflow/step-6')}>
+              Next: Run Counterfactuals <ArrowRight size={16} />
+            </button>
+          </div>
         </div>
       </div>
     );
   }
-
-  if (!explainResult) return null;
 
   return (
     <div>
@@ -49,10 +50,10 @@ export default function Step5Explanations() {
         </div>
       </div>
 
-      <div style={{ 
-        backgroundColor: '#fffbeb', 
-        border: '1px solid #fcd34d', 
-        borderRadius: '8px', 
+      <div style={{
+        backgroundColor: '#fffbeb',
+        border: '1px solid #fcd34d',
+        borderRadius: '8px',
         padding: '16px',
         marginBottom: '24px',
         display: 'flex',
@@ -71,7 +72,7 @@ export default function Step5Explanations() {
       {explainSummary && (
         <div className="card" style={{ marginBottom: 16, borderLeft: '4px solid var(--accent)', background: 'rgba(79, 142, 247, 0.05)' }}>
           <div className="section-title" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
-             <span>Manager Summary</span>
+            <span>Manager Summary</span>
           </div>
           <p style={{ fontSize: '1.1rem', lineHeight: 1.5, margin: '8px 0 0' }}>
             {explainSummary}
@@ -84,11 +85,11 @@ export default function Step5Explanations() {
         <div className="helper" style={{ marginBottom: 16 }}>
           Review specific decisions flagged for high risk. We split the analysis into how the model works versus why it might be unfair.
         </div>
-        
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {explainResult.map((item: any) => {
             const proxyReasons = (item.top_reasons || []).filter((r: any) => r.is_proxy_risk);
-            
+
             return (
               <div className="card" key={item.record_id} style={{ padding: '24px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #f3f4f6', paddingBottom: '12px' }}>
@@ -101,13 +102,12 @@ export default function Step5Explanations() {
                 <div className="grid-2" style={{ gap: '24px' }}>
                   {/* Section 1: Model Decision (SHAP) */}
                   <div style={{ borderRight: '1px solid #f3f4f6', paddingRight: '24px' }}>
-                    <div style={{ fontWeight: 600, marginBottom: '16px', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ fontWeight: 600, marginBottom: '16px', color: '#374151' }}>
                       Why the model made this decision
                     </div>
                     <div className="helper" style={{ marginBottom: '16px', fontSize: '0.85rem' }}>
                       Top feature contributions (SHAP values).
                     </div>
-                    
                     <div style={{ display: 'grid', gap: '12px' }}>
                       {(item.top_reasons || []).map((reason: any) => (
                         <div key={reason.feature}>
@@ -116,12 +116,14 @@ export default function Step5Explanations() {
                             <span style={{ color: '#6b7280' }}>{reason.shap_value.toFixed(2)}</span>
                           </div>
                           <div className="progress-track">
-                            <div 
-                              className="progress-fill" 
-                              style={{ 
-                                width: `${Math.min(Math.abs(reason.shap_value) * 100, 100)}%`, 
-                                background: reason.is_proxy_risk ? 'linear-gradient(90deg, #f59e0b, #ef4444)' : 'linear-gradient(90deg, #3550c8, #4f8ef7)' 
-                              }} 
+                            <div
+                              className="progress-fill"
+                              style={{
+                                width: `${Math.min(Math.abs(reason.shap_value) * 100, 100)}%`,
+                                background: reason.is_proxy_risk
+                                  ? 'linear-gradient(90deg, #f59e0b, #ef4444)'
+                                  : 'linear-gradient(90deg, #3550c8, #4f8ef7)'
+                              }}
                             />
                           </div>
                         </div>
@@ -131,10 +133,9 @@ export default function Step5Explanations() {
 
                   {/* Section 2: Fairness Assessment */}
                   <div>
-                    <div style={{ fontWeight: 600, marginBottom: '16px', color: '#b91c1c', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ fontWeight: 600, marginBottom: '16px', color: '#b91c1c' }}>
                       Why this may be unfair
                     </div>
-                    
                     <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
                       <div style={{ fontSize: '0.95rem', lineHeight: 1.5, color: '#374151' }}>
                         {item.human_explanation}
@@ -157,16 +158,20 @@ export default function Step5Explanations() {
                     )}
 
                     <div style={{ marginTop: '24px' }}>
-                      <button className="btn btn-small" style={{ backgroundColor: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5' }} onClick={() => {
-                        const reason = window.prompt('Enter reason for flagging this decision:');
-                        if (reason) {
-                          formApi.post('/monitoring/flag', {
-                            project_id: parseInt(projectId),
-                            record_id: String(item.record_id),
-                            reason,
-                          });
-                        }
-                      }}>
+                      <button
+                        className="btn btn-small"
+                        style={{ backgroundColor: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5' }}
+                        onClick={() => {
+                          const reason = window.prompt('Enter reason for flagging this decision:');
+                          if (reason) {
+                            formApi.post('/monitoring/flag', {
+                              project_id: parseInt(projectId),
+                              record_id: String(item.record_id),
+                              reason,
+                            });
+                          }
+                        }}
+                      >
                         🚩 Flag this decision for review
                       </button>
                     </div>
