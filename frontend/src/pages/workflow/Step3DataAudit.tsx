@@ -5,7 +5,7 @@ import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Step3DataAudit() {
-  const { pipelineResults, auditResult: audit, proxyResult: proxy } = useAppContext();
+  const { pipelineResults, auditResult: audit, proxyResult: proxy, advanceStep } = useAppContext();
   const [dismissed, setDismissed] = useState<string[]>([]);
   const navigate = useNavigate();
 
@@ -123,7 +123,10 @@ export default function Step3DataAudit() {
         <button className="btn" onClick={() => navigate('/workflow/step-2')}>
           <ArrowLeft size={16} /> Back
         </button>
-        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-4')}>
+        <button className="btn btn-primary" onClick={async () => {
+          await advanceStep(4);
+          navigate('/workflow/step-4');
+        }}>
           Next: Analyze Model Bias <ArrowRight size={16} />
         </button>
       </div>

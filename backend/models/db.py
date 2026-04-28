@@ -29,9 +29,14 @@ class Project(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     sensitive_columns: Mapped[list[str]] = mapped_column(JSON, default=list)
     target_column: Mapped[str] = mapped_column(String(255), nullable=False)
+    dataset_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    model_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    max_step: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
 
     audit_runs: Mapped[list["AuditRun"]] = relationship(back_populates="project", cascade="all, delete-orphan")
     monitoring_events: Mapped[list["MonitoringEvent"]] = relationship(back_populates="project", cascade="all, delete-orphan")
+    monitoring_logs: Mapped[list["MonitoringLog"]] = relationship(back_populates="project", cascade="all, delete-orphan")
+    alerts: Mapped[list["Alert"]] = relationship(back_populates="project", cascade="all, delete-orphan")
 
 
 class AuditRun(Base):
@@ -41,8 +46,12 @@ class AuditRun(Base):
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=False, index=True)
     timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     fairness_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    accuracy: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     risk_level: Mapped[str] = mapped_column(String(20), default="Yellow", nullable=False)
     results_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    decision: Mapped[str] = mapped_column(String(50), default="UNKNOWN", nullable=False)
+    full_result_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    task_id: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)
 
     project: Mapped[Project] = relationship(back_populates="audit_runs")
 
@@ -59,6 +68,31 @@ class MonitoringEvent(Base):
     group_breakdown: Mapped[dict | None] = mapped_column(JSON, nullable=True)
 
     project: Mapped[Project] = relationship(back_populates="monitoring_events")
+
+class MonitoringLog(Base):
+    __tablename__ = "monitoring_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=False, index=True)
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    fairness_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    data_drift_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    prediction_drift_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    key_metrics: Mapped[dict] = mapped_column(JSON, default=dict)
+
+    project: Mapped[Project] = relationship(back_populates="monitoring_logs")
+
+class Alert(Base):
+    __tablename__ = "alerts"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=False, index=True)
+    type: Mapped[str] = mapped_column(String(50), nullable=False) # BIAS, DRIFT, DEGRADATION
+    message: Mapped[str] = mapped_column(String(500), nullable=False)
+    severity: Mapped[str] = mapped_column(String(20), nullable=False) # LOW, MEDIUM, HIGH
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    project: Mapped[Project] = relationship(back_populates="alerts")
 
 class FairnessFlag(Base):
     __tablename__ = "fairness_flags"

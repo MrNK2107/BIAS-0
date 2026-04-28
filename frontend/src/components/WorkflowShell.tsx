@@ -4,13 +4,17 @@ import {
   BarChart3,
   BrainCircuit,
   FlaskConical,
+  FolderPlus,
   Gauge,
   LayoutDashboard,
   Search,
   Settings2,
   ShieldCheck,
   Upload,
+  LayoutGrid,
 } from 'lucide-react';
+import ProjectSelector from './ProjectSelector';
+import { useAppContext } from '../context/AppContext';
 
 const STEPS = [
   { id: 1, to: '/workflow/step-1', label: 'Upload', icon: Upload },
@@ -21,11 +25,13 @@ const STEPS = [
   { id: 6, to: '/workflow/step-6', label: 'Counterfactual', icon: ShieldCheck },
   { id: 7, to: '/workflow/step-7', label: 'Stress Test', icon: Gauge },
   { id: 8, to: '/workflow/step-8', label: 'Sandbox', icon: FlaskConical },
-  { id: 9, to: '/workflow/step-9', label: 'Monitoring', icon: Activity },
+  { id: 9, to: '/workflow/step-9', label: 'Setup Monitor', icon: Settings2 },
+  { id: 10, to: '/monitoring', label: 'Live Monitor', icon: Activity },
 ];
 
 export default function WorkflowShell({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const { maxStep } = useAppContext();
 
   const isDashboard = location.pathname === '/dashboard';
   const currentStep = STEPS.find((step) => location.pathname.includes(step.to)) || STEPS[0];
@@ -43,57 +49,62 @@ export default function WorkflowShell({ children }: { children: React.ReactNode 
 
         <div className="workflow-rail-line" />
 
+        <Link
+          to="/dashboard"
+          className={`workflow-rail-item ${location.pathname === '/dashboard' ? 'active' : ''}`}
+          aria-label="Open dashboard"
+          title="Open dashboard"
+        >
+          <LayoutDashboard size={17} strokeWidth={1.75} />
+        </Link>
+
+        <div className="workflow-rail-line" style={{ height: 1, width: '60%', margin: '0 auto' }} />
+
         <nav className="workflow-rail-nav">
           {STEPS.map((step) => {
             const Icon = step.icon;
             const isActive = location.pathname.includes(step.to);
+            const isLocked = step.id > maxStep;
+
             return (
               <Link
                 key={step.id}
-                to={step.to}
-                className={`workflow-rail-item ${isActive ? 'active' : ''}`}
+                to={isLocked ? '#' : step.to}
+                className={`workflow-rail-item ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}`}
                 aria-label={`Step ${step.id}: ${step.label}`}
-                title={`Step ${step.id}: ${step.label}`}
+                title={isLocked ? `Complete previous steps to unlock: ${step.label}` : `Step ${step.id}: ${step.label}`}
+                style={{ 
+                  opacity: isLocked ? 0.3 : 1,
+                  cursor: isLocked ? 'not-allowed' : 'pointer',
+                  pointerEvents: isLocked ? 'none' : 'auto'
+                }}
               >
                 <Icon size={17} strokeWidth={1.75} />
               </Link>
             );
           })}
         </nav>
-
-        <div className="workflow-rail-line" />
-
-        <Link
-          to={isDashboard ? '/workflow/step-1' : '/dashboard'}
-          className="workflow-rail-item workflow-rail-dashboard"
-          aria-label={isDashboard ? 'Open workflow' : 'Open dashboard'}
-          title={isDashboard ? 'Open workflow' : 'Open dashboard'}
-        >
-          <LayoutDashboard size={17} strokeWidth={1.75} />
-        </Link>
       </aside>
 
       <div className="workflow-content-area">
-        <header className="workflow-topbar">
-          <div className="workflow-brand">
-            <div className="workflow-brand-badge">◈</div>
-            <div className="workflow-brand-text">
-              <strong>Unbiased AI</strong>
-              <span>INTELLIGENCE ENGINE</span>
-            </div>
+        <header className="workflow-topbar" style={{ 
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+          padding: '0 32px', height: 72, background: 'rgba(10, 10, 10, 0.8)',
+          backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--border)',
+          position: 'sticky', top: 0, zIndex: 100
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <ProjectSelector />
+            <div style={{ width: 1, height: 24, background: 'var(--border)', opacity: 0.3 }} />
           </div>
 
-          <div className="workflow-breadcrumb">
-            <span className="workflow-breadcrumb-kicker">{isDashboard ? 'Workspace' : 'Workflow'}</span>
-            <span className="workflow-breadcrumb-label">{currentLabel}</span>
-            <span className="workflow-breadcrumb-meta">{currentMeta}</span>
-          </div>
-
-          <div className="workflow-step-indicator" aria-hidden={isDashboard}>
-            <div className="workflow-step-track">
-              <div className="workflow-step-fill" style={{ width: `${progressPct}%` }} />
+          <div style={{ minWidth: 280, textAlign: 'right' }}>
+            <div style={{ 
+              color: '#fff', fontWeight: 700, fontSize: '0.95rem', letterSpacing: '1.5px', 
+              textTransform: 'uppercase', opacity: 0.9 
+            }}>
+              {currentLabel}
             </div>
-            <span>{isDashboard ? 'Dashboard' : `Step ${currentStep.id} / ${STEPS.length}`}</span>
           </div>
         </header>
 

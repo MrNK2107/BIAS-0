@@ -4,7 +4,7 @@ import SandboxComparison from '../../components/SandboxComparison';
 import { useAppContext } from '../../context/AppContext';
 
 export default function Step8Sandbox() {
-  const { file, pipelineResults, recommendResult, runSandboxSimulation, sandboxResult } = useAppContext();
+  const { file, pipelineResults, recommendResult, runSandboxSimulation, sandboxResult, advanceStep } = useAppContext();
   const [selected, setSelected] = useState<string[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -160,7 +160,10 @@ export default function Step8Sandbox() {
         <button className="btn btn-secondary" onClick={() => navigate('/workflow/step-7')}>
           Back
         </button>
-        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-9')}>
+        <button className="btn btn-primary" onClick={async () => {
+          await advanceStep(9);
+          navigate('/workflow/step-9');
+        }}>
           Continue to Monitoring Setup
         </button>
       </div>

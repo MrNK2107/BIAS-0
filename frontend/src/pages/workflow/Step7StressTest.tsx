@@ -7,7 +7,7 @@ import ScanningSkeleton from '../../components/animations/ScanningSkeleton';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Step7StressTest() {
-  const { pipelineResults, stressResult, biasResult, runModelBias } = useAppContext();
+  const { pipelineResults, stressResult, biasResult, runModelBias, advanceStep } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [customScenarios, setCustomScenarios] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -232,7 +232,10 @@ export default function Step7StressTest() {
         <button className="btn btn-secondary" onClick={() => navigate('/workflow/step-6')}>
           <ArrowLeft size={16} /> Back
         </button>
-        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-8')}>
+        <button className="btn btn-primary" onClick={async () => {
+          await advanceStep(8);
+          navigate('/workflow/step-8');
+        }}>
           Continue to Sandbox Fixes <ArrowRight size={16} />
         </button>
       </div>

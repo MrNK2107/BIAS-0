@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import WorkflowShell from './components/WorkflowShell';
 import Step1Upload from './pages/workflow/Step1Upload';
 import Step2Config from './pages/workflow/Step2Config';
@@ -9,14 +9,34 @@ import Step6Counterfactual from './pages/workflow/Step6Counterfactual';
 import Step7StressTest from './pages/workflow/Step7StressTest';
 import Step8Sandbox from './pages/workflow/Step8Sandbox';
 import Step9Monitoring from './pages/workflow/Step9Monitoring';
+import MonitoringDashboard from './pages/MonitoringDashboard';
 
 import Dashboard from './pages/Dashboard';
 import HeroPage from './pages/HeroPage';
+import CreateProject from './pages/CreateProject';
 import PageTransition from './components/animations/PageTransition';
 import BackgroundGrid from './components/animations/BackgroundGrid';
+import { useAppContext } from './context/AppContext';
+import React from 'react';
 
 export default function App() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { projectId, projects } = useAppContext();
+  const [hasResumed, setHasResumed] = React.useState(false);
+
+  // Safe Auto-Resume Logic
+  React.useEffect(() => {
+    if (projectId && projects.length > 0 && !hasResumed) {
+      const p = projects.find(proj => String(proj.id) === String(projectId));
+      if (p && p.max_step > 1) {
+        if (location.pathname === '/' || location.pathname === '/workflow/step-1') {
+          navigate(`/workflow/step-${p.max_step}`);
+          setHasResumed(true);
+        }
+      }
+    }
+  }, [projectId, projects, hasResumed, location.pathname, navigate]);
 
   return (
     <>
@@ -38,6 +58,7 @@ export default function App() {
               <Route path="/workflow/step-7" element={<PageTransition locationKey="s7"><Step7StressTest /></PageTransition>} />
               <Route path="/workflow/step-8" element={<PageTransition locationKey="s8"><Step8Sandbox /></PageTransition>} />
               <Route path="/workflow/step-9" element={<PageTransition locationKey="s9"><Step9Monitoring /></PageTransition>} />
+              <Route path="/monitoring" element={<PageTransition locationKey="mon"><MonitoringDashboard /></PageTransition>} />
               
               <Route path="*" element={<Navigate to="/workflow/step-1" replace />} />
             </Routes>

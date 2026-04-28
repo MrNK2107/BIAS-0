@@ -7,7 +7,7 @@ import { formApi } from '../../api/client';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Step6Counterfactual() {
-  const { pipelineResults, sensitiveCols, counterfactualResult, projectId } = useAppContext();
+  const { pipelineResults, sensitiveCols, counterfactualResult, projectId, advanceStep } = useAppContext();
   const [sensitiveCol, setSensitiveCol] = useState(sensitiveCols[0] || 'gender');
   const navigate = useNavigate();
 
@@ -127,7 +127,7 @@ export default function Step6Counterfactual() {
                       <td style={{ padding: '12px 8px' }}>
                         <button className="btn btn-small" onClick={() => {
                           const reason = window.prompt('Enter reason for flagging this decision:');
-                          if (reason) {
+                          if (reason && projectId) {
                             formApi.post('/monitoring/flag', {
                               project_id: parseInt(projectId),
                               record_id: String(flip.record_id),
@@ -151,7 +151,10 @@ export default function Step6Counterfactual() {
         <button className="btn btn-secondary" onClick={() => navigate('/workflow/step-5')}>
           <ArrowLeft size={16} /> Back
         </button>
-        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-7')}>
+        <button className="btn btn-primary" onClick={async () => {
+          await advanceStep(7);
+          navigate('/workflow/step-7');
+        }}>
           Continue to Stress Test <ArrowRight size={16} />
         </button>
       </div>

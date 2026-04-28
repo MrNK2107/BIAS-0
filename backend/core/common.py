@@ -72,10 +72,18 @@ def prepare_split(df: pd.DataFrame, target_col: str, random_state: int = 42) -> 
     y = df[target_col].copy()
     numeric_features = [col for col in X.columns if pd.api.types.is_numeric_dtype(X[col])]
     categorical_features = [col for col in X.columns if col not in numeric_features]
+    # Use a dynamic test size for very small datasets to ensure at least 1 sample in each
+    test_size = 0.2
+    if len(df) < 5:
+        test_size = 0.5
+    if len(df) < 2:
+        # Cannot split 1 row, use it for both for metrics (not ideal but avoids crash)
+        return PreparedData(X, X, y, y, feature_columns, numeric_features, categorical_features)
+
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
-        test_size=0.2,
+        test_size=test_size,
         random_state=random_state,
         stratify=y if y.nunique() > 1 else None,
     )
@@ -117,6 +125,10 @@ def group_metrics(y_true: pd.Series, y_pred: pd.Series, group: pd.Series) -> dic
         mask = group.astype(str) == value
         group_true = y_true[mask]
         group_pred = y_pred[mask]
+        
+        if len(group_true) == 0:
+            continue
+            
         tn, fp, fn, tp = confusion_matrix(group_true, group_pred, labels=[0, 1]).ravel()
         denom_pos = max(tp + fn, 1)
         denom_neg = max(fp + tn, 1)
@@ -134,11 +146,16 @@ def fairness_gaps(y_pred: pd.Series, y_true: pd.Series, group: pd.Series) -> dic
     approval_rates = []
     tprs = []
     fprs = []
+    fprs = []
     fnrs = []
     for value in group_values:
         mask = group.astype(str) == value
         group_true = y_true[mask]
         group_pred = y_pred[mask]
+        
+        if len(group_true) == 0:
+            continue
+            
         tn, fp, fn, tp = confusion_matrix(group_true, group_pred, labels=[0, 1]).ravel()
         approval_rates.append(float(np.mean(group_pred)))
         tprs.append(float(tp / max(tp + fn, 1)))

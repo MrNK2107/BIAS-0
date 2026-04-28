@@ -101,4 +101,5 @@ def run_data_audit(df: pd.DataFrame, sensitive_cols: list[str], target_col: str)
         "missing_data": missing_data,
         "risk_level": risk_level,
         "risk_reason": worst_reason,
+        "max_gap": round(max_gap, 4),
     }

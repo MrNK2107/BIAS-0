@@ -4,7 +4,7 @@ import { ArrowRight, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { formApi } from '../../api/client';
 
 export default function Step5Explanations() {
-  const { pipelineResults, explainResult, explainSummary, projectId } = useAppContext();
+  const { pipelineResults, explainResult, explainSummary, projectId, advanceStep } = useAppContext();
   const navigate = useNavigate();
 
   if (!pipelineResults || !explainResult || explainResult.length === 0) {
@@ -31,7 +31,10 @@ export default function Step5Explanations() {
             <button className="btn" onClick={() => navigate('/workflow/step-4')}>
               <ArrowLeft size={16} /> Back
             </button>
-            <button className="btn btn-primary" onClick={() => navigate('/workflow/step-6')}>
+            <button className="btn btn-primary" onClick={async () => {
+              await advanceStep(6);
+              navigate('/workflow/step-6');
+            }}>
               Next: Run Counterfactuals <ArrowRight size={16} />
             </button>
           </div>
@@ -163,7 +166,7 @@ export default function Step5Explanations() {
                         style={{ backgroundColor: 'rgba(188,71,73,0.14)', color: 'var(--warning)', border: '0.5px solid rgba(188,71,73,0.6)' }}
                         onClick={() => {
                           const reason = window.prompt('Enter reason for flagging this decision:');
-                          if (reason) {
+                          if (reason && projectId) {
                             formApi.post('/monitoring/flag', {
                               project_id: parseInt(projectId),
                               record_id: String(item.record_id),
@@ -187,7 +190,10 @@ export default function Step5Explanations() {
         <button className="btn" onClick={() => navigate('/workflow/step-4')}>
           <ArrowLeft size={16} /> Back
         </button>
-        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-6')}>
+        <button className="btn btn-primary" onClick={async () => {
+          await advanceStep(6);
+          navigate('/workflow/step-6');
+        }}>
           Next: Run Counterfactuals <ArrowRight size={16} />
         </button>
       </div>

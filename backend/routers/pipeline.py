@@ -19,7 +19,7 @@ from core.feature_intelligence import detect_proxy_features
 from core.common import build_classifier, prepare_split
 from core.model_bias import run_model_bias_analysis
 from core.stress_test import run_stress_tests
-from models.db import AuditRun, get_db
+from models.db import AuditRun, Project, MonitoringLog, Alert, get_db
 from utils.data_io import upload_file_to_dataframe
 from utils.model_loader import load_model_from_bytes
 
@@ -114,11 +114,57 @@ def _run_pipeline(
         # ── Stage 7: Stress Tests ─────────────────────────────────────────────
         stress = run_stress_tests(df, shared_model, sensitive_list, target_col)
 
+        # ── Scores & Decision Calculation ─────────────────────────────────────
+        data_bias_score = round(100 * (1 - data_audit.get("max_gap", 0.0)))
+        model_bias_score = round(model_bias.get("fairness_score", 0.0))
+        proxy_risk_score = round(100 * (1 - proxy.get("proxy_score", 0.0)))
+        counterfactual_score = round(counterfactual.get("counterfactual_fairness_score", 0.0))
+
+        stress_scenarios = stress.get("scenarios", [])
+        if stress_scenarios:
+            stress_test_score = round(sum(s["fairness_score"] for s in stress_scenarios) / len(stress_scenarios))
+        else:
+            stress_test_score = 100
+
+        unified_fairness_score = round(
+            0.25 * model_bias_score +
+            0.20 * counterfactual_score +
+            0.20 * stress_test_score +
+            0.20 * data_bias_score +
+            0.15 * proxy_risk_score
+        )
+
+        if unified_fairness_score < 50:
+            decision = "HIGH RISK"
+        elif unified_fairness_score <= 70:
+            decision = "MODERATE RISK"
+        else:
+            decision = "LOW RISK"
+
         # ── Stage 8: Fix Recommendations ──────────────────────────────────────
-        recommendations = generate_fix_recommendations(data_audit, proxy, model_bias)
+        recommendations = generate_fix_recommendations(
+            data_audit, 
+            proxy, 
+            model_bias,
+            counterfactual_score=counterfactual_score,
+            stress_test_score=stress_test_score,
+            proxy_risk_score=proxy_risk_score
+        )
+
+        scores = {
+            "data_bias_score": data_bias_score,
+            "model_bias_score": model_bias_score,
+            "proxy_risk_score": proxy_risk_score,
+            "counterfactual_score": counterfactual_score,
+            "stress_test_score": stress_test_score,
+        }
 
         # ── Consolidate ───────────────────────────────────────────────────────
         result: dict[str, Any] = {
+            "scores": scores,
+            "fairness_score": unified_fairness_score,
+            "decision": decision,
+            "recommendations": recommendations,
             "data_audit": data_audit,
             "proxy": proxy,
             "model_bias": model_bias,
@@ -126,20 +172,71 @@ def _run_pipeline(
             "explain_summary": explain_summary,
             "counterfactual": counterfactual,
             "stress": stress,
-            "recommendations": recommendations,
             "model_used": model_used,
         }
 
         # ── Persist to DB ──────────────────────────────────────────────────────
-        fairness_score = float(model_bias.get("fairness_score", 0.0))
         risk_level = data_audit.get("risk_level", "Yellow")
         audit_run = AuditRun(
             project_id=project_id,
-            fairness_score=fairness_score,
+            fairness_score=float(unified_fairness_score),
+            accuracy=float(model_bias.get("overall_accuracy", 0.0)),
             risk_level=risk_level,
-            results_json=result,
+            decision=decision,
+            results_json=result,  # old field
+            full_result_json=result,  # new field
+            task_id=task_id,
         )
         db.add(audit_run)
+
+        # Create Monitoring Log entry for time-series tracking
+        log_entry = MonitoringLog(
+            project_id=project_id,
+            fairness_score=float(unified_fairness_score),
+            data_drift_score=0.0, # Will be updated if drift detection is run
+            prediction_drift_score=0.0,
+            key_metrics={
+                "accuracy": float(model_bias.get("overall_accuracy", 0.0)),
+                "disparate_impact": model_bias.get("metrics", {}).get("disparate_impact"),
+                "demographic_parity": model_bias.get("metrics", {}).get("demographic_parity_difference"),
+                "max_gap": data_audit.get("max_gap", 0.0)
+            }
+        )
+        db.add(log_entry)
+        
+        # Trigger Alerts based on scores and historical trends
+        if unified_fairness_score < 50:
+            db.add(Alert(
+                project_id=project_id,
+                type="BIAS",
+                message=f"Critical bias detected. Fairness score: {unified_fairness_score:.1f}.",
+                severity="HIGH"
+            ))
+
+        last_log = db.query(MonitoringLog).filter(MonitoringLog.project_id == project_id).order_by(MonitoringLog.timestamp.desc()).first()
+        if last_log and last_log.fairness_score > 0:
+            drop_pct = (last_log.fairness_score - unified_fairness_score) / last_log.fairness_score
+            if drop_pct > 0.15:
+                db.add(Alert(
+                    project_id=project_id,
+                    type="DRIFT",
+                    message=f"Critical score drift: {drop_pct*100:.1f}% drop from previous.",
+                    severity="HIGH"
+                ))
+
+        prev_logs = db.query(MonitoringLog).filter(MonitoringLog.project_id == project_id).order_by(MonitoringLog.timestamp.desc()).limit(2).all()
+        if len(prev_logs) == 2:
+            s1 = prev_logs[1].fairness_score 
+            s2 = prev_logs[0].fairness_score 
+            s3 = unified_fairness_score
+            if s1 > s2 > s3:
+                db.add(Alert(
+                    project_id=project_id,
+                    type="DEGRADATION",
+                    message="Sequential degradation detected over 3+ runs.",
+                    severity="MEDIUM"
+                ))
+
         db.commit()
 
         _task_store[task_id] = {"status": "complete", "result": result}
@@ -193,9 +290,42 @@ async def run_all(
 
 
 @router.get("/status/{task_id}")
-async def get_task_status(task_id: str) -> dict[str, Any]:
+async def get_task_status(task_id: str, db: Session = Depends(get_db)) -> dict[str, Any]:
     """Poll this endpoint after calling /pipeline/run-all to retrieve results."""
     task = _task_store.get(task_id)
-    if task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    return task
+    if task is not None:
+        return task
+        
+    # If not in memory, check if it was completed and saved to DB (e.g., after server restart)
+    from models.db import AuditRun
+    audit = db.query(AuditRun).filter(AuditRun.task_id == task_id).first()
+    if audit:
+        return {"status": "complete", "result": audit.full_result_json}
+        
+    raise HTTPException(status_code=404, detail="Task not found")
+
+
+@router.get("/result/{task_id}")
+async def get_task_result(task_id: str, db: Session = Depends(get_db)) -> dict[str, Any]:
+    """Fetches the final persistent result of a pipeline run."""
+    # Check in-memory first
+    task = _task_store.get(task_id)
+    if task and task.get("status") in ["queued", "processing"]:
+        return {"status": "running"}
+
+    # Fetch from DB for persistence
+    audit = db.query(AuditRun).filter(AuditRun.task_id == task_id).first()
+    if not audit:
+        if task and task.get("status") == "error":
+            return {"status": "error", "error": task.get("error")}
+        raise HTTPException(status_code=404, detail="Audit result not found in database")
+
+    res = audit.full_result_json
+    return {
+        "status": "completed",
+        "fairness_score": audit.fairness_score,
+        "decision": audit.decision,
+        "scores": res.get("scores", {}),
+        "recommendations": res.get("recommendations", []),
+        "details": res
+    }

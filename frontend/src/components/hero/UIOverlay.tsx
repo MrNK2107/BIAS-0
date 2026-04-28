@@ -28,7 +28,7 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
           <div className="cta-wrapper pointer-events-auto z-50">
             <button
               type="button"
-              onClick={() => navigate('/workflow/step-1')}
+              onClick={() => navigate('/dashboard')}
               className="cta-enter"
             >
               ENTER PLATFORM
@@ -99,7 +99,7 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
           <div className="cta-wrapper pointer-events-auto z-50">
             <button
               type="button"
-              onClick={() => navigate('/workflow/step-1')}
+              onClick={() => navigate('/dashboard')}
               className="cta-primary cta-analysis"
             >
               START YOUR ANALYSIS

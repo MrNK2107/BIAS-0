@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 import joblib
+import numpy as np
 import pandas as pd
 import sklearn.metrics
 from sklearn.metrics import accuracy_score
@@ -64,25 +65,44 @@ def run_model_bias_analysis(
         if sensitive not in df.columns:
             continue
         sensitive_features = df.loc[prepared.y_test.index, sensitive]
-        mf = MetricFrame(
-            metrics={
-                "accuracy": sklearn.metrics.accuracy_score,
-                "tpr": true_positive_rate,
-                "fpr": false_positive_rate,
-            },
-            y_true=prepared.y_test,
-            y_pred=y_pred,
-            sensitive_features=sensitive_features,
-        )
         # Cast pandas/numpy values to native Python types for JSON safety
         def _to_native(d: dict) -> dict:
-            return {str(k): float(v) for k, v in d.items()}
+            # Handle NaN/Inf which are not JSON serializable in some libraries
+            clean = {}
+            for k, v in d.items():
+                try:
+                    val = float(v)
+                    if pd.isna(val) or np.isinf(val):
+                        clean[str(k)] = 0.0
+                    else:
+                        clean[str(k)] = val
+                except (ValueError, TypeError):
+                    clean[str(k)] = 0.0
+            return clean
 
-        fairlearn_metrics[sensitive] = {
-            "by_group": {metric: _to_native(vals) for metric, vals in mf.by_group.to_dict().items()},
-            "overall": {metric: float(val) for metric, val in mf.overall.to_dict().items()},
-            "difference": {metric: float(val) for metric, val in mf.difference().to_dict().items()},
-        }
+        try:
+            mf = MetricFrame(
+                metrics={
+                    "accuracy": sklearn.metrics.accuracy_score,
+                    "tpr": true_positive_rate,
+                    "fpr": false_positive_rate,
+                },
+                y_true=prepared.y_test,
+                y_pred=y_pred,
+                sensitive_features=sensitive_features,
+            )
+            fairlearn_metrics[sensitive] = {
+                "by_group": {metric: _to_native(vals) for metric, vals in mf.by_group.to_dict().items()},
+                "overall": _to_native(mf.overall.to_dict()),
+                "difference": _to_native(mf.difference().to_dict()),
+            }
+        except Exception:
+            fairlearn_metrics[sensitive] = {
+                "by_group": {},
+                "overall": {},
+                "difference": {},
+                "error": "Fairlearn metric calculation failed due to insufficient subgroup samples."
+            }
 
     return {
         "overall_accuracy": round(overall_accuracy, 4),

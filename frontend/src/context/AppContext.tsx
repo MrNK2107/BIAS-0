@@ -6,7 +6,7 @@ interface AppState {
   sensitiveCols: string[];
   targetCol: string;
   domain: string;
-  projectId: string;
+  projectId: string | null;
   modelType: 'file' | 'api';
   apiUrl: string;
   requestFormat: string;
@@ -26,6 +26,8 @@ interface AppState {
   pipelineResults: any;
   isAnalyzing: boolean;
   analyzeError: string | null;
+  projects: any[];
+  maxStep: number;
 }
 
 interface AppContextType extends AppState {
@@ -33,6 +35,7 @@ interface AppContextType extends AppState {
   setSensitiveCols: (val: string[]) => void;
   setTargetCol: (val: string) => void;
   setDomain: (val: string) => void;
+  setProjectId: (val: string | null) => void;
   setModelType: (val: 'file' | 'api') => void;
   setApiUrl: (val: string) => void;
   setRequestFormat: (val: string) => void;
@@ -57,6 +60,9 @@ interface AppContextType extends AppState {
   runSandboxSimulation: (fixes: string[]) => Promise<void>;
   runMonitoringSimulation: () => Promise<void>;
   getMonitoringData: () => Promise<void>;
+  refreshProjects: () => Promise<void>;
+  advanceStep: (step: number) => Promise<void>;
+  setResultsFromPipeline: (data: any) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -66,7 +72,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [sensitiveCols, setSensitiveCols] = useState<string[]>(['gender', 'caste']);
   const [targetCol, setTargetCol] = useState('approved');
   const [domain, setDomain] = useState('loan');
-  const [projectId] = useState('1');
+  const [projectId, setProjectId] = useState<string | null>(null);
   const [modelType, setModelType] = useState<'file' | 'api'>('file');
   const [apiUrl, setApiUrl] = useState('');
   const [requestFormat, setRequestFormat] = useState('');
@@ -83,10 +89,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [sandboxResult, setSandboxResult] = useState<any>(null);
   const [monitoringResult, setMonitoringResult] = useState<any>(null);
 
-  // Unified pipeline state
   const [pipelineResults, setPipelineResults] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+  const [projects, setProjects] = useState<any[]>([]);
 
   // ── Unified pipeline ────────────────────────────────────────────────────────
   const runFullAnalysis = async () => {
@@ -99,7 +105,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       fd.append('file', file);
       fd.append('sensitive_cols', sensitiveCols.join(','));
       fd.append('target_col', targetCol);
-      fd.append('project_id', projectId);
+      fd.append('project_id', projectId || '');
       fd.append('metric_priority', metricPriority);
       fd.append('domain', domain);
 
@@ -107,37 +113,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const kickoff = await formApi.post('/pipeline/run-all', fd, { timeout: 15000 });
       const { task_id } = kickoff.data as { task_id: string; status: string };
 
-      // Poll /pipeline/status/{task_id} every 2 s until done or error
-      const data = await new Promise<any>((resolve, reject) => {
-        const interval = setInterval(async () => {
-          try {
-            const poll = await api.get(`/pipeline/status/${task_id}`, { timeout: 10000 });
-            const { status, result, error } = poll.data;
-            if (status === 'complete') {
-              clearInterval(interval);
-              resolve(result);
-            } else if (status === 'error') {
-              clearInterval(interval);
-              reject(new Error(error || 'Pipeline failed'));
-            }
-            // status === 'queued' | 'processing' → keep polling
-          } catch (pollErr) {
-            clearInterval(interval);
-            reject(pollErr);
-          }
-        }, 2000);
-      });
+      localStorage.setItem('active_analysis_task', task_id);
+      const data = await pollTaskStatus(task_id);
 
-      // Unpack into individual context slices for backward compatibility
-      setAuditResult(data.data_audit);
-      setProxyResult(data.proxy);
-      setBiasResult(data.model_bias);
-      setExplainResult(data.explanations);
-      setExplainSummary(data.explain_summary);
-      setCounterfactualResult(data.counterfactual);
-      setStressResult(data.stress);
-      setRecommendResult(data.recommendations);
-      setPipelineResults(data);
+      setResultsFromPipeline(data);
+      await refreshProjects();
+      localStorage.removeItem('active_analysis_task');
 
     } catch (err: any) {
       const isTimeout = err?.code === 'ECONNABORTED';
@@ -154,10 +135,65 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const pollTaskStatus = async (task_id: string) => {
+    return new Promise<any>((resolve, reject) => {
+      const interval = setInterval(async () => {
+        try {
+          const poll = await api.get(`/pipeline/status/${task_id}`, { timeout: 10000 });
+          const { status, result, error } = poll.data;
+          if (status === 'complete') {
+            clearInterval(interval);
+            resolve(result);
+          } else if (status === 'error') {
+            clearInterval(interval);
+            reject(new Error(error || 'Pipeline failed'));
+          }
+        } catch (pollErr) {
+          clearInterval(interval);
+          reject(pollErr);
+        }
+      }, 2000);
+    });
+  };
+
+  // 4. Resume active task on reload
+  React.useEffect(() => {
+    const activeTask = localStorage.getItem('active_analysis_task');
+    if (activeTask && !pipelineResults && !isAnalyzing) {
+      setIsAnalyzing(true);
+      pollTaskStatus(activeTask)
+        .then(data => {
+          setResultsFromPipeline(data);
+          refreshProjects();
+          localStorage.removeItem('active_analysis_task');
+          setIsAnalyzing(false);
+        })
+        .catch(err => {
+          console.error('Failed to resume task', err);
+          localStorage.removeItem('active_analysis_task');
+          setIsAnalyzing(false);
+        });
+    }
+  }, [projectId]);
+
+  const setResultsFromPipeline = (data: any) => {
+    // Check if it's the wrapper or the direct result
+    const result = data.details || data;
+    setAuditResult(result.data_audit);
+    setProxyResult(result.proxy);
+    setBiasResult(result.model_bias);
+    setExplainResult(result.explanations);
+    setExplainSummary(result.explain_summary);
+    setCounterfactualResult(result.counterfactual);
+    setStressResult(result.stress);
+    setRecommendResult(result.recommendations);
+    setPipelineResults(result);
+  };
+
   // ── Legacy helpers (kept for interactive steps) ─────────────────────────────
   const getFormData = () => {
     const fd = new FormData();
-    fd.append('project_id', projectId);
+    fd.append('project_id', projectId || '');
     fd.append('sensitive_cols', sensitiveCols.join(','));
     fd.append('target_col', targetCol);
     fd.append('metric_priority', metricPriority);
@@ -232,13 +268,77 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const getMonitoringData = async () => {
+    if (!projectId) return;
     const res = await api.get(`/monitoring/${projectId}`);
     setMonitoringResult(res.data);
   };
+  
+  const refreshProjects = async () => {
+    try {
+      const res = await api.get('/project/list');
+      setProjects(res.data);
+    } catch {}
+  };
+  
+  const advanceStep = async (step: number) => {
+    if (!projectId) return;
+    try {
+      const fd = new FormData();
+      fd.append('step', step.toString());
+      await formApi.patch(`/project/${projectId}/step`, fd);
+      await refreshProjects();
+    } catch (err) {
+      console.error('Failed to advance step', err);
+    }
+  };
+
+  // ── Persistence & Hydration ────────────────────────────────────────────────
+  
+  // 1. Initial hydration from localStorage
+  React.useEffect(() => {
+    const savedId = localStorage.getItem('active_project_id');
+    if (savedId && !projectId) {
+      setProjectId(savedId);
+    }
+  }, []);
+
+  // 2. Persist projectId when it changes
+  React.useEffect(() => {
+    if (projectId) {
+      localStorage.setItem('active_project_id', projectId);
+    }
+  }, [projectId]);
+
+  // 3. Auto-load latest results & Navigate to latest step
+  React.useEffect(() => {
+    if (projectId) {
+      // Load results
+      api.get(`/project/${projectId}/latest`)
+        .then(res => {
+          if (res.data.status === 'complete') {
+            setResultsFromPipeline(res.data.result);
+          }
+        })
+        .catch(() => {});
+        
+      // Ensure we have project info to find max_step
+      if (projects.length > 0) {
+        const p = projects.find(proj => String(proj.id) === String(projectId));
+        if (p && p.max_step > 1) {
+          // Logic for redirection removed from here to avoid infinite loops
+        }
+      }
+    }
+  }, [projectId, projects.length]);
+  
+  const currentProject = projects.find(p => p.id?.toString() === projectId?.toString());
+  const maxStep = currentProject?.max_step || 1;
+
+  React.useEffect(() => { refreshProjects(); }, []);
 
   return (
     <AppContext.Provider value={{
-      file, setFile, sensitiveCols, setSensitiveCols, targetCol, setTargetCol, domain, setDomain, projectId,
+      file, setFile, sensitiveCols, setSensitiveCols, targetCol, setTargetCol, domain, setDomain, projectId, setProjectId,
       modelType, setModelType, apiUrl, setApiUrl, requestFormat, setRequestFormat,
       metricPriority, setMetricPriority,
       auditResult, setAuditResult, proxyResult, setProxyResult, biasResult, setBiasResult,
@@ -247,9 +347,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       stressResult, setStressResult, recommendResult, setRecommendResult,
       sandboxResult, setSandboxResult, monitoringResult, setMonitoringResult,
       pipelineResults, isAnalyzing, analyzeError,
+      projects, maxStep,
       runFullAnalysis,
       runModelBias, runRecommendFixes, runSandboxSimulation,
       runMonitoringSimulation, getMonitoringData,
+      refreshProjects, advanceStep,
+      setResultsFromPipeline,
     }}>
       {children}
     </AppContext.Provider>

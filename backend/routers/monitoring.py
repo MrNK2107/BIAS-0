@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from core.monitoring import check_alert_condition, get_monitoring_history, log_monitoring_event
 from core.common import fairness_score_from_gaps
-from models.db import MonitoringEvent, Project, FairnessFlag, get_db
+from models.db import MonitoringEvent, Project, FairnessFlag, MonitoringLog, Alert, get_db
 from fastapi import HTTPException
 import json
 from pydantic import BaseModel, Field
@@ -101,21 +101,50 @@ def ingest_monitoring(payload: IngestPayload, db: Session = Depends(get_db)) -> 
     return {"fairness_score": fairness_score, "alerts": alert}
 
 
-@router.post("/drift")
-async def monitoring_drift(
-    baseline_file: UploadFile = File(...),
-    current_file: UploadFile = File(...),
-    sensitive_cols: str = Form(...),
-    target_col: str = Form(...),
+@router.post("/project/{project_id}/simulate-data")
+async def simulate_monitoring_data(
+    project_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
 ) -> dict[str, Any]:
     from core.common import upload_file_to_dataframe
     from core.monitoring import detect_data_drift
+    import pandas as pd
+    import os
+
+    # 1. Fetch project info
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    # 2. Load baseline dataset
+    if not project.dataset_path or not os.path.exists(project.dataset_path):
+        raise HTTPException(status_code=400, detail="Baseline dataset not found for this project")
     
-    baseline_df = await upload_file_to_dataframe(baseline_file)
-    current_df = await upload_file_to_dataframe(current_file)
-    sensitive_list = [item.strip() for item in sensitive_cols.split(",") if item.strip()]
+    baseline_df = pd.read_csv(project.dataset_path)
     
-    return detect_data_drift(baseline_df, current_df, sensitive_list, target_col)
+    # 3. Load simulation dataset
+    simulation_df = await upload_file_to_dataframe(file)
+
+    # 4. Detect Drift
+    drift_results = detect_data_drift(
+        baseline_df, 
+        simulation_df, 
+        project.sensitive_columns, 
+        project.target_column
+    )
+
+    # 5. Simple fairness prediction (proxy)
+    # Since we don't have the full model running here, we'll estimate fairness based on DP shifts
+    avg_shift = sum(drift_results.get("sensitive_distribution_shift", {}).values()) / max(len(project.sensitive_columns), 1)
+    predicted_fairness = max(0.0, 80.0 - (avg_shift * 100)) # Base 80 minus shift penalty
+
+    return {
+        "status": "simulation_complete",
+        "predicted_fairness": round(predicted_fairness, 1),
+        "drift_results": drift_results,
+        "is_safe_to_deploy": not drift_results["drift_alert"]
+    }
 
 # Flagging models and endpoints
 class FlagPayload(BaseModel):
@@ -159,3 +188,117 @@ def resolve_flag(flag_id: int, db: Session = Depends(get_db)) -> dict[str, Any]:
     db.commit()
     return {"message": "Flag resolved"}
 
+@router.get("/project/{project_id}/monitor")
+def get_project_monitoring(project_id: int, db: Session = Depends(get_db)) -> dict[str, Any]:
+    events = (
+        db.query(MonitoringEvent)
+        .filter(MonitoringEvent.project_id == project_id)
+        .order_by(MonitoringEvent.timestamp.asc())
+        .all()
+    )
+    
+    trend = [
+        {"timestamp": e.timestamp.isoformat(), "score": e.fairness_score}
+        for e in events
+    ]
+    
+    drift_detected = False
+    if len(events) >= 2:
+        latest = events[-1].fairness_score
+        previous = events[-2].fairness_score
+        # Drop > 15% relative to previous score
+        if previous > 0 and (previous - latest) / previous > 0.15:
+            drift_detected = True
+            
+    return {
+        "trend": trend,
+        "drift_detected": drift_detected
+    }
+
+@router.get("/logs/{project_id}")
+def get_monitoring_logs(project_id: int, limit: int = 10, db: Session = Depends(get_db)) -> list[dict[str, Any]]:
+    logs = (
+        db.query(MonitoringLog)
+        .filter(MonitoringLog.project_id == project_id)
+        .order_by(MonitoringLog.timestamp.desc())
+        .limit(limit)
+        .all()
+    )
+    return [
+        {
+            "id": log.id,
+            "timestamp": log.timestamp.isoformat(),
+            "fairness_score": log.fairness_score,
+            "data_drift_score": log.data_drift_score,
+            "prediction_drift_score": log.prediction_drift_score,
+            "key_metrics": log.key_metrics,
+        }
+    ]
+
+@router.get("/project/{project_id}/trend")
+def get_project_trend(project_id: int, limit: int = 10, db: Session = Depends(get_db)) -> dict[str, Any]:
+    import numpy as np
+
+    logs = (
+        db.query(MonitoringLog)
+        .filter(MonitoringLog.project_id == project_id)
+        .order_by(MonitoringLog.timestamp.desc())
+        .limit(limit)
+        .all()
+    )
+    
+    if not logs:
+        return {
+            "trend": "STABLE",
+            "stability_score": 100.0,
+            "degradation_detected": False
+        }
+
+    scores = [log.fairness_score for log in reversed(logs)]
+    
+    # 1. Compute fairness trend
+    if len(scores) < 2:
+        trend = "STABLE"
+    else:
+        diff = scores[-1] - scores[0]
+        if diff > 5:
+            trend = "UP"
+        elif diff < -5:
+            trend = "DOWN"
+        else:
+            trend = "STABLE"
+
+    # 2. Compute stability score (100 - standard deviation)
+    if len(scores) < 2:
+        stability_score = 100.0
+    else:
+        std_dev = np.std(scores)
+        stability_score = max(0.0, round(100.0 - std_dev, 2))
+
+    # 3. Detect degradation (consistent drop over last 3+ runs)
+    degradation_detected = False
+    if len(scores) >= 3:
+        last_three = scores[-3:]
+        if last_three[0] > last_three[1] > last_three[2]:
+            degradation_detected = True
+
+    return {
+        "trend": trend,
+        "stability_score": stability_score,
+        "degradation_detected": degradation_detected,
+        "recent_scores": scores
+    }
+
+@router.get("/project/{project_id}/alerts")
+def get_project_alerts(project_id: int, db: Session = Depends(get_db)) -> list[dict[str, Any]]:
+    alerts = db.query(Alert).filter(Alert.project_id == project_id).order_by(Alert.timestamp.desc()).all()
+    return [
+        {
+            "id": alert.id,
+            "type": alert.type,
+            "message": alert.message,
+            "severity": alert.severity,
+            "timestamp": alert.timestamp.isoformat(),
+        }
+        for alert in alerts
+    ]

@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/client';
 import { useAppContext } from '../../context/AppContext';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, LayoutGrid } from 'lucide-react';
 
 export default function Step1Upload() {
   const { 
     file, setFile, 
-    setSensitiveCols, setTargetCol, setDomain
+    setSensitiveCols, setTargetCol, setDomain,
+    projectId, projects, advanceStep, refreshProjects 
   } = useAppContext();
 
   const [headers, setHeaders] = useState<string[]>([]);
@@ -46,7 +47,13 @@ export default function Step1Upload() {
       <div className="page-header">
         <div>
           <div className="kicker">Step 1 of 9</div>
-          <h1 className="page-title">Upload Dataset</h1>
+          <h1 className="page-title">Upload Dataset {projectId ? `for ${projects.find(p => String(p.id) === String(projectId))?.name}` : ''}</h1>
+          {!projectId && (
+            <div className="banner yellow" style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <LayoutGrid size={18} />
+              <span>Please select or create a project from the top menu before uploading data.</span>
+            </div>
+          )}
           <p className="page-subtitle">Provide the dataset you want to audit for fairness. We support CSV files.</p>
         </div>
       </div>
@@ -81,7 +88,10 @@ export default function Step1Upload() {
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <button 
           className="btn btn-primary" 
-          onClick={() => navigate('/workflow/step-2')} 
+          onClick={async () => {
+            await advanceStep(2);
+            navigate('/workflow/step-2');
+          }} 
           disabled={!file}
         >
           Next: Configure Attributes <ArrowRight size={16} />

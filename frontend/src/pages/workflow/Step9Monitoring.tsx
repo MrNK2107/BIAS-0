@@ -45,11 +45,27 @@ export default function Step9Monitoring() {
   const [viewMode, setViewMode] = useState<'overall' | 'group'>('overall');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
+  const [monitorData, setMonitorData] = useState<any>(null);
+  const [trendData, setTrendData] = useState<any>(null);
   const navigate = useNavigate();
 
   const fetchFlags = async () => { try { const r = await api.get(`/monitoring/flags/${projectId}`); setFlags(r.data); } catch {} };
   useEffect(() => { fetchFlags(); }, [projectId]);
   const resolveFlag = async (id: number) => { try { await api.patch(`/monitoring/flag/${id}`); fetchFlags(); } catch {} };
+
+  const fetchMonitorData = async () => {
+    if (projectId) {
+      try {
+        const [mon, trn] = await Promise.all([
+          api.get(`/monitoring/project/${projectId}/monitor`),
+          api.get(`/monitoring/project/${projectId}/trend`)
+        ]);
+        setMonitorData(mon.data);
+        setTrendData(trn.data);
+      } catch {}
+    }
+  };
+  useEffect(() => { fetchMonitorData(); }, [projectId, monitoringResult]);
 
   const runDriftCheck = async () => {
     if (!driftFile || !file) return;
@@ -142,8 +158,27 @@ export default function Step9Monitoring() {
   const trendIcon = trend === 'improving' ? <TrendingUp size={16} color="var(--accent)" /> : trend === 'declining' ? <TrendingDown size={16} color="var(--warning)" /> : <Activity size={16} color="var(--text-secondary)" />;
   const trendColor = trend === 'improving' ? 'var(--accent)' : trend === 'declining' ? 'var(--warning)' : 'var(--text-secondary)';
 
+  const driftDetected = monitorData?.drift_detected;
+  const degradationDetected = trendData?.degradation_detected;
+
   return (
     <div>
+      {(driftDetected || degradationDetected) && (
+        <div style={{ background: 'rgba(188,71,73,0.15)', border: '1px solid #bc4749', borderRadius: 12, padding: '12px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16 }}>
+          <AlertTriangle color="#bc4749" size={24} />
+          <div>
+            <strong style={{ color: '#bc4749', fontSize: '1.05rem' }}>
+              {degradationDetected ? 'Sequential Performance Degradation' : 'Critical Score Drift Detected'}
+            </strong>
+            <p style={{ margin: '4px 0 0', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+              {degradationDetected 
+                ? 'The fairness score has dropped consistently over the last 3 runs. Investigate recent model or data changes.'
+                : 'The fairness score has dropped by more than 15% since the last monitoring check. Immediate audit recommended.'}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div style={S.header}>
         <div>
@@ -179,6 +214,13 @@ export default function Step9Monitoring() {
           <div style={S.statLabel}>Incidents</div>
           <div style={{...S.statVal, color: alertCount > 0 ? 'var(--warning)' : 'var(--accent)' }}>{alertCount}</div>
           <div style={S.statSub}>{driftCount} drift warning{driftCount !== 1 ? 's' : ''}</div>
+        </div>
+        <div className="card" style={S.statCard}>
+          <div style={S.statLabel}>Stability Score</div>
+          <div style={{...S.statVal, color: (trendData?.stability_score || 0) > 85 ? 'var(--accent)' : 'var(--warning)' }}>
+            {trendData?.stability_score ? trendData.stability_score.toFixed(1) : '--'}
+          </div>
+          <div style={S.statSub}>Reliability metric</div>
         </div>
         <div className="card" style={S.statCard}>
           <div style={S.statLabel}>Risk Status</div>
@@ -227,11 +269,98 @@ export default function Step9Monitoring() {
                 </button>
               </div>
               {driftReport && (
-                <div style={{ flex:1, padding:14, borderRadius:12, border:`0.5px solid ${driftReport.drift_alert ? 'rgba(188,71,73,0.45)' : 'rgba(212,163,115,0.45)'}`, background: driftReport.drift_alert ? 'rgba(188,71,73,0.1)' : 'rgba(212,163,115,0.1)' }}>
-                  <div style={{ fontWeight:600, marginBottom:6, color: driftReport.drift_alert ? 'var(--warning)' : 'var(--accent)' }}>
-                    {driftReport.drift_alert ? '⚠ Drift Detected' : '✓ No Significant Drift'}
+                <div style={{ flex:1, padding:16, borderRadius:12, border:`0.5px solid ${driftReport.drift_alert ? 'rgba(188,71,73,0.45)' : 'rgba(212,163,115,0.45)'}`, background: driftReport.drift_alert ? 'rgba(188,71,73,0.1)' : 'rgba(212,163,115,0.1)' }}>
+                  <div style={{ fontWeight:600, marginBottom:8, color: driftReport.drift_alert ? '#ef4444' : 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {driftReport.drift_alert ? <AlertTriangle size={16} /> : <CheckCircle size={16} />}
+                    {driftReport.drift_alert ? 'Significant Drift Detected' : 'No Significant Drift'}
                   </div>
-                  <div style={{ fontSize:'0.85rem', color:'var(--text-secondary)' }}>{driftReport.drift_message}</div>
+                  <div style={{ fontSize:'0.85rem', color:'var(--text-secondary)', marginBottom: 12 }}>{driftReport.drift_message}</div>
+                  
+                  {driftReport.root_cause && driftReport.root_cause.length > 0 && (
+                    <div style={{ marginTop: 12 }}>
+                      <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: 1, color: 'var(--text-muted)', marginBottom: 6 }}>Top Drift Drivers</div>
+                      {driftReport.root_cause.map((rc: any, idx: number) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', padding: '4px 0' }}>
+                          <span>{rc.feature}</span>
+                          <span style={{ fontWeight: 600 }}>{(rc.change * 100).toFixed(1)}% shift</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {driftReport.affected_groups && driftReport.affected_groups.length > 0 && (
+                    <div style={{ marginTop: 12 }}>
+                      <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: 1, color: 'var(--text-muted)', marginBottom: 6 }}>Potentially Impacted Groups</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                        {driftReport.affected_groups.map((g: string, idx: number) => (
+                          <span key={idx} className="pill yellow" style={{ fontSize: '0.7rem' }}>{g}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {driftReport.recommended_actions && driftReport.recommended_actions.length > 0 && (
+                    <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                       <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: 1, color: 'var(--text-muted)', marginBottom: 8 }}>Next Steps</div>
+                       {driftReport.recommended_actions.map((action: string, idx: number) => (
+                         <div key={idx} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginBottom: 6 }}>
+                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', marginTop: 6, flexShrink: 0 }} />
+                            <div style={{ fontSize: '0.85rem', color: '#fff' }}>{action}</div>
+                         </div>
+                       ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* What-if Simulation Sandbox */}
+          <div className="card">
+            <div className="section-title">What-if Fairness Sandbox</div>
+            <p className="helper" style={{ marginBottom:16 }}>Upload a potential future dataset to simulate drift and predict fairness impacts without affecting your production logs.</p>
+            <div style={S.driftBox}>
+              <div style={{ flex:1 }}>
+                <input type="file" className="input" onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDriftFile(e.target.files?.[0] || null)} accept=".csv" />
+                <button className="btn btn-primary" style={{ marginTop:12 }} onClick={async () => {
+                  if (!driftFile) return;
+                  setDriftLoading(true);
+                  const fd = new FormData();
+                  fd.append('file', driftFile);
+                  try {
+                    const r = await formApi.post(`/monitoring/project/${projectId}/simulate-data`, fd);
+                    setDriftReport(r.data);
+                  } finally {
+                    setDriftLoading(false);
+                  }
+                }} disabled={!driftFile || driftLoading}>
+                  <Activity size={14} /> {driftLoading ? 'Simulating...' : 'Run Simulation'}
+                </button>
+              </div>
+              {driftReport && driftReport.status === 'simulation_complete' && (
+                <div style={{ flex:1, padding:16, borderRadius:12, border:`0.5px solid ${driftReport.drift_results?.drift_alert ? 'rgba(188,71,73,0.45)' : 'rgba(212,163,115,0.45)'}`, background: driftReport.drift_results?.drift_alert ? 'rgba(188,71,73,0.1)' : 'rgba(212,163,115,0.1)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <div style={{ fontWeight:600, color: driftReport.drift_results?.drift_alert ? '#ef4444' : 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {driftReport.drift_results?.drift_alert ? <AlertTriangle size={16} /> : <CheckCircle size={16} />}
+                      Simulation Result
+                    </div>
+                    <div className="pill" style={{ background: 'var(--bg)', color: 'var(--accent)', fontWeight: 800 }}>
+                       Pred. Fairness: {driftReport.predicted_fairness}
+                    </div>
+                  </div>
+                  <div style={{ fontSize:'0.85rem', color:'var(--text-secondary)', marginBottom: 12 }}>{driftReport.drift_results?.drift_message}</div>
+                  
+                  {driftReport.drift_results?.root_cause?.length > 0 && (
+                    <div style={{ marginTop: 12 }}>
+                      <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: 1, color: 'var(--text-muted)', marginBottom: 6 }}>Predicted Drift Drivers</div>
+                      {driftReport.drift_results.root_cause.map((rc: any, idx: number) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', padding: '4px 0' }}>
+                          <span>{rc.feature}</span>
+                          <span style={{ fontWeight: 600 }}>{(rc.change * 100).toFixed(1)}% shift</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -333,7 +462,7 @@ export default function Step9Monitoring() {
       {/* Footer navigation */}
       <div style={{ display:'flex', justifyContent:'space-between', marginTop:32 }}>
         <button className="btn btn-secondary" onClick={() => navigate('/workflow/step-8')}>← Back</button>
-        <button className="btn btn-primary" onClick={() => { alert('Workflow complete! Model is ready for deployment.'); navigate('/'); }}>Finish Workflow</button>
+        <button className="btn btn-primary" onClick={() => { navigate('/monitoring'); }}>Go to Live Dashboard</button>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
+import { formApi } from '../../api/client';
 import { ArrowRight, ArrowLeft, CheckCircle, Circle, Loader } from 'lucide-react';
 
 const ANALYSIS_STAGES = [
@@ -119,6 +120,7 @@ export default function Step2Config() {
     sensitiveCols, setSensitiveCols,
     targetCol, setTargetCol,
     domain, setDomain,
+    projectId,
     modelType, setModelType,
     apiUrl, setApiUrl,
     requestFormat, setRequestFormat,
@@ -145,6 +147,13 @@ export default function Step2Config() {
   const handleStartAnalysis = async () => {
     setLocalError(null);
     try {
+      // 1. Persist config to backend project record
+      const fd = new FormData();
+      fd.append('sensitive_cols', sensitiveCols.join(','));
+      fd.append('target_col', targetCol);
+      await formApi.patch(`/project/${projectId}/config`, fd);
+
+      // 2. Run analysis
       await runFullAnalysis();
       navigate('/workflow/step-3');
     } catch {
@@ -184,38 +193,140 @@ export default function Step2Config() {
       </div>
 
       <div className="grid-2">
-        <div className="card">
+        <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
           <div className="section-title">Sensitive columns</div>
-          <div className="helper">Select columns that contain protected attributes (e.g., race, gender).</div>
-          <select
-            className="select"
-            multiple
-            value={sensitiveCols}
-            onChange={(event) => setSensitiveCols(Array.from(event.target.selectedOptions).map((option) => option.value))}
-            style={{ minHeight: 120, marginTop: 12 }}
+          <p className="helper" style={{ marginBottom: 16 }}>
+            Select attributes to audit for bias. We support <strong>Multiple Selection</strong> because bias often overlaps across groups.
+          </p>
+          
+          {/* Selected Chips */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+            {sensitiveCols.map(col => (
+              <div key={col} style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 6, 
+                background: 'rgba(212,163,115,0.15)', 
+                color: 'var(--accent)', 
+                padding: '4px 10px', 
+                borderRadius: '16px',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                border: '1px solid rgba(212,163,115,0.3)'
+              }}>
+                {col}
+                <button 
+                  onClick={() => setSensitiveCols(sensitiveCols.filter(c => c !== col))}
+                  style={{ 
+                    background: 'none', 
+                    border: 'none', 
+                    color: 'var(--accent)', 
+                    cursor: 'pointer', 
+                    fontSize: '1rem', 
+                    padding: 0,
+                    lineHeight: 1,
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+            {sensitiveCols.length === 0 && <span className="helper">No attributes selected</span>}
+          </div>
+
+          {/* Dropdown Selector */}
+          <select 
+            className="select" 
+            value="" 
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val && !sensitiveCols.includes(val)) {
+                setSensitiveCols([...sensitiveCols, val]);
+              }
+            }}
+            style={{ color: '#fff', backgroundColor: '#111' }}
           >
-            {headers.map((header) => <option key={header} value={header}>{header}</option>)}
+            <option value="" disabled>+ Add sensitive attribute...</option>
+            {headers
+              .filter(h => !sensitiveCols.includes(h))
+              .map((header) => (
+                <option key={header} value={header} style={{ color: '#fff', backgroundColor: '#111' }}>
+                  {header}
+                </option>
+              ))}
           </select>
         </div>
+
         <div className="card">
           <div className="section-title">Target column</div>
-          <select className="select" value={targetCol} onChange={(event) => setTargetCol(event.target.value)}>
-            {headers.map((header) => <option key={header} value={header}>{header}</option>)}
+          <p className="helper" style={{ marginBottom: 8 }}>The column the model predicts (e.g. 'Approved', 'Risk').</p>
+          <select 
+            className="select" 
+            value={targetCol} 
+            onChange={(event) => setTargetCol(event.target.value)}
+            style={{ color: '#fff', backgroundColor: '#111' }}
+          >
+            {headers.map((header) => <option key={header} value={header} style={{ color: '#fff', backgroundColor: '#111' }}>{header}</option>)}
           </select>
-          <div style={{ height: 16 }} />
+          
+          <div style={{ height: 24 }} />
 
-          <div className="section-title">Domain</div>
-          <select className="select" value={domain} onChange={(event) => setDomain(event.target.value)}>
-            {['loan', 'hiring', 'insurance', 'healthcare'].map((item) => <option key={item} value={item}>{item}</option>)}
+          <div className="section-title">Project Domain</div>
+          <p className="helper" style={{ marginBottom: 8 }}>Context-specific benchmarks for the audit.</p>
+          <select 
+            className="select" 
+            value={domain} 
+            onChange={(event) => setDomain(event.target.value)}
+            style={{ color: '#fff', backgroundColor: '#111' }}
+          >
+            {[
+              { id: 'loan', name: 'Financial Services / Loans' },
+              { id: 'hiring', name: 'Human Resources / Recruitment' },
+              { id: 'insurance', name: 'Insurance & Actuarial' },
+              { id: 'healthcare', name: 'Healthcare & Diagnostics' },
+              { id: 'education', name: 'Education & Admissions' },
+              { id: 'criminal_justice', name: 'Public Safety / Law' },
+              { id: 'marketing', name: 'Marketing & Personalization' },
+              { id: 'other', name: 'General / Custom Domain' }
+            ].map((item) => <option key={item.id} value={item.id} style={{ color: '#fff', backgroundColor: '#111' }}>{item.name}</option>)}
           </select>
-          <div style={{ height: 16 }} />
+
+          <div style={{ height: 24 }} />
 
           <div className="section-title">Fairness Priority</div>
-          <select className="select" value={metricPriority} onChange={(event) => setMetricPriority(event.target.value)}>
-            <option value="balanced">Balanced (Default)</option>
-            <option value="equal_opportunity_first">Equal Opportunity First</option>
-            <option value="demographic_parity_first">Demographic Parity First</option>
-          </select>
+          <p className="helper" style={{ marginBottom: 12 }}>Choose the metric the forensic engine should prioritize.</p>
+          <div style={{ display: 'grid', gap: 12 }}>
+            {[
+              { id: 'balanced', name: 'Balanced Audit', desc: 'Standard audit balancing fairness and model performance.' },
+              { id: 'equal_opportunity_first', name: 'Equal Opportunity', desc: 'Ensures similar True Positive Rates across all groups.' },
+              { id: 'demographic_parity_first', name: 'Demographic Parity', desc: 'Ensures the same overall positive outcome rate for all.' }
+            ].map(p => (
+              <label key={p.id} className={`priority-card ${metricPriority === p.id ? 'active' : ''}`} style={{
+                padding: '12px',
+                borderRadius: '8px',
+                border: '1px solid var(--border)',
+                cursor: 'pointer',
+                background: metricPriority === p.id ? 'rgba(212,163,115,0.08)' : 'transparent',
+                borderColor: metricPriority === p.id ? 'var(--accent)' : 'var(--border)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <input 
+                    type="radio" 
+                    name="priority" 
+                    checked={metricPriority === p.id} 
+                    onChange={() => setMetricPriority(p.id)}
+                    style={{ accentColor: 'var(--accent)' }}
+                  />
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '0.9rem', color: metricPriority === p.id ? 'var(--accent)' : 'var(--text-primary)' }}>{p.name}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: 2 }}>{p.desc}</div>
+                  </div>
+                </div>
+              </label>
+            ))}
+          </div>
         </div>
       </div>
 

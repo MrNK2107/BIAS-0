@@ -6,7 +6,7 @@ import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Step4ModelBias() {
-  const { pipelineResults, biasResult, counterfactualResult } = useAppContext();
+  const { pipelineResults, biasResult, counterfactualResult, advanceStep } = useAppContext();
   const navigate = useNavigate();
 
   if (!pipelineResults || !biasResult) {
@@ -70,7 +70,10 @@ export default function Step4ModelBias() {
         <button className="btn" onClick={() => navigate('/workflow/step-3')}>
           <ArrowLeft size={16} /> Back
         </button>
-        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-5')}>
+        <button className="btn btn-primary" onClick={async () => {
+          await advanceStep(5);
+          navigate('/workflow/step-5');
+        }}>
           Next: Explore Explanations <ArrowRight size={16} />
         </button>
       </div>
