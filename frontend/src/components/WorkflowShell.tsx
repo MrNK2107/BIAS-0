@@ -1,10 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Activity,
   BarChart3,
   BrainCircuit,
   FlaskConical,
-  FolderPlus,
   Gauge,
   LayoutDashboard,
   Search,
@@ -25,8 +23,6 @@ const STEPS = [
   { id: 6, to: '/workflow/step-6', label: 'Counterfactual', icon: ShieldCheck },
   { id: 7, to: '/workflow/step-7', label: 'Stress Test', icon: Gauge },
   { id: 8, to: '/workflow/step-8', label: 'Sandbox', icon: FlaskConical },
-  { id: 9, to: '/workflow/step-9', label: 'Setup Monitor', icon: Settings2 },
-  { id: 10, to: '/monitoring', label: 'Live Monitor', icon: Activity },
 ];
 
 export default function WorkflowShell({ children }: { children: React.ReactNode }) {
@@ -105,6 +101,9 @@ export default function WorkflowShell({ children }: { children: React.ReactNode 
               textTransform: 'uppercase', opacity: 0.9 
             }}>
               {currentLabel}
+            </div>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.74rem', letterSpacing: '0.18em', marginTop: 4, textTransform: 'uppercase' }}>
+              {currentMeta}
             </div>
           </div>
         </header>

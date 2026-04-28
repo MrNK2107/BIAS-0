@@ -8,8 +8,6 @@ import Step5Explanations from './pages/workflow/Step5Explanations';
 import Step6Counterfactual from './pages/workflow/Step6Counterfactual';
 import Step7StressTest from './pages/workflow/Step7StressTest';
 import Step8Sandbox from './pages/workflow/Step8Sandbox';
-import Step9Monitoring from './pages/workflow/Step9Monitoring';
-import MonitoringDashboard from './pages/MonitoringDashboard';
 
 import Dashboard from './pages/Dashboard';
 import HeroPage from './pages/HeroPage';
@@ -31,7 +29,8 @@ export default function App() {
       const p = projects.find(proj => String(proj.id) === String(projectId));
       if (p && p.max_step > 1) {
         if (location.pathname === '/' || location.pathname === '/workflow/step-1') {
-          navigate(`/workflow/step-${p.max_step}`);
+          const resumeStep = Math.min(p.max_step, 8);
+          navigate(`/workflow/step-${resumeStep}`);
           setHasResumed(true);
         }
       }
@@ -57,8 +56,6 @@ export default function App() {
               <Route path="/workflow/step-6" element={<PageTransition locationKey="s6"><Step6Counterfactual /></PageTransition>} />
               <Route path="/workflow/step-7" element={<PageTransition locationKey="s7"><Step7StressTest /></PageTransition>} />
               <Route path="/workflow/step-8" element={<PageTransition locationKey="s8"><Step8Sandbox /></PageTransition>} />
-              <Route path="/workflow/step-9" element={<PageTransition locationKey="s9"><Step9Monitoring /></PageTransition>} />
-              <Route path="/monitoring" element={<PageTransition locationKey="mon"><MonitoringDashboard /></PageTransition>} />
               
               <Route path="*" element={<Navigate to="/workflow/step-1" replace />} />
             </Routes>

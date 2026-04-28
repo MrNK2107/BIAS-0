@@ -69,8 +69,8 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [file, setFile] = useState<File | null>(null);
-  const [sensitiveCols, setSensitiveCols] = useState<string[]>(['gender', 'caste']);
-  const [targetCol, setTargetCol] = useState('approved');
+  const [sensitiveCols, setSensitiveCols] = useState<string[]>([]);
+  const [targetCol, setTargetCol] = useState('');
   const [domain, setDomain] = useState('loan');
   const [projectId, setProjectId] = useState<string | null>(null);
   const [modelType, setModelType] = useState<'file' | 'api'>('file');
@@ -362,8 +362,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const currentProject = projects.find(
     p => p.id?.toString() === projectId?.toString()
   );
-  const maxStep = currentProject?.max_step
-    ?? parseInt(localStorage.getItem(`max_step_${projectId}`) ?? '1', 10);
+  const maxStep = Math.min(
+    currentProject?.max_step
+      ?? parseInt(localStorage.getItem(`max_step_${projectId}`) ?? '1', 10),
+    8
+  );
 
   React.useEffect(() => { refreshProjects(); }, []);
 

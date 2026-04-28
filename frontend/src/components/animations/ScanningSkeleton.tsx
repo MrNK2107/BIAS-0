@@ -12,35 +12,27 @@ export default function ScanningSkeleton({
   borderRadius = '14px' 
 }: ScanningSkeletonProps) {
   return (
-    <div 
+    <motion.div 
+      animate={{ 
+        opacity: [0.4, 0.8, 0.4],
+        boxShadow: [
+          '0 0 8px rgba(212, 163, 115, 0.05)',
+          '0 0 24px rgba(212, 163, 115, 0.15)',
+          '0 0 8px rgba(212, 163, 115, 0.05)',
+        ]
+      }}
+      transition={{
+        duration: 2.4,
+        ease: 'easeInOut',
+        repeat: Infinity,
+      }}
       style={{ 
         height, 
         width, 
         borderRadius, 
-        backgroundColor: 'rgba(255, 255, 255, 0.03)', 
-        position: 'relative', 
-        overflow: 'hidden',
-        border: '1px solid rgba(148, 163, 184, 0.05)'
+        backgroundColor: 'rgba(212, 163, 115, 0.04)', 
+        border: '1px solid rgba(212, 163, 115, 0.1)',
       }}
-    >
-      <motion.div
-        initial={{ left: '-100%' }}
-        animate={{ left: '200%' }}
-        transition={{
-          duration: 2,
-          ease: 'easeInOut',
-          repeat: Infinity,
-          repeatDelay: 0.2
-        }}
-        style={{
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          width: '50%',
-          background: 'linear-gradient(90deg, transparent 0%, rgba(79, 142, 247, 0.15) 50%, transparent 100%)',
-          zIndex: 1
-        }}
-      />
-    </div>
+    />
   );
 }

@@ -103,7 +103,7 @@ export default function Step9Monitoring() {
          let attrs = {}; try { attrs = JSON.parse(sensitive_attrs); } catch {}
          return { record_id: Number(record_id), prediction: Number(prediction), sensitive_attrs: attrs, timestamp };
        });
-       await api.post('/monitoring/ingest', { project_id: parseInt(projectId), predictions });
+      await api.post('/monitoring/ingest', { project_id: parseInt(projectId ?? '0', 10), predictions });
        await getMonitoringData(); await new Promise(r => setTimeout(r, 500));
      }
    };

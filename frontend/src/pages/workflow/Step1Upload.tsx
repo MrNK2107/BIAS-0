@@ -46,7 +46,7 @@ export default function Step1Upload() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 1 of 9</div>
+          <div className="kicker">Step 1 of 8</div>
           <h1 className="page-title">Upload Dataset {projectId ? `for ${projects.find(p => String(p.id) === String(projectId))?.name}` : ''}</h1>
           {!projectId && (
             <div className="banner yellow" style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 12 }}>

@@ -16,7 +16,7 @@ export default function Step6Counterfactual() {
       <div>
         <div className="page-header">
           <div>
-            <div className="kicker">Step 6 of 9</div>
+            <div className="kicker">Step 6 of 8</div>
             <h1 className="page-title">Counterfactual Testing</h1>
           </div>
         </div>
@@ -41,7 +41,7 @@ export default function Step6Counterfactual() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 6 of 9</div>
+          <div className="kicker">Step 6 of 8</div>
           <h1 className="page-title">Counterfactual Testing</h1>
           <p className="helper" style={{ marginTop: 8 }}>
             Analyze if individual predictions flip when modifying only the sensitive attribute. This ensures the model isn't using the sensitive attribute as a proxy.

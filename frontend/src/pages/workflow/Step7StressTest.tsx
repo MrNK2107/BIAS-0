@@ -35,7 +35,7 @@ export default function Step7StressTest() {
       <div>
         <div className="page-header">
           <div>
-            <div className="kicker">Step 7 of 9</div>
+            <div className="kicker">Step 7 of 8</div>
             <h1 className="page-title">Stress Testing</h1>
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function Step7StressTest() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 7 of 9</div>
+          <div className="kicker">Step 7 of 8</div>
           <h1 className="page-title">Stress Testing</h1>
           <p className="helper" style={{ marginTop: 8 }}>
             Discover how the model's fairness holds up against data perturbations, missing values, and distribution shifts.
@@ -165,7 +165,7 @@ export default function Step7StressTest() {
           return (
             <div className="card" key={scenario.name} style={{ padding: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '0.5px solid var(--border)', paddingBottom: '12px' }}>
-                <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                   {scenario.name}
                 </div>
                 <span className={`pill ${scenario.fragile ? 'red' : 'green'}`} style={{ fontWeight: 600 }}>

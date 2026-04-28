@@ -19,6 +19,10 @@ def run_data_audit(df: pd.DataFrame, sensitive_cols: list[str], target_col: str)
         counts = df[sensitive].value_counts(dropna=False)
 
         for group_value, count in counts.items():
+            # Skip nan/null groups for under-representation reporting
+            if pd.isna(group_value) or str(group_value).lower() == "nan":
+                continue
+                
             count_int = int(count)
             mask = df[sensitive].astype(str) == str(group_value)
             group_df = df[mask]
@@ -47,6 +51,7 @@ def run_data_audit(df: pd.DataFrame, sensitive_cols: list[str], target_col: str)
             }
             if representation_ratio < 0.2:
                 under_represented_groups.append(str(group_value))
+
 
         group_stats[sensitive] = stats_for_sensitive
 

@@ -9,6 +9,8 @@ export default function Step3DataAudit() {
   const [dismissed, setDismissed] = useState<string[]>([]);
   const navigate = useNavigate();
 
+  const primarySensitive = useMemo(() => Object.keys(audit?.group_stats || {})[0] || 'group', [audit]);
+
   const fairnessScore = useMemo(() => {
     if (!audit) return 0;
     const base = audit.risk_level === 'High' ? 48 : audit.risk_level === 'Medium' ? 70 : 88;
@@ -28,14 +30,22 @@ export default function Step3DataAudit() {
     );
   }, [audit]);
 
-  const underRep = audit?.under_represented_groups ?? [];
+  const underRep = useMemo(
+    () => (audit?.under_represented_groups ?? []).filter((group: string) => {
+      const value = String(group ?? '').trim().toLowerCase();
+      return value !== '' && value !== 'nan' && value !== 'null' && value !== 'none' && value !== 'undefined';
+    }),
+    [audit]
+  );
+
+  const proxyFeatures = proxy?.proxy_features ?? [];
 
   if (!pipelineResults || !audit || !proxy) {
     return (
       <div>
         <div className="page-header">
           <div>
-            <div className="kicker">Step 3 of 9</div>
+            <div className="kicker">Step 3 of 8</div>
             <h1 className="page-title">Data Audit</h1>
           </div>
         </div>
@@ -53,7 +63,7 @@ export default function Step3DataAudit() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 3 of 9</div>
+          <div className="kicker">Step 3 of 8</div>
           <h1 className="page-title">Data Audit</h1>
           <p className="page-subtitle">We analyzed your dataset for representation bias and missing data before modeling.</p>
         </div>
@@ -74,7 +84,7 @@ export default function Step3DataAudit() {
 
       <div className="grid-2" style={{ marginBottom: 16 }}>
         <div className="card">
-          <div className="section-title">Gender group stats</div>
+          <div className="section-title">{primarySensitive} group stats</div>
           <div style={{ height: 280, marginTop: 16 }}>
             <AnimatedBarChart data={chartData} height={250} maxDomain={100} valueSuffix="%" />
           </div>
@@ -90,6 +100,11 @@ export default function Step3DataAudit() {
                 </div>
               </div>
             ))}
+            {underRep.length === 0 && (
+              <div className="notice">
+                <span className="helper">No under-represented groups detected after excluding missing values.</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -114,14 +129,23 @@ export default function Step3DataAudit() {
           <div className="section-title">Proxy risk</div>
           <div className="helper">Features that highly correlate with sensitive attributes.</div>
           <div className="notice-list" style={{ marginTop: 12 }}>
-            {proxy.proxy_features.map((feature: any) => (
-              <div className="notice" key={feature.feature}>
-                <strong>{feature.feature}</strong>
-                <div className="helper">Correlated with {feature.correlated_with}</div>
-                <div className="progress-track" style={{ margin: '10px 0' }}><div className="progress-fill" style={{ width: `${feature.proxy_score * 100}%` }} /></div>
-                <div className="helper">{feature.warning}</div>
+            {proxyFeatures.map((feature: any) => {
+              const score = feature.proxy_score ?? feature.cluster_proxy_score ?? feature.combined_score ?? 0;
+              const correlatedWith = feature.correlated_with ?? feature.related_sensitive ?? 'sensitive attribute';
+              return (
+                <div className="notice" key={feature.feature}>
+                  <strong>{feature.feature}</strong>
+                  <div className="helper">Correlated with {correlatedWith}</div>
+                  <div className="progress-track" style={{ margin: '10px 0' }}><div className="progress-fill" style={{ width: `${Math.max(0, Math.min(1, score)) * 100}%` }} /></div>
+                  <div className="helper">{feature.warning}</div>
+                </div>
+              );
+            })}
+            {proxyFeatures.length === 0 && (
+              <div className="notice">
+                <span className="helper">No high-confidence proxy features were detected for this dataset.</span>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

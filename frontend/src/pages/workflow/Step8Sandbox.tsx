@@ -136,7 +136,7 @@ export default function Step8Sandbox() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 8 of 9</div>
+          <div className="kicker">Step 8 of 8</div>
           <h1 className="page-title">Sandbox Fixes</h1>
           <p className="helper" style={{ marginTop: 8 }}>
             Review AI-generated recommendations to mitigate bias. Apply fixes to your sandbox environment to simulate their impact.
@@ -174,10 +174,10 @@ export default function Step8Sandbox() {
           Back
         </button>
         <button className="btn btn-primary" onClick={async () => {
-          await advanceStep(9);
-          navigate('/workflow/step-9');
+          await advanceStep(8);
+          navigate('/dashboard');
         }}>
-          Continue to Monitoring Setup
+          Finish Workflow
         </button>
       </div>
     </div>

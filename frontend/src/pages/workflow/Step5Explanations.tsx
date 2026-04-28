@@ -12,7 +12,7 @@ export default function Step5Explanations() {
       <div>
         <div className="page-header">
           <div>
-            <div className="kicker">Step 5 of 9</div>
+            <div className="kicker">Step 5 of 8</div>
             <h1 className="page-title">Explanations</h1>
           </div>
         </div>
@@ -47,7 +47,7 @@ export default function Step5Explanations() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 5 of 9</div>
+          <div className="kicker">Step 5 of 8</div>
           <h1 className="page-title">Explanations</h1>
           <p className="page-subtitle">Understand why the model made certain decisions and review high-risk flags.</p>
         </div>

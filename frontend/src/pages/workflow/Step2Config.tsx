@@ -2,40 +2,19 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import { formApi } from '../../api/client';
-import { ArrowRight, ArrowLeft, CheckCircle, Circle, Loader } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader } from 'lucide-react';
 
 const ANALYSIS_STAGES = [
-  { label: 'Scanning dataset for representation gaps', duration: 2200 },
-  { label: 'Detecting proxy feature correlations', duration: 3800 },
-  { label: 'Training model & computing fairness metrics', duration: 6500 },
-  { label: 'Calculating SHAP values for explanations', duration: 9500 },
-  { label: 'Running counterfactual fairness tests', duration: 13000 },
-  { label: 'Probing model under stress perturbations', duration: 17000 },
-  { label: 'Generating fix recommendations', duration: 20000 },
+  'Scanning dataset for representation gaps',
+  'Detecting proxy feature correlations',
+  'Training model and computing fairness metrics',
+  'Calculating SHAP values for explanations',
+  'Running counterfactual fairness tests',
+  'Probing model under stress perturbations',
+  'Generating fix recommendations',
 ];
 
-const STAGE_COMPLETE_MS = 20000; // when all fake stages tick off
-
 function AnalysisLoadingScreen({ error, onRetry }: { error: string | null; onRetry: () => void }) {
-  const [elapsed, setElapsed] = useState(0);
-  const [isFinalizingPhase, setIsFinalizingPhase] = useState(false);
-
-  useEffect(() => {
-    const timer = setInterval(() => setElapsed(prev => prev + 100), 100);
-    const finalizingTimer = window.setTimeout(() => setIsFinalizingPhase(true), STAGE_COMPLETE_MS);
-    return () => {
-      clearInterval(timer);
-      clearTimeout(finalizingTimer);
-    };
-  }, []);
-
-  const completedCount = ANALYSIS_STAGES.filter(s => elapsed >= s.duration).length;
-  const allStagesDone = completedCount === ANALYSIS_STAGES.length;
-  const showFinalizing = isFinalizingPhase || allStagesDone;
-  const progressPct = showFinalizing
-    ? undefined
-    : Math.min(Math.round((completedCount / ANALYSIS_STAGES.length) * 100), 91);
-
   if (error) {
     return (
       <div className="analysis-screen">
@@ -56,58 +35,38 @@ function AnalysisLoadingScreen({ error, onRetry }: { error: string | null; onRet
           <div className="analysis-spinner-ring">
             <Loader size={22} color="var(--text-primary)" style={{ animation: 'spin 1.2s linear infinite' }} />
           </div>
-          <h2 style={{ margin: 0, marginBottom: 8, fontSize: '1.4rem', color: 'var(--text-primary)' }}>
-            {showFinalizing ? 'Finalizing Results…' : 'Running Full Analysis'}
-          </h2>
+          <h2 style={{ margin: 0, marginBottom: 8, fontSize: '1.4rem', color: 'var(--text-primary)' }}>Running Full Analysis</h2>
           <p className="helper" style={{ margin: 0 }}>
-            {showFinalizing
-              ? 'All stages complete — writing results to database.'
-              : 'Computing all 7 fairness stages — this takes 20–40 seconds.'}
+            Computing all fairness stages. This can take up to a minute for larger files.
           </p>
         </div>
 
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-            <span>Progress</span>
-            <span>{showFinalizing ? 'Finalizing…' : `${progressPct}%`}</span>
+            <span>Status</span>
+            <span>Running</span>
           </div>
           <div className="analysis-progress-track">
-            {showFinalizing ? (
-              <div className="analysis-progress-indeterminate" />
-            ) : (
-              <div className="analysis-progress-fill" style={{ width: `${progressPct}%` }} />
-            )}
+            <div className="analysis-progress-indeterminate" />
           </div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {ANALYSIS_STAGES.map((stage, i) => {
-            const done = elapsed >= stage.duration;
-            const active = !done && (i === 0 || elapsed >= ANALYSIS_STAGES[i - 1].duration);
+            const active = i === 0;
             return (
-              <div key={stage.label} className={`analysis-stage ${done ? 'is-complete' : active ? 'is-active' : ''}`}>
-                {done ? (
-                  <CheckCircle size={16} color="var(--green)" className="analysis-stage-icon" />
-                ) : active ? (
+              <div key={stage} className={`analysis-stage ${active ? 'is-active' : ''}`}>
+                {active ? (
                   <Loader size={16} color="var(--accent)" className="analysis-stage-icon analysis-stage-icon-spinning" />
                 ) : (
-                  <Circle size={16} color="var(--text-secondary)" className="analysis-stage-icon" />
+                  <Loader size={16} color="var(--text-secondary)" className="analysis-stage-icon" />
                 )}
-                <span className={`analysis-stage-label ${done ? 'is-complete' : active ? 'is-active' : ''}`}>
-                  {stage.label}
+                <span className={`analysis-stage-label ${active ? 'is-active' : ''}`}>
+                  {stage}
                 </span>
               </div>
             );
           })}
-
-          {showFinalizing && (
-            <div className="analysis-stage analysis-stage-finalizing">
-              <Loader size={16} color="var(--accent)" className="analysis-stage-icon analysis-stage-icon-spinning" />
-              <span className="analysis-stage-label analysis-stage-label-finalizing">
-                Persisting results &amp; preparing insights…
-              </span>
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -140,7 +99,12 @@ export default function Step2Config() {
     }
     file.text().then(text => {
       const lines = text.trim().split(/\r?\n/);
-      setHeaders(lines[0]?.split(',') ?? []);
+      const parsedHeaders = lines[0]?.split(',') ?? [];
+      setHeaders(parsedHeaders);
+      // Auto-select last column as target if none selected yet
+      if (!targetCol && parsedHeaders.length > 0) {
+        setTargetCol(parsedHeaders[parsedHeaders.length - 1]);
+      }
     });
   }, [file, navigate]);
 
@@ -205,7 +169,7 @@ export default function Step2Config() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 2 of 9</div>
+          <div className="kicker">Step 2 of 8</div>
           <h1 className="page-title">Configuration</h1>
           <p className="page-subtitle">Select the sensitive attributes and define how the model should be accessed.</p>
         </div>
@@ -265,13 +229,12 @@ export default function Step2Config() {
                 setSensitiveCols([...sensitiveCols, val]);
               }
             }}
-            style={{ color: '#fff', backgroundColor: '#111' }}
           >
             <option value="" disabled>+ Add sensitive attribute...</option>
             {headers
               .filter(h => !sensitiveCols.includes(h))
               .map((header) => (
-                <option key={header} value={header} style={{ color: '#fff', backgroundColor: '#111' }}>
+                <option key={header} value={header}>
                   {header}
                 </option>
               ))}
@@ -285,9 +248,8 @@ export default function Step2Config() {
             className="select" 
             value={targetCol} 
             onChange={(event) => setTargetCol(event.target.value)}
-            style={{ color: '#fff', backgroundColor: '#111' }}
           >
-            {headers.map((header) => <option key={header} value={header} style={{ color: '#fff', backgroundColor: '#111' }}>{header}</option>)}
+            {headers.map((header) => <option key={header} value={header}>{header}</option>)}
           </select>
           
           <div style={{ height: 24 }} />
@@ -298,7 +260,6 @@ export default function Step2Config() {
             className="select" 
             value={domain} 
             onChange={(event) => setDomain(event.target.value)}
-            style={{ color: '#fff', backgroundColor: '#111' }}
           >
             {[
               { id: 'loan', name: 'Financial Services / Loans' },
@@ -309,7 +270,7 @@ export default function Step2Config() {
               { id: 'criminal_justice', name: 'Public Safety / Law' },
               { id: 'marketing', name: 'Marketing & Personalization' },
               { id: 'other', name: 'General / Custom Domain' }
-            ].map((item) => <option key={item.id} value={item.id} style={{ color: '#fff', backgroundColor: '#111' }}>{item.name}</option>)}
+            ].map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
           </select>
 
           <div style={{ height: 24 }} />

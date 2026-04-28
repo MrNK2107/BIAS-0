@@ -99,8 +99,8 @@ def explain_flagged_decisions(
     pipeline = model if model is not None else _build_default(prepared)
 
     sample_limit = min(len(prepared.X_test), max(n_samples * 2, 10))
-    test_features = prepared.X_test.reset_index(drop=True).iloc[:sample_limit].copy()
-    predictions = pd.Series(pipeline.predict(test_features))
+    test_features = prepared.X_test.iloc[:sample_limit].copy()
+    predictions = pd.Series(pipeline.predict(test_features), index=test_features.index)
     flagged: list[dict[str, Any]] = []
 
     # ── Attempt SHAP ─────────────────────────────────────────────────────────
@@ -134,11 +134,17 @@ def explain_flagged_decisions(
 
     ranked_features = sorted(feature_scores.items(), key=lambda x: x[1], reverse=True)[:3]
 
-    def _build_reasons(row_idx: int) -> list[dict[str, Any]]:
+    def _record_id(value: Any) -> int | str:
+        try:
+            return int(value)
+        except Exception:
+            return str(value)
+
+    def _build_reasons(row_pos: int, row: pd.Series) -> list[dict[str, Any]]:
         # Prefer per-record SHAP values
         if shap_values is not None:
             try:
-                row_sv = shap_values[row_idx]
+                row_sv = np.asarray(shap_values)[row_pos]
                 col_names = list(test_features.columns)
                 # shap_values may have more columns (after OHE). Use raw cols if mismatch.
                 n = min(len(col_names), len(row_sv))
@@ -157,6 +163,33 @@ def explain_flagged_decisions(
                 ]
             except Exception:
                 pass
+
+        # Per-record numeric deviation fallback so each record has distinct reasons
+        numeric_row = pd.to_numeric(row, errors='coerce').dropna()
+        local_reasons: list[tuple[str, float]] = []
+        for feature_name, feature_value in numeric_row.items():
+            if feature_name not in prepared.X_train.columns:
+                continue
+            train_col = pd.to_numeric(prepared.X_train[feature_name], errors='coerce').dropna()
+            if train_col.empty:
+                continue
+            center = float(train_col.median())
+            spread = float(train_col.std())
+            if spread <= 1e-8:
+                continue
+            score = abs((float(feature_value) - center) / spread)
+            if score == score:
+                local_reasons.append((str(feature_name), float(score)))
+
+        if local_reasons:
+            return [
+                {
+                    'feature': feature,
+                    'shap_value': round(score, 4),
+                    'is_proxy_risk': feature in proxy_features,
+                }
+                for feature, score in sorted(local_reasons, key=lambda x: x[1], reverse=True)[:3]
+            ]
 
         # Fall back to global feature importance
         if ranked_features:
@@ -180,9 +213,10 @@ def explain_flagged_decisions(
         ]
 
     # ── Contrastive (near-identical) flagging ─────────────────────────────────
-    for idx in range(min(len(test_features), n_samples * 2)):
-        row = test_features.iloc[idx]
-        other_rows = test_features.drop(index=idx)
+    for row_pos in range(min(len(test_features), n_samples * 2)):
+        row = test_features.iloc[row_pos]
+        row_idx = test_features.index[row_pos]
+        other_rows = test_features.drop(index=row_idx)
         if other_rows.empty:
             continue
         diffs = other_rows.drop(
@@ -195,11 +229,11 @@ def explain_flagged_decisions(
         if len(numeric_columns) == 0:
             continue
         distances = diffs[numeric_columns].sub(row[numeric_columns], axis=1).pow(2).sum(axis=1)
-        nearest = int(distances.idxmin()) if not distances.empty else idx
-        if predictions.iloc[idx] == predictions.iloc[nearest]:
+        nearest = distances.idxmin() if not distances.empty else row_idx
+        if predictions.loc[row_idx] == predictions.loc[nearest]:
             continue
 
-        top_reasons = _build_reasons(idx)
+        top_reasons = _build_reasons(row_pos, row)
         has_proxy = any(r["is_proxy_risk"] for r in top_reasons)
         explanation = (
             "This decision differs from a very similar record; proxy features may be influencing the result."
@@ -207,8 +241,8 @@ def explain_flagged_decisions(
             else "The model treats this near-identical case differently, indicating potential bias or threshold sensitivity."
         )
         flagged.append({
-            "record_id": int(idx),
-            "decision": "approved" if int(predictions.iloc[idx]) == 1 else "rejected",
+            "record_id": _record_id(row_idx),
+            "decision": "approved" if int(predictions.loc[row_idx]) == 1 else "rejected",
             "sensitive_attribute": ", ".join(
                 f"{col}={row[col]}" for col in sensitive_cols if col in row.index
             ),
@@ -221,12 +255,13 @@ def explain_flagged_decisions(
 
     # ── Individual fallback if no contrastive pairs found ─────────────────────
     if not flagged:
-        for idx in range(min(len(test_features), n_samples, 10)):
-            row = test_features.iloc[idx]
-            top_reasons = _build_reasons(idx)
+        for row_pos in range(min(len(test_features), n_samples, 10)):
+            row = test_features.iloc[row_pos]
+            row_idx = test_features.index[row_pos]
+            top_reasons = _build_reasons(row_pos, row)
             flagged.append({
-                "record_id": int(idx),
-                "decision": "approved" if int(predictions.iloc[idx]) == 1 else "rejected",
+                "record_id": _record_id(row_idx),
+                "decision": "approved" if int(predictions.loc[row_idx]) == 1 else "rejected",
                 "sensitive_attribute": ", ".join(
                     f"{col}={row[col]}" for col in sensitive_cols if col in row.index
                 ),

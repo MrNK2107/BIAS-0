@@ -247,6 +247,11 @@ textarea {
   box-shadow: 0 0 0 4px rgba(212, 163, 115, 0.16);
 }
 
+select option {
+  background: #1a1d23;
+  color: var(--text-primary);
+}
+
 .pill {
   display: inline-flex;
   align-items: center;
@@ -347,20 +352,23 @@ textarea {
 .dropzone::before {
   content: '';
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 2px;
-  background: rgba(212, 163, 115, 0.9);
-  box-shadow: 0 0 15px rgba(212, 163, 115, 0.8), 0 0 30px rgba(212, 163, 115, 0.4);
-  animation: scannerSweep 2.5s ease-in-out infinite;
+  inset: -28%;
+  background: radial-gradient(circle at center, rgba(212, 163, 115, 0.2) 0%, rgba(212, 163, 115, 0.08) 40%, rgba(212, 163, 115, 0) 70%);
+  filter: blur(6px);
+  animation: dropzoneGlow 3s ease-in-out infinite;
+  pointer-events: none;
 }
 
-@keyframes scannerSweep {
-  0% { top: 0%; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+@keyframes dropzoneGlow {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
 }
 
 .notice-list {

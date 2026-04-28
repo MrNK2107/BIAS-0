@@ -107,7 +107,7 @@ export default function Dashboard() {
           <p className="helper">Comprehensive fairness assessment for your model.</p>
         </div>
         <div style={{ 
-          display: 'flex', alignItems: 'center', gap: 12, padding: '10px 24px', 
+          display: 'flex', alignItems: 'center', gap: 12, padding: '10px 24px', marginLeft: 20,
           background: config.bg, borderRadius: 100, border: `1px solid ${config.color}`
         }}>
           <DecisionIcon size={20} color={config.color} />
@@ -127,7 +127,7 @@ export default function Dashboard() {
                 cx="50" cy="50" r="44" fill="none" stroke={getScoreColor(fairness_score)} 
                 strokeWidth="6" strokeDasharray="276"
                 initial={{ strokeDashoffset: 276 }}
-                animate={{ strokeDashoffset: 276 - (fairness_score * 2.76) / 100 }}
+                animate={{ strokeDashoffset: 276 - (fairness_score * 2.76) }}
                 transition={{ duration: 1.8, ease: "circOut" }}
                 strokeLinecap="round" transform="rotate(-90 50 50)"
               />

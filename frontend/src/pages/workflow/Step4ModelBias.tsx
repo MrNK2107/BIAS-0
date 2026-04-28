@@ -14,7 +14,7 @@ export default function Step4ModelBias() {
       <div>
         <div className="page-header">
           <div>
-            <div className="kicker">Step 4 of 9</div>
+            <div className="kicker">Step 4 of 8</div>
             <h1 className="page-title">Model Bias</h1>
           </div>
         </div>
@@ -39,7 +39,7 @@ export default function Step4ModelBias() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 4 of 9</div>
+          <div className="kicker">Step 4 of 8</div>
           <h1 className="page-title">Model Bias</h1>
           <p className="page-subtitle">We evaluated the model across different groups to check for disparate impact.</p>
         </div>
