@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, ArrowLeft, AlertTriangle } from 'lucide-react';
-import { formApi } from '../../api/client';
+import { api } from '../../api/client';
 
 export default function Step5Explanations() {
   const { pipelineResults, explainResult, explainSummary, projectId, advanceStep } = useAppContext();
@@ -167,7 +167,7 @@ export default function Step5Explanations() {
                         onClick={() => {
                           const reason = window.prompt('Enter reason for flagging this decision:');
                           if (reason && projectId) {
-                            formApi.post('/monitoring/flag', {
+                            api.post('/monitoring/flag', {
                               project_id: parseInt(projectId),
                               record_id: String(item.record_id),
                               reason,

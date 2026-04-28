@@ -16,12 +16,19 @@ export default function Step3DataAudit() {
   }, [audit]);
 
   const chartData = useMemo(() => {
-    if (!audit?.group_stats?.gender) return [];
-    return Object.entries(audit.group_stats.gender).map(([group, metrics]: any) => ({
-      label: group,
-      value: Math.round((metrics.positive_rate || 0) * 100)
-    }));
+    if (!audit?.group_stats) return [];
+    // Use the first available sensitive column's stats
+    const firstKey = Object.keys(audit.group_stats)[0];
+    if (!firstKey) return [];
+    return Object.entries(audit.group_stats[firstKey]).map(
+      ([group, metrics]: [string, any]) => ({
+        label: group,
+        value: Math.round((metrics.positive_rate ?? 0) * 100)
+      })
+    );
   }, [audit]);
+
+  const underRep = audit?.under_represented_groups ?? [];
 
   if (!pipelineResults || !audit || !proxy) {
     return (
@@ -75,7 +82,7 @@ export default function Step3DataAudit() {
         <div className="card">
           <div className="section-title">Under-represented groups</div>
           <div className="notice-list">
-            {(audit.under_represented_groups || []).filter((group: string) => !dismissed.includes(group)).map((group: string) => (
+            {underRep.filter((group: string) => !dismissed.includes(group)).map((group: string) => (
               <div className="notice" key={group}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
                   <strong>{group}</strong>

@@ -76,27 +76,37 @@ export default function Step9Monitoring() {
     try { const r = await formApi.post('/monitoring/drift', fd); setDriftReport(r.data); } finally { setDriftLoading(false); }
   };
 
-  useEffect(() => {
-    if (!monitoringResult && !loading) { setLoading(true); getMonitoringData().finally(() => setLoading(false)); }
-  }, [monitoringResult, loading, getMonitoringData]);
+   useEffect(() => {
+     if (!monitoringResult && !loading) { setLoading(true); getMonitoringData().finally(() => setLoading(false)); }
+   }, [monitoringResult, loading, getMonitoringData]);
 
-  const handleSimulate = async () => { setSimulating(true); await runMonitoringSimulation(); setSimulating(false); };
+   const handleSimulate = async () => {
+     setSimulating(true);
+     await runMonitoringSimulation();
+     setSimulating(false);
+   };
 
-  const handleLiveIngestion = async () => {
-    if (!file) return;
-    const text = await file.text(); const lines = text.split(/\r?\n/).filter(l => l.trim()); const rows = lines.slice(1);
-    const chunkSize = Math.ceil(rows.length / 5);
-    for (let i = 0; i < 5; i++) {
-      const chunk = rows.slice(i * chunkSize, (i + 1) * chunkSize);
-      const predictions = chunk.map(r => {
-        const [record_id, prediction, sensitive_attrs, timestamp] = r.split(',');
-        let attrs = {}; try { attrs = JSON.parse(sensitive_attrs); } catch {}
-        return { record_id: Number(record_id), prediction: Number(prediction), sensitive_attrs: attrs, timestamp };
-      });
-      await formApi.post('/monitoring/ingest', { project_id: parseInt(projectId), predictions });
-      await getMonitoringData(); await new Promise(r => setTimeout(r, 500));
-    }
-  };
+   useEffect(() => {
+     if (monitoringResult && (!monitoringResult.events || monitoringResult.events.length === 0)) {
+       handleSimulate();
+     }
+   }, [monitoringResult]);
+
+   const handleLiveIngestion = async () => {
+     if (!file) return;
+     const text = await file.text(); const lines = text.split(/\r?\n/).filter(l => l.trim()); const rows = lines.slice(1);
+     const chunkSize = Math.ceil(rows.length / 5);
+     for (let i = 0; i < 5; i++) {
+       const chunk = rows.slice(i * chunkSize, (i + 1) * chunkSize);
+       const predictions = chunk.map(r => {
+         const [record_id, prediction, sensitive_attrs, timestamp] = r.split(',');
+         let attrs = {}; try { attrs = JSON.parse(sensitive_attrs); } catch {}
+         return { record_id: Number(record_id), prediction: Number(prediction), sensitive_attrs: attrs, timestamp };
+       });
+       await api.post('/monitoring/ingest', { project_id: parseInt(projectId), predictions });
+       await getMonitoringData(); await new Promise(r => setTimeout(r, 500));
+     }
+   };
 
   // Build timeline
   const timelineEvents = useMemo(() => {

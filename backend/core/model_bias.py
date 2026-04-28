@@ -104,6 +104,31 @@ def run_model_bias_analysis(
                 "error": "Fairlearn metric calculation failed due to insufficient subgroup samples."
             }
 
+    # Compute intersectional subgroup bias (hidden bias)
+    hidden_bias = []
+    if len(sensitive_cols) >= 2:
+        col_a, col_b = sensitive_cols[0], sensitive_cols[1]
+        if col_a in df.columns and col_b in df.columns:
+            df_test = df.loc[prepared.y_test.index].copy()
+            df_test['_combo'] = df_test[col_a].astype(str) + ' + ' + df_test[col_b].astype(str)
+            overall_rate = float(y_pred.mean())
+            for combo, group_df in df_test.groupby('_combo'):
+                idx = group_df.index
+                if len(idx) < 20:
+                    continue
+                group_rate = float(y_pred.loc[idx].mean())
+                diff = group_rate - overall_rate
+                parts = str(combo).split(' + ')
+                hidden_bias.append({
+                    "id": str(combo),
+                    "definition": str(combo),
+                    "attributes": {col_a: parts[0], col_b: parts[1] if len(parts) > 1 else ''},
+                    "metricDifference": f"{diff:+.0%}",
+                    "metricValue": round(diff, 4),
+                    "sampleSize": len(idx),
+                    "metricName": "Approval Rate"
+                })
+
     return {
         "overall_accuracy": round(overall_accuracy, 4),
         "fairness_score": round(fairness_score),
@@ -112,4 +137,5 @@ def run_model_bias_analysis(
         "group_performance": group_performance,
         "fairlearn_metrics": fairlearn_metrics,
         "model_used": model_used,
+        "hidden_bias": sorted(hidden_bias, key=lambda x: abs(x["metricValue"]), reverse=True)[:10]
     }

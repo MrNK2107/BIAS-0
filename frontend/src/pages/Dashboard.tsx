@@ -22,61 +22,65 @@ export default function Dashboard() {
     }
   }, [projectId, pipelineResults]);
 
-  if (!pipelineResults) {
-    return (
-      <div className="fade-in" style={{ maxWidth: 1000, margin: '0 auto', paddingTop: 60 }}>
-        <div style={{ textAlign: 'center', marginBottom: 60 }}>
-          <div className="kicker" style={{ marginBottom: 16 }}>Intelligence Workspace</div>
-          <h1 className="page-title" style={{ fontSize: '3.5rem', marginBottom: 20 }}>Forensic AI Hub</h1>
-          <p className="helper" style={{ maxWidth: 600, margin: '0 auto', fontSize: '1.1rem', lineHeight: 1.6 }}>
-            {projectId ? 'Your project is ready. Upload a dataset to start the audit sequence.' : 'Select or create a project from the top menu to begin your forensic audit.'}
-          </p>
-          
-          <div style={{ marginTop: 40, display: 'flex', justifyContent: 'center', gap: 16 }}>
-            {projectId ? (
-              <button className="btn btn-primary" style={{ padding: '14px 40px', fontSize: '1rem' }} onClick={() => navigate('/workflow/step-1')}>
-                Start Audit Sequence
-              </button>
-            ) : (
-              <button className="btn btn-primary" style={{ padding: '14px 40px', fontSize: '1rem', opacity: 0.5, cursor: 'not-allowed' }}>
-                Select Project Above
-              </button>
-            )}
-            <button className="btn" style={{ padding: '14px 30px' }} onClick={() => window.open('https://github.com', '_blank')}>
-              View Documentation
-            </button>
-          </div>
-        </div>
-        
-        <div className="grid-3" style={{ opacity: 0.8 }}>
-           <div className="card" style={{ padding: 32, textAlign: 'left' }}>
-              <div className="workflow-brand-badge" style={{ marginBottom: 20, width: 48, height: 48 }}><Search size={24} /></div>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: 12 }}>Bias Discovery</h3>
-              <p className="helper" style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>Scan datasets for representation gaps and latent proxy variables that distort decision logic.</p>
+   if (!pipelineResults) {
+     return (
+       <div className="fade-in" style={{ maxWidth: 1000, margin: '0 auto', paddingTop: 60 }}>
+         <div style={{ textAlign: 'center', marginBottom: 60 }}>
+           <div className="kicker" style={{ marginBottom: 16 }}>Intelligence Workspace</div>
+           <h1 className="page-title" style={{ fontSize: '3.5rem', marginBottom: 20 }}>Forensic AI Hub</h1>
+           <p className="helper" style={{ maxWidth: 600, margin: '0 auto', fontSize: '1.1rem', lineHeight: 1.6 }}>
+             {projectId ? 'Your project is ready. Upload a dataset to start the audit sequence.' : 'Select or create a project from the top menu to begin your forensic audit.'}
+           </p>
+           
+           <div style={{ marginTop: 40, display: 'flex', justifyContent: 'center', gap: 16 }}>
+             {projectId ? (
+               <button className="btn btn-primary" style={{ padding: '14px 40px', fontSize: '1rem' }} onClick={() => navigate('/workflow/step-1')}>
+                 Start Audit Sequence
+               </button>
+             ) : (
+               <button className="btn btn-primary" style={{ padding: '14px 40px', fontSize: '1rem', opacity: 0.5, cursor: 'not-allowed' }}>
+                 Select Project Above
+               </button>
+             )}
+             <button className="btn" style={{ padding: '14px 30px' }} onClick={() => window.open('https://github.com', '_blank')}>
+               View Documentation
+             </button>
            </div>
-           <div className="card" style={{ padding: 32, textAlign: 'left' }}>
-              <div className="workflow-brand-badge" style={{ marginBottom: 20, width: 48, height: 48, background: 'rgba(185, 140, 98, 0.1)', color: 'var(--yellow)', borderColor: 'rgba(185, 140, 98, 0.2)' }}><Zap size={24} /></div>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: 12 }}>Contrastive Analysis</h3>
-              <p className="helper" style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>Apply counterfactual tests to verify individual fairness by flipping sensitive attributes in real-time.</p>
-           </div>
-           <div className="card" style={{ padding: 32, textAlign: 'left' }}>
-              <div className="workflow-brand-badge" style={{ marginBottom: 20, width: 48, height: 48, background: 'rgba(34, 197, 94, 0.1)', color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.2)' }}><Activity size={24} /></div>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: 12 }}>Live Guardianship</h3>
-              <p className="helper" style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>Monitor production streams for drift and degradation, ensuring your model remains ethical at scale.</p>
-           </div>
-        </div>
-      </div>
-    );
-  }
+         </div>
+         
+         <div className="grid-3" style={{ opacity: 0.8 }}>
+            <div className="card" style={{ padding: 32, textAlign: 'left' }}>
+               <div className="workflow-brand-badge" style={{ marginBottom: 20, width: 48, height: 48 }}><Search size={24} /></div>
+               <h3 style={{ fontSize: '1.1rem', marginBottom: 12 }}>Bias Discovery</h3>
+               <p className="helper" style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>Scan datasets for representation gaps and latent proxy variables that distort decision logic.</p>
+            </div>
+            <div className="card" style={{ padding: 32, textAlign: 'left' }}>
+               <div className="workflow-brand-badge" style={{ marginBottom: 20, width: 48, height: 48, background: 'rgba(185, 140, 98, 0.1)', color: 'var(--yellow)', borderColor: 'rgba(185, 140, 98, 0.2)' }}><Zap size={24} /></div>
+               <h3 style={{ fontSize: '1.1rem', marginBottom: 12 }}>Contrastive Analysis</h3>
+               <p className="helper" style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>Apply counterfactual tests to verify individual fairness by flipping sensitive attributes in real-time.</p>
+            </div>
+            <div className="card" style={{ padding: 32, textAlign: 'left' }}>
+               <div className="workflow-brand-badge" style={{ marginBottom: 20, width: 48, height: 48, background: 'rgba(34, 197, 94, 0.1)', color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.2)' }}><Activity size={24} /></div>
+               <h3 style={{ fontSize: '1.1rem', marginBottom: 12 }}>Live Guardianship</h3>
+               <p className="helper" style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>Monitor production streams for drift and degradation, ensuring your model remains ethical at scale.</p>
+            </div>
+         </div>
+       </div>
+     );
+   }
 
-  const { scores, fairness_score, decision, recommendations } = pipelineResults;
+  if (!pipelineResults?.scores) return null; // inside the results branch
 
+  const scores = pipelineResults.scores ?? {};
+  const fairness_score = pipelineResults.fairness_score ?? 0;
+  const decision = pipelineResults.decision ?? 'UNKNOWN';
+  const recommendations = pipelineResults.recommendations ?? [];
   const chartData = [
-    { name: 'Data', score: scores.data_bias_score },
-    { name: 'Model', score: scores.model_bias_score },
-    { name: 'Proxy', score: scores.proxy_risk_score },
-    { name: 'Contrast', score: scores.counterfactual_score },
-    { name: 'Stress', score: scores.stress_test_score },
+    { name: 'Data',     score: scores.data_bias_score     ?? 0 },
+    { name: 'Model',    score: scores.model_bias_score    ?? 0 },
+    { name: 'Proxy',    score: scores.proxy_risk_score    ?? 0 },
+    { name: 'Contrast', score: scores.counterfactual_score ?? 0 },
+    { name: 'Stress',   score: scores.stress_test_score   ?? 0 },
   ];
 
   const getScoreColor = (score: number) => {

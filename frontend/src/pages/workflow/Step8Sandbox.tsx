@@ -9,6 +9,7 @@ export default function Step8Sandbox() {
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [scenarioLoading, setScenarioLoading] = useState(false);
+  const [simulateError, setSimulateError] = useState<string | null>(null);
   const navigate = useNavigate();
 
 
@@ -17,7 +18,7 @@ export default function Step8Sandbox() {
     if (recommendResult && selected.length === 0) {
       const initialSelected = recommendResult.slice(0, 2).map((r: any) => r.fix_id);
       setSelected(initialSelected);
-      
+
       // Initialize option selections for fixes with mitigation options
       const initialOptions: Record<string, string> = {};
       recommendResult.forEach((r: any) => {
@@ -31,10 +32,12 @@ export default function Step8Sandbox() {
 
   const handleSimulate = async (fixesToRun?: string[]) => {
     setScenarioLoading(true);
+    setSimulateError(null);
     try {
       await runSandboxSimulation(fixesToRun || selected);
-    } catch (e) {
-      console.error('Simulation failed', e);
+    } catch (e: any) {
+      const message = e?.response?.data?.detail || e?.message || 'Simulation failed';
+      setSimulateError(message);
     } finally {
       setScenarioLoading(false);
     }
@@ -79,7 +82,7 @@ export default function Step8Sandbox() {
           {fixes.map(fix => {
             const isApplied = selected.includes(fix.fix_id);
             const rationale = fix.mitigation_options?.[0]?.rationale || 'Addresses identified bias patterns directly.';
-            
+
             return (
               <div className="card" key={fix.fix_id} style={{ display: 'flex', flexDirection: 'column', height: '100%', border: isApplied ? '0.5px solid rgba(212,163,115,0.72)' : '0.5px solid var(--border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -88,7 +91,7 @@ export default function Step8Sandbox() {
                   </div>
                   {isApplied && <span className="pill green">Active</span>}
                 </div>
-                
+
                 <div style={{ marginBottom: 12, fontSize: '0.95rem' }}>
                   <strong style={{ color: 'var(--text-secondary)' }}>What to do:</strong>
                   <div style={{ color: 'var(--text-primary)', marginTop: 4 }}>{fix.description}</div>
@@ -104,7 +107,7 @@ export default function Step8Sandbox() {
                   <div style={{ color: 'var(--accent)', marginTop: 4, fontWeight: 500 }}>{fix.estimated_impact}</div>
                 </div>
 
-                <button 
+                <button
                   className={`btn ${isApplied ? 'btn-secondary' : 'btn-primary'}`}
                   style={{ width: '100%', justifyContent: 'center' }}
                   onClick={() => {
@@ -148,11 +151,21 @@ export default function Step8Sandbox() {
         {recommendResult.length === 0 && <span className="helper">No fixes recommended based on the current results.</span>}
       </div>
 
-      {sandboxResult && (
+      {sandboxResult && sandboxResult.scenarios && (
         <div className="card fade-in" style={{ marginBottom: 24 }}>
           <div className="section-title">Sandbox Comparison Results</div>
-          <p className="helper" style={{ marginBottom: 16 }}>Review how your applied fixes impacted fairness metrics vs. overall accuracy.</p>
-          <SandboxComparison scenarios={sandboxResult} />
+          <SandboxComparison scenarios={sandboxResult.scenarios} />
+          {sandboxResult.recommendation && (
+            <p className="helper" style={{ marginTop: 12 }}>
+              {sandboxResult.recommendation}
+            </p>
+          )}
+        </div>
+      )}
+
+      {simulateError && (
+        <div className="card" style={{ marginBottom: 24, borderColor: 'var(--red)', borderWidth: '1px', borderStyle: 'solid' }}>
+          <p style={{ color: 'var(--red)' }}>Simulation error: {simulateError}</p>
         </div>
       )}
 

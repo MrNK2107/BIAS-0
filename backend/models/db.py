@@ -28,7 +28,8 @@ class Project(Base):
     domain: Mapped[str] = mapped_column(String(80), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     sensitive_columns: Mapped[list[str]] = mapped_column(JSON, default=list)
-    target_column: Mapped[str] = mapped_column(String(255), nullable=False)
+    target_column: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
     dataset_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
     model_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
     max_step: Mapped[int] = mapped_column(Integer, default=1, nullable=False)

@@ -233,7 +233,27 @@ def get_monitoring_logs(project_id: int, limit: int = 10, db: Session = Depends(
             "prediction_drift_score": log.prediction_drift_score,
             "key_metrics": log.key_metrics,
         }
+        for log in logs
     ]
+
+
+@router.post("/drift")
+async def detect_drift(
+    baseline_file: UploadFile = File(...),
+    current_file: UploadFile = File(...),
+    sensitive_cols: str = Form(...),
+    target_col: str = Form(...),
+):
+    from core.monitoring import detect_data_drift
+    import pandas as pd
+    import io
+
+    baseline_bytes = await baseline_file.read()
+    current_bytes = await current_file.read()
+    baseline_df = pd.read_csv(io.BytesIO(baseline_bytes))
+    current_df = pd.read_csv(io.BytesIO(current_bytes))
+    sensitive_list = [s.strip() for s in sensitive_cols.split(",") if s.strip()]
+    return detect_data_drift(baseline_df, current_df, sensitive_list, target_col)
 
 @router.get("/project/{project_id}/trend")
 def get_project_trend(project_id: int, limit: int = 10, db: Session = Depends(get_db)) -> dict[str, Any]:

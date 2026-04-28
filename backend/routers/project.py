@@ -20,9 +20,10 @@ async def create_project(
     name: str = Form(...),
     domain: str = Form(default="general"),
     sensitive_cols: Optional[str] = Form(None),
-    target_col: Optional[str] = Form(None),
+    target_col: str = Form(default=""),
     db: Session = Depends(get_db),
 ) -> dict[str, Any]:
+
     sensitive_list = [col.strip() for col in (sensitive_cols or "").split(",") if col.strip()]
     project = Project(
         name=name,

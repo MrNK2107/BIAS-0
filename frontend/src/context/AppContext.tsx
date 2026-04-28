@@ -97,6 +97,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ── Unified pipeline ────────────────────────────────────────────────────────
   const runFullAnalysis = async () => {
     if (!file) return;
+    
+    // Set analyzing state IMMEDIATELY before any async work
     setIsAnalyzing(true);
     setAnalyzeError(null);
 
@@ -105,15 +107,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
       fd.append('file', file);
       fd.append('sensitive_cols', sensitiveCols.join(','));
       fd.append('target_col', targetCol);
-      fd.append('project_id', projectId || '');
+      fd.append('project_id', projectId ?? '0');
       fd.append('metric_priority', metricPriority);
       fd.append('domain', domain);
 
-      // Kick off background task — immediately returns { task_id, status }
-      const kickoff = await formApi.post('/pipeline/run-all', fd, { timeout: 15000 });
+      // Kick off background task — increased timeout to 60s
+      const kickoff = await formApi.post('/pipeline/run-all', fd, { timeout: 60000 });
       const { task_id } = kickoff.data as { task_id: string; status: string };
 
       localStorage.setItem('active_analysis_task', task_id);
+      
+      // Wait 1s for backend to initialize before first poll
+      await new Promise(r => setTimeout(r, 1000));
       const data = await pollTaskStatus(task_id);
 
       setResultsFromPipeline(data);
@@ -121,10 +126,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('active_analysis_task');
 
     } catch (err: any) {
-      const isTimeout = err?.code === 'ECONNABORTED';
+      console.error('Analysis pipeline error:', err);
+      const isTimeout = err?.code === 'ECONNABORTED' || err?.message?.includes('timeout');
       const isNetworkIssue = err?.message?.includes('Network Error');
       const message = isTimeout
-        ? 'Could not reach the backend to start analysis. Please make sure the server is running.'
+        ? 'Analysis timed out. The server is taking longer than expected to finalize results. Please check the terminal logs or try again.'
         : isNetworkIssue
           ? 'Cannot reach backend API. Please make sure the backend server is running.'
           : err?.response?.data?.detail || err?.message || 'Analysis failed. Please try again.';
@@ -135,11 +141,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const pollTaskStatus = async (task_id: string) => {
-    return new Promise<any>((resolve, reject) => {
+  const pollTaskStatus = async (task_id: string): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      const startTime = Date.now();
       const interval = setInterval(async () => {
+        // 5 minute overall timeout for the whole analysis
+        if (Date.now() - startTime > 300_000) {
+          clearInterval(interval);
+          reject(new Error('Analysis timed out after 5 minutes'));
+          return;
+        }
         try {
-          const poll = await api.get(`/pipeline/status/${task_id}`, { timeout: 10000 });
+          // Individual poll timeout increased to 60s
+          const poll = await api.get(`/pipeline/status/${task_id}`, { timeout: 60000 });
           const { status, result, error } = poll.data;
           if (status === 'complete') {
             clearInterval(interval);
@@ -148,13 +162,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
             clearInterval(interval);
             reject(new Error(error || 'Pipeline failed'));
           }
-        } catch (pollErr) {
-          clearInterval(interval);
-          reject(pollErr);
+        } catch (pollErr: any) {
+          if (pollErr?.code === 'ECONNABORTED' || pollErr?.message?.includes('timeout')) {
+            clearInterval(interval);
+            reject(new Error('Connection timed out while waiting for results. The server may be busy finalizing data.'));
+          }
         }
-      }, 2000);
+      }, 3000);
     });
   };
+
+
 
   // 4. Resume active task on reload
   React.useEffect(() => {
@@ -177,18 +195,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [projectId]);
 
   const setResultsFromPipeline = (data: any) => {
-    // Check if it's the wrapper or the direct result
-    const result = data.details || data;
-    setAuditResult(result.data_audit);
-    setProxyResult(result.proxy);
-    setBiasResult(result.model_bias);
-    setExplainResult(result.explanations);
-    setExplainSummary(result.explain_summary);
-    setCounterfactualResult(result.counterfactual);
-    setStressResult(result.stress);
-    setRecommendResult(result.recommendations);
+    // Handle both direct pipeline result and the wrapped /result/{id} response
+    const result = data?.details ?? data?.result ?? data;
+    if (!result) return;
+    
+    // Clear any previous analysis errors when results are successfully set
+    setAnalyzeError(null);
+    setIsAnalyzing(false);
+
+    setAuditResult(result.data_audit ?? null);
+    setProxyResult(result.proxy ?? null);
+    setBiasResult(result.model_bias ?? null);
+    setExplainResult(result.explanations ?? null);
+    setExplainSummary(result.explain_summary ?? null);
+    setCounterfactualResult(result.counterfactual ?? null);
+    setStressResult(result.stress ?? null);
+    setRecommendResult(result.recommendations ?? null);
     setPipelineResults(result);
   };
+
 
   // ── Legacy helpers (kept for interactive steps) ─────────────────────────────
   const getFormData = () => {
@@ -272,16 +297,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const res = await api.get(`/monitoring/${projectId}`);
     setMonitoringResult(res.data);
   };
-  
+
   const refreshProjects = async () => {
     try {
       const res = await api.get('/project/list');
       setProjects(res.data);
-    } catch {}
+    } catch { }
   };
-  
+
   const advanceStep = async (step: number) => {
     if (!projectId) return;
+    localStorage.setItem(`max_step_${projectId}`, String(
+      Math.max(step, parseInt(localStorage.getItem(`max_step_${projectId}`) ?? '1', 10))
+    ));
     try {
       const fd = new FormData();
       fd.append('step', step.toString());
@@ -293,7 +321,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   // ── Persistence & Hydration ────────────────────────────────────────────────
-  
+
   // 1. Initial hydration from localStorage
   React.useEffect(() => {
     const savedId = localStorage.getItem('active_project_id');
@@ -319,8 +347,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
             setResultsFromPipeline(res.data.result);
           }
         })
-        .catch(() => {});
-        
+        .catch(() => { });
+
       // Ensure we have project info to find max_step
       if (projects.length > 0) {
         const p = projects.find(proj => String(proj.id) === String(projectId));
@@ -330,9 +358,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     }
   }, [projectId, projects.length]);
-  
-  const currentProject = projects.find(p => p.id?.toString() === projectId?.toString());
-  const maxStep = currentProject?.max_step || 1;
+
+  const currentProject = projects.find(
+    p => p.id?.toString() === projectId?.toString()
+  );
+  const maxStep = currentProject?.max_step
+    ?? parseInt(localStorage.getItem(`max_step_${projectId}`) ?? '1', 10);
 
   React.useEffect(() => { refreshProjects(); }, []);
 

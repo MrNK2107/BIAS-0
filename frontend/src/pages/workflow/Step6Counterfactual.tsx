@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import CounterfactualFlip from '../../components/CounterfactualFlip';
 import ScoreGauge from '../../components/ScoreGauge';
 import { useAppContext } from '../../context/AppContext';
-import { formApi } from '../../api/client';
+import { api } from '../../api/client';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Step6Counterfactual() {
@@ -128,7 +128,7 @@ export default function Step6Counterfactual() {
                         <button className="btn btn-small" onClick={() => {
                           const reason = window.prompt('Enter reason for flagging this decision:');
                           if (reason && projectId) {
-                            formApi.post('/monitoring/flag', {
+                            api.post('/monitoring/flag', {
                               project_id: parseInt(projectId),
                               record_id: String(flip.record_id),
                               reason,

@@ -64,7 +64,8 @@ export default function WorkflowShell({ children }: { children: React.ReactNode 
           {STEPS.map((step) => {
             const Icon = step.icon;
             const isActive = location.pathname.includes(step.to);
-            const isLocked = step.id > maxStep;
+            const isLocked = step.id > maxStep && step.id > 2;
+            // Allow step 1 and 2 always; lock rest until unlocked
 
             return (
               <Link

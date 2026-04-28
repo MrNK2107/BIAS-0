@@ -48,23 +48,36 @@ def _get_shap_values(model, X_background: pd.DataFrame, X_explain: pd.DataFrame)
     try:
         import shap  # type: ignore
 
+        # Separate the preprocessor from the final estimator so that
+        # predict_fn receives pre-transformed numpy arrays (what KernelExplainer
+        # passes) instead of raw DataFrames with named columns.
+        has_preprocessor = hasattr(model, "named_steps") and "preprocessor" in model.named_steps
+        model_step = (
+            model.named_steps.get("model", model)
+            if hasattr(model, "named_steps")
+            else model
+        )
+
         X_bg_np = (
             model.named_steps["preprocessor"].transform(X_background)
-            if hasattr(model, "named_steps") and "preprocessor" in model.named_steps
+            if has_preprocessor
             else X_background.to_numpy()
         )
         X_ex_np = (
             model.named_steps["preprocessor"].transform(X_explain)
-            if hasattr(model, "named_steps") and "preprocessor" in model.named_steps
+            if has_preprocessor
             else X_explain.to_numpy()
         )
-        # Use a small background sample for speed
-        bg_sample = shap.sample(X_bg_np, min(50, len(X_bg_np)))
 
+        # Ensure at least 1 background sample (guard for tiny datasets)
+        n_bg = max(1, min(50, len(X_bg_np)))
+        bg_sample = shap.sample(X_bg_np, n_bg)
+
+        # predict_fn works on pre-transformed numpy arrays → use model_step only
         def predict_fn(data: np.ndarray) -> np.ndarray:
-            if hasattr(model, "predict_proba"):
-                return model.predict_proba(data)[:, 1]
-            return model.predict(data).astype(float)
+            if hasattr(model_step, "predict_proba"):
+                return model_step.predict_proba(data)[:, 1]
+            return model_step.predict(data).astype(float)
 
         explainer = shap.KernelExplainer(predict_fn, bg_sample)
         return explainer.shap_values(X_ex_np, nsamples=100)

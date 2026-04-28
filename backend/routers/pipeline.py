@@ -6,7 +6,7 @@ GET  /pipeline/status/{task_id} → returns { status, result? }
 from __future__ import annotations
 
 import uuid
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -56,7 +56,7 @@ def _run_pipeline(
     filename: str,
     sensitive_list: list[str],
     target_col: str,
-    project_id: int,
+    project_id: int | str,
     metric_weights: dict[str, float],
     model_bytes: bytes | None,
     domain: str,
@@ -71,9 +71,29 @@ def _run_pipeline(
     db: Session = SessionLocal()
 
     try:
+        print(f"DEBUG: Starting pipeline for task {task_id}")
+        if not project_id or str(project_id) in ("", "null", "undefined", "None"):
+            print("DEBUG: No project ID provided, creating auto project")
+            # ... (omitted for brevity in replacement, but I will include it)
+            project = Project(
+                name="Auto Project",
+                domain=domain,
+                sensitive_columns=sensitive_list,
+                target_column=target_col,
+            )
+            db.add(project)
+            db.commit()
+            db.refresh(project)
+            project_id = project.id
+        else:
+            project_id = int(project_id)
+
+        print(f"DEBUG: Project ID set to {project_id}")
         df = pd.read_csv(io.BytesIO(df_bytes))
+        print(f"DEBUG: CSV loaded, shape: {df.shape}")
 
         # ── Build / load model ────────────────────────────────────────────────
+        print("DEBUG: Stage 0: Building/Loading model...")
         prepared = prepare_split(df, target_col)
         if model_bytes:
             shared_model = load_model_from_bytes(model_bytes)
@@ -82,14 +102,18 @@ def _run_pipeline(
             shared_model = build_classifier(prepared.X_train, model_type="rf")
             shared_model.fit(prepared.X_train, prepared.y_train)
             model_used = "built_in_rf"
+        print(f"DEBUG: Model ready (using {model_used})")
 
         # ── Stage 1: Data Audit ───────────────────────────────────────────────
+        print("DEBUG: Stage 1: Running Data Audit...")
         data_audit = run_data_audit(df, sensitive_list, target_col)
 
         # ── Stage 2: Proxy Detection ──────────────────────────────────────────
+        print("DEBUG: Stage 2: Running Proxy Detection...")
         proxy = detect_proxy_features(df, sensitive_list)
 
         # ── Stage 3: Model Bias ───────────────────────────────────────────────
+        print("DEBUG: Stage 3: Running Model Bias Analysis...")
         model_bias = run_model_bias_analysis(
             df, sensitive_list, target_col,
             model=shared_model,
@@ -97,14 +121,17 @@ def _run_pipeline(
         )
 
         # ── Stage 4: Explainability (SHAP / contrastive) ─────────────────────
+        print("DEBUG: Stage 4: Running Explainability Analysis (SHAP)...")
         explanations = explain_flagged_decisions(
             df, shared_model, sensitive_list, target_col, n_samples=5
         )
 
         # ── Stage 5: Narrative Summary ────────────────────────────────────────
+        print("DEBUG: Stage 5: Generating Narrative Summary...")
         explain_summary = generate_narrative_summary(explanations, sensitive_list, domain=domain)
 
         # ── Stage 6: Counterfactual (first sensitive col) ─────────────────────
+        print("DEBUG: Stage 6: Running Counterfactual Analysis...")
         primary_sensitive_col = sensitive_list[0] if sensitive_list else target_col
         counterfactual = run_counterfactual_test(
             df, shared_model, primary_sensitive_col, target_col,
@@ -112,9 +139,11 @@ def _run_pipeline(
         )
 
         # ── Stage 7: Stress Tests ─────────────────────────────────────────────
+        print("DEBUG: Stage 7: Running Stress Tests...")
         stress = run_stress_tests(df, shared_model, sensitive_list, target_col)
 
         # ── Scores & Decision Calculation ─────────────────────────────────────
+        print("DEBUG: Calculating unified scores...")
         data_bias_score = round(100 * (1 - data_audit.get("max_gap", 0.0)))
         model_bias_score = round(model_bias.get("fairness_score", 0.0))
         proxy_risk_score = round(100 * (1 - proxy.get("proxy_score", 0.0)))
@@ -142,6 +171,7 @@ def _run_pipeline(
             decision = "LOW RISK"
 
         # ── Stage 8: Fix Recommendations ──────────────────────────────────────
+        print("DEBUG: Stage 8: Generating Fix Recommendations...")
         recommendations = generate_fix_recommendations(
             data_audit, 
             proxy, 
@@ -176,6 +206,11 @@ def _run_pipeline(
         }
 
         # ── Persist to DB ──────────────────────────────────────────────────────
+        print(f"DEBUG: Finalizing Results for task {task_id}...")
+        import time
+        time.sleep(0.1)  # Brief sleep to yield GIL before heavy DB ops
+
+        print("DEBUG: Consolidation Phase: Creating audit_run record...")
         risk_level = data_audit.get("risk_level", "Yellow")
         audit_run = AuditRun(
             project_id=project_id,
@@ -183,17 +218,17 @@ def _run_pipeline(
             accuracy=float(model_bias.get("overall_accuracy", 0.0)),
             risk_level=risk_level,
             decision=decision,
-            results_json=result,  # old field
-            full_result_json=result,  # new field
+            results_json={},  # Clear old field to save space/time
+            full_result_json=result,
             task_id=task_id,
         )
         db.add(audit_run)
 
-        # Create Monitoring Log entry for time-series tracking
+        print("DEBUG: Consolidation Phase: Creating monitoring_log record...")
         log_entry = MonitoringLog(
             project_id=project_id,
             fairness_score=float(unified_fairness_score),
-            data_drift_score=0.0, # Will be updated if drift detection is run
+            data_drift_score=0.0,
             prediction_drift_score=0.0,
             key_metrics={
                 "accuracy": float(model_bias.get("overall_accuracy", 0.0)),
@@ -204,7 +239,7 @@ def _run_pipeline(
         )
         db.add(log_entry)
         
-        # Trigger Alerts based on scores and historical trends
+        print("DEBUG: Consolidation Phase: Checking for alerts...")
         if unified_fairness_score < 50:
             db.add(Alert(
                 project_id=project_id,
@@ -213,6 +248,7 @@ def _run_pipeline(
                 severity="HIGH"
             ))
 
+        print("DEBUG: Consolidation Phase: Querying historical trends...")
         last_log = db.query(MonitoringLog).filter(MonitoringLog.project_id == project_id).order_by(MonitoringLog.timestamp.desc()).first()
         if last_log and last_log.fairness_score > 0:
             drop_pct = (last_log.fairness_score - unified_fairness_score) / last_log.fairness_score
@@ -237,12 +273,20 @@ def _run_pipeline(
                     severity="MEDIUM"
                 ))
 
+        print("DEBUG: Consolidation Phase: Committing to database...")
         db.commit()
+        print("DEBUG: Database commit successful.")
 
         _task_store[task_id] = {"status": "complete", "result": result}
+        print(f"DEBUG: Task {task_id} complete and results available.")
+
 
     except Exception as exc:
+        import traceback
+        print(f"ERROR in pipeline task {task_id}:")
+        traceback.print_exc()
         _task_store[task_id] = {"status": "error", "error": str(exc)}
+
     finally:
         db.close()
 
@@ -253,19 +297,27 @@ async def run_all(
     file: UploadFile = File(...),
     sensitive_cols: str = Form(...),
     target_col: str = Form(...),
-    project_id: int = Form(...),
+    # Accept any string so "null"/"undefined" from the frontend don't 422
+    project_id: str = Form(default=""),
     metric_priority: str = Form(default="balanced"),
     domain: str = Form(default="general"),
-    model_file: Optional[UploadFile] = File(default=None),
+    model_file: UploadFile | None = None,
 ) -> dict[str, str]:
     """
     Accepts the CSV and optional model file, immediately returns a task_id.
     The heavy computation runs in a background thread.
     """
     df_bytes = await file.read()
+
+    # ── Safe model_file read ──────────────────────────────────────────────────
     model_bytes: bytes | None = None
-    if model_file is not None and model_file.filename:
-        model_bytes = await model_file.read()
+    if model_file is not None:
+        try:
+            model_bytes = await model_file.read()
+            if not model_bytes:
+                model_bytes = None
+        except Exception:
+            model_bytes = None
 
     sensitive_list = [col.strip() for col in sensitive_cols.split(",") if col.strip()]
     metric_weights = _get_metric_weights(metric_priority)

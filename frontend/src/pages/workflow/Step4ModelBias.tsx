@@ -57,14 +57,16 @@ export default function Step4ModelBias() {
         counterfactualResult={counterfactualResult}
       />
 
-      {displayGroupKey && (
-        <div className="card" style={{ marginBottom: 16 }}>
-          <div className="section-title">Group performance ({displayGroupKey})</div>
-          <FairnessTable data={biasResult.group_performance[displayGroupKey]} />
-        </div>
-      )}
+       {displayGroupKey && (
+         <div className="card" style={{ marginBottom: 16 }}>
+           <div className="section-title">Group performance ({displayGroupKey})</div>
+           <FairnessTable data={biasResult.group_performance[displayGroupKey]} />
+         </div>
+       )}
 
-      <HiddenBiasExplorer subgroups={biasResult.hidden_bias} />
+       {biasResult?.hidden_bias && biasResult.hidden_bias.length > 0 && (
+         <HiddenBiasExplorer subgroups={biasResult.hidden_bias} />
+       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>
         <button className="btn" onClick={() => navigate('/workflow/step-3')}>

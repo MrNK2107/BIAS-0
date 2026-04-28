@@ -146,21 +146,40 @@ export default function Step2Config() {
 
   const handleStartAnalysis = async () => {
     setLocalError(null);
-    try {
-      // 1. Persist config to backend project record
-      const fd = new FormData();
-      fd.append('sensitive_cols', sensitiveCols.join(','));
-      fd.append('target_col', targetCol);
-      await formApi.patch(`/project/${projectId}/config`, fd);
+    if (!file) {
+      setLocalError('Please upload a CSV file first.');
+      return;
+    }
+    if (!projectId) {
+      setLocalError('Please select or create a project from the top menu first.');
+      return;
+    }
 
-      // 2. Run analysis
+    try {
+      // Persist config — catch 404 gracefully
+      try {
+        const fd = new FormData();
+        fd.append('sensitive_cols', sensitiveCols.join(','));
+        fd.append('target_col', targetCol);
+        await formApi.patch(`/project/${projectId}/config`, fd);
+      } catch (configErr) {
+        console.warn('Could not persist config, continuing anyway:', configErr);
+      }
+
+      // runFullAnalysis handles its own isAnalyzing state internally
       await runFullAnalysis();
       navigate('/workflow/step-3');
-    } catch {
-      // analyzeError is already set in context; keep local error in sync
-      setLocalError(analyzeError);
+    } catch (err: any) {
+      // If runFullAnalysis fails, it sets analyzeError in context.
+      // We also set localError here to ensure the UI switches to the error state.
+      const msg = analyzeError
+        ?? err?.response?.data?.detail
+        ?? err?.message
+        ?? 'Analysis failed. Please check the backend is running.';
+      setLocalError(msg);
     }
   };
+
 
   // Show full-page loading/error overlay while analysis is running
   if (isAnalyzing || (analyzeError && !localError)) {
