@@ -90,7 +90,7 @@ npm run dev
 ```
 
 ### 3. Demo Mode
-Don't have a dataset? Use the **"Load Demo Project"** button on the Upload page to instantly explore the platform using a synthetic loan application dataset with pre-baked bias patterns.
+Don't have a dataset and still want to see what it can do? Use the **"Load Demo Project"** button on the Upload page to instantly explore the platform using a synthetic loan application dataset with pre-baked bias patterns.
 
 ---
 
