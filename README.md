@@ -3,7 +3,7 @@
 **Audit. Analyze. Mitigate. Monitor.**
 
 BIAS-0 is an end-to-end fairness assurance platform that enables AI engineers to detect, interpret, and mitigate bias in machine learning pipelines.
-
+---
 # 🧭 End-to-End Workflow (Visual Walkthrough)
 
 ---
