@@ -39,8 +39,8 @@ export default function WorkflowShell({ children }: { children: React.ReactNode 
   return (
     <div className="workflow-shell">
       <aside className="workflow-rail" aria-label="Workflow navigation">
-        <Link to="/" className="workflow-rail-brand" aria-label="Unbiased AI home">
-          ◈
+        <Link to="/" className="workflow-rail-brand" aria-label="BIAS LAB home">
+          <img src="/logo.png" alt="Logo" style={{ width: '24px', height: '24px' }} />
         </Link>
 
         <div className="workflow-rail-line" />

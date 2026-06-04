@@ -11,9 +11,9 @@ export default function Navbar({ items, activePath }: { items: NavItem[]; active
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-badge">◈</div>
+        <img src="/logo.png" alt="BIAS LAB Logo" className="brand-logo-img" style={{ width: '32px', height: '32px', marginRight: '10px' }} />
         <div>
-          <strong>Unbiased AI</strong>
+          <strong>BIAS LAB</strong>
           <span>FAIRNESS SUITE</span>
         </div>
       </div>

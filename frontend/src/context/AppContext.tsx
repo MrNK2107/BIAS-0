@@ -301,7 +301,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const refreshProjects = async () => {
     try {
       const res = await api.get('/project/list');
-      setProjects(res.data);
+      const data = res.data;
+      setProjects(Array.isArray(data) ? data : []);
     } catch { }
   };
 

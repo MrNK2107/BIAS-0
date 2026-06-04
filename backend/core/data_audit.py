@@ -82,7 +82,7 @@ def run_data_audit(df: pd.DataFrame, sensitive_cols: list[str], target_col: str)
         if sensitive not in df.columns or target_col not in df.columns:
             continue
         try:
-            numeric_target = pd.to_numeric(df[target_col], errors="coerce")
+            pd.to_numeric(df[target_col], errors="coerce")
             rates = df.groupby(sensitive)[target_col].apply(
                 lambda s: float(pd.to_numeric(s, errors="coerce").mean())
             ).dropna()

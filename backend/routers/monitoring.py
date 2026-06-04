@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta
 from typing import Any
 
 from fastapi import APIRouter, Depends, UploadFile, File, Form
@@ -12,7 +11,7 @@ from models.db import MonitoringEvent, Project, FairnessFlag, MonitoringLog, Ale
 from fastapi import HTTPException
 import json
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any
+from typing import List, Dict
 
 class IngestPrediction(BaseModel):
     record_id: int
@@ -107,7 +106,7 @@ async def simulate_monitoring_data(
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ) -> dict[str, Any]:
-    from core.common import upload_file_to_dataframe
+    from utils.data_io import upload_file_to_dataframe
     from core.monitoring import detect_data_drift
     import pandas as pd
     import os
@@ -167,7 +166,7 @@ def create_flag(payload: FlagPayload, db: Session = Depends(get_db)) -> dict[str
 
 @router.get("/flags/{project_id}")
 def get_unresolved_flags(project_id: int, db: Session = Depends(get_db)) -> list[dict[str, Any]]:
-    flags = db.query(FairnessFlag).filter(FairnessFlag.project_id == project_id, FairnessFlag.resolved == False).all()
+    flags = db.query(FairnessFlag).filter(FairnessFlag.project_id == project_id, not FairnessFlag.resolved).all()
     return [
         {
             "id": f.id,

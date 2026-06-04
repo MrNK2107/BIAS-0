@@ -37,7 +37,7 @@ export default function MonitoringDashboard() {
   if (!projectId) {
     return (
       <div style={{ maxWidth: 800, margin: '0 auto', paddingTop: 80, textAlign: 'center' }}>
-        <div className="brand-badge" style={{ width: 64, height: 64, fontSize: 32, margin: '0 auto 24px' }}>◈</div>
+        <img src="/logo.png" alt="BIAS LAB Logo" style={{ width: 80, height: 80, margin: '0 auto 24px', display: 'block' }} />
         <h1 className="page-title">Monitoring Dashboard</h1>
         <p className="helper" style={{ maxWidth: 500, margin: '0 auto 40px' }}>
           Please select or initialize a project to view real-time fairness monitoring and drift intelligence.

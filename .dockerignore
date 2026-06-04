@@ -1,0 +1,13 @@
+.git
+.gitignore
+**/node_modules
+**/__pycache__
+**/.venv
+frontend/dist
+backend/unbiased_ai.db
+PROMPT.md
+context.md
+README.md
+implementation_plan.md
+task.md
+walkthrough.md

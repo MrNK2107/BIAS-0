@@ -1,8 +1,5 @@
-// ─── Hero Demo Page ──────────────────────────────────────────────────────────
-// Standalone page to view/test the 3D hero section
-
-import { BiasNetworkHero } from '../components/hero';
+import { LandingPage } from '../components/landing';
 
 export default function HeroPage() {
-  return <BiasNetworkHero />;
+  return <LandingPage />;
 }

@@ -16,3 +16,4 @@ seaborn
 httpx
 python-dotenv
 imbalanced-learn>=0.12
+requests

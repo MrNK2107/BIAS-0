@@ -20,7 +20,6 @@ from core.common import build_classifier, prepare_split
 from core.model_bias import run_model_bias_analysis
 from core.stress_test import run_stress_tests
 from models.db import AuditRun, Project, MonitoringLog, Alert, get_db
-from utils.data_io import upload_file_to_dataframe
 from utils.model_loader import load_model_from_bytes
 
 router = APIRouter(prefix="/pipeline", tags=["pipeline"])
@@ -64,7 +63,6 @@ def _run_pipeline(
     """Background worker: runs all 8 stages and writes result to task_store."""
     import io
     import pandas as pd
-    from sqlalchemy.orm import Session
     from models.db import SessionLocal
 
     _task_store[task_id]["status"] = "processing"
@@ -301,7 +299,7 @@ async def run_all(
     project_id: str = Form(default=""),
     metric_priority: str = Form(default="balanced"),
     domain: str = Form(default="general"),
-    model_file: UploadFile | None = None,
+    custom_model_file: UploadFile | None = None,
 ) -> dict[str, str]:
     """
     Accepts the CSV and optional model file, immediately returns a task_id.
@@ -311,9 +309,9 @@ async def run_all(
 
     # ── Safe model_file read ──────────────────────────────────────────────────
     model_bytes: bytes | None = None
-    if model_file is not None:
+    if custom_model_file is not None:
         try:
-            model_bytes = await model_file.read()
+            model_bytes = await custom_model_file.read()
             if not model_bytes:
                 model_bytes = None
         except Exception:

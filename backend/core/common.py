@@ -10,7 +10,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
@@ -56,9 +56,6 @@ def infer_numeric_and_categorical(df: pd.DataFrame, sensitive_cols: list[str], t
     feature_cols = [col for col in df.columns if col != target_col]
     numeric_features = [col for col in feature_cols if pd.api.types.is_numeric_dtype(df[col])]
     categorical_features = [col for col in feature_cols if col not in numeric_features]
-    for col in sensitive_cols:
-        if col in categorical_features:
-            continue
     return numeric_features, categorical_features
 
 

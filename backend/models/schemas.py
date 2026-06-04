@@ -20,6 +20,7 @@ class AuditRequest(BaseModel):
 
 
 class ModelBiasRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
     project_id: int
     sensitive_cols: list[str]
     target_col: str
@@ -27,6 +28,7 @@ class ModelBiasRequest(BaseModel):
 
 
 class ExplainRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
     project_id: int
     sensitive_cols: list[str]
     target_col: str
@@ -35,6 +37,7 @@ class ExplainRequest(BaseModel):
 
 
 class CounterfactualRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
     project_id: int
     sensitive_col: str
     target_col: str
@@ -42,6 +45,7 @@ class CounterfactualRequest(BaseModel):
 
 
 class StressRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
     project_id: int
     sensitive_cols: list[str]
     target_col: str

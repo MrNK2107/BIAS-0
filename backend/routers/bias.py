@@ -5,7 +5,7 @@ from typing import Any
 
 import pandas as pd
 import requests
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, File, Form, UploadFile
 from sklearn.metrics import accuracy_score
 
 from core.common import fairness_gaps, fairness_score_from_gaps, group_metrics, prepare_split, risk_from_score

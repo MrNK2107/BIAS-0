@@ -4,10 +4,13 @@ import urllib.request
 import urllib.parse
 import json
 import os
+import sys
 
-os.chdir("c:/Users/nanda/Desktop/solution_challenge/unbiased-ai/backend")
-server = subprocess.Popen(["c:/Users/nanda/Desktop/solution_challenge/.venv/Scripts/python.exe", "-m", "uvicorn", "main:app"])
-time.sleep(3)
+backend_dir = os.path.join(os.path.dirname(__file__), "backend")
+os.chdir(backend_dir)
+python = sys.executable
+server = subprocess.Popen([python, "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"])
+time.sleep(5)
 
 base = "http://127.0.0.1:8000"
 
@@ -84,9 +87,17 @@ try:
     recommendations = json.loads(text)
 
     print("POST /fixes/sandbox")
-    req_body2 = {
-        "df": "should be multiparts?", # Wait, fixes/sandbox might expect multipart or JSON?
+    # sandbox expects multipart with file + strategies
+    data2 = {
+        "sensitiveCols": "gender,caste",
+        "targetCol": "approved",
+        "strategies": "smote_rebalance,threshold_tune",
+        "audit_result": json.dumps(audit_res),
+        "proxy_result": json.dumps(proxy_res),
+        "bias_result": json.dumps(bias_res),
     }
+    code2, text2 = post_multipart(f"{base}/fixes/sandbox", csv_text, data2)
+    print(code2, text2[:200])
 
 except Exception as e:
     import traceback

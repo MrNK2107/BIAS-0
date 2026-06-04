@@ -9,8 +9,6 @@ import sklearn.metrics
 from sklearn.metrics import accuracy_score
 from fairlearn.metrics import (
     MetricFrame,
-    demographic_parity_difference,
-    equalized_odds_difference,
     false_positive_rate,
     true_positive_rate,
 )
