@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   AreaChart, Area
 } from 'recharts';
 import { 
-  Activity, AlertTriangle, TrendingUp, TrendingDown, Clock, 
-  ShieldCheck, ShieldAlert, BarChart3, Info, Search
+  Activity, TrendingUp, TrendingDown, 
+  ShieldCheck, ShieldAlert, BarChart3, Search
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useAppContext } from '../context/AppContext';
 
 export default function MonitoringDashboard() {
   const { projectId } = useAppContext();
-  const [monitorData, setMonitorData] = useState<any>(null);
-  const [trendData, setTrendData] = useState<any>(null);
-  const [alerts, setAlerts] = useState<any[]>([]);
+  const [monitorData, setMonitorData] = useState<{ drift_detected: boolean; trend?: Array<{ score: number; timestamp: string }> } | null>(null);
+  const [trendData, setTrendData] = useState<{ trend?: string; stability_score?: number } | null>(null);
+  const [alerts, setAlerts] = useState<Array<{ id: number; severity: string; type: string; timestamp: string; message: string }>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

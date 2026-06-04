@@ -2,41 +2,29 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SandboxComparison from '../../components/SandboxComparison';
 import { useAppContext } from '../../context/AppContext';
+import type { FixRecommendation, SandboxResult } from '../../types';
 
 export default function Step8Sandbox() {
   const { file, pipelineResults, recommendResult, runSandboxSimulation, sandboxResult, advanceStep } = useAppContext();
   const [selected, setSelected] = useState<string[]>([]);
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [scenarioLoading, setScenarioLoading] = useState(false);
   const [simulateError, setSimulateError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-
-  // Pre-select the first 2 fixes when recommendations are available
   useEffect(() => {
-    if (recommendResult && selected.length === 0) {
-      const initialSelected = recommendResult.slice(0, 2).map((r: any) => r.fix_id);
-      setSelected(initialSelected);
-
-      // Initialize option selections for fixes with mitigation options
-      const initialOptions: Record<string, string> = {};
-      recommendResult.forEach((r: any) => {
-        if (r.mitigation_options && r.mitigation_options.length > 0) {
-          initialOptions[r.fix_id] = r.mitigation_options[0].option;
-        }
-      });
-      setSelectedOptions(initialOptions);
-    }
-  }, [recommendResult, selected]);
+    if (!recommendResult) return;
+    setSelected((recommendResult as FixRecommendation[]).map((r: FixRecommendation) => r.fix_id));
+  }, [recommendResult]);
 
   const handleSimulate = async (fixesToRun?: string[]) => {
     setScenarioLoading(true);
     setSimulateError(null);
     try {
       await runSandboxSimulation(fixesToRun || selected);
-    } catch (e: any) {
-      const message = e?.response?.data?.detail || e?.message || 'Simulation failed';
+    } catch (e) {
+      const err = e as { response?: { data?: { detail?: string } }; message?: string };
+      const message = err.response?.data?.detail || err.message || 'Simulation failed';
       setSimulateError(message);
     } finally {
       setScenarioLoading(false);
@@ -69,11 +57,11 @@ export default function Step8Sandbox() {
     return 'Model Fixes';
   };
 
-  const dataFixes = recommendResult.filter((r: any) => getCategory(r.fix_type) === 'Data Fixes');
-  const modelFixes = recommendResult.filter((r: any) => getCategory(r.fix_type) === 'Model Fixes');
-  const policyFixes = recommendResult.filter((r: any) => getCategory(r.fix_type) === 'Policy Fixes');
+  const dataFixes = (recommendResult as Array<FixRecommendation & { fix_type: string }>).filter((r) => getCategory(r.fix_type) === 'Data Fixes');
+  const modelFixes = (recommendResult as Array<FixRecommendation & { fix_type: string }>).filter((r) => getCategory(r.fix_type) === 'Model Fixes');
+  const policyFixes = (recommendResult as Array<FixRecommendation & { fix_type: string }>).filter((r) => getCategory(r.fix_type) === 'Policy Fixes');
 
-  const renderFixGroup = (title: string, fixes: any[]) => {
+  const renderFixGroup = (title: string, fixes: Array<FixRecommendation & { fix_type: string; mitigation_options?: Array<{ option: string; rationale: string }>; estimated_impact?: string }>) => {
     if (!fixes || fixes.length === 0) return null;
     return (
       <div style={{ marginBottom: 32 }}>
@@ -151,13 +139,13 @@ export default function Step8Sandbox() {
         {recommendResult.length === 0 && <span className="helper">No fixes recommended based on the current results.</span>}
       </div>
 
-      {sandboxResult && sandboxResult.scenarios && (
+      {sandboxResult && (sandboxResult as SandboxResult & { scenarios?: unknown[]; recommendation?: string }).scenarios && (
         <div className="card fade-in" style={{ marginBottom: 24 }}>
           <div className="section-title">Sandbox Comparison Results</div>
-          <SandboxComparison scenarios={sandboxResult.scenarios} />
-          {sandboxResult.recommendation && (
+          <SandboxComparison scenarios={(sandboxResult as SandboxResult & { scenarios?: Array<{ name: string; accuracy: number; fairness_score: number; risk_level: string; notes: string }> }).scenarios || []} />
+          {(sandboxResult as SandboxResult & { recommendation?: string }).recommendation && (
             <p className="helper" style={{ marginTop: 12 }}>
-              {sandboxResult.recommendation}
+              {(sandboxResult as SandboxResult & { recommendation?: string }).recommendation}
             </p>
           )}
         </div>

@@ -4,6 +4,47 @@ import MonitoringChart from '../../components/MonitoringChart';
 import { useAppContext } from '../../context/AppContext';
 import { formApi, api } from '../../api/client';
 import { AlertTriangle, Flag, Activity, Info, CheckCircle, Clock, TrendingUp, TrendingDown, Shield, ChevronDown, ChevronUp, Zap } from 'lucide-react';
+import type { FairnessFlag, MonitoringPayload } from '../../types';
+
+interface DriftReportData {
+  drift_alert?: boolean;
+  drift_message?: string;
+  root_cause?: Array<{ feature: string; change: number }>;
+  affected_groups?: string[];
+  recommended_actions?: string[];
+  status?: string;
+  predicted_fairness?: number;
+  drift_results?: {
+    drift_alert?: boolean;
+    drift_message?: string;
+    root_cause?: Array<{ feature: string; change: number }>;
+  };
+}
+interface MonitorData {
+  drift_detected: boolean;
+  trend?: Array<{ score: number; timestamp?: string }>;
+}
+interface TrendData {
+  degradation_detected: boolean;
+  stability_score: number;
+  trend?: string;
+}
+interface MonitoringEventData {
+  timestamp: string;
+  fairness_score: number;
+  alert: boolean;
+  group_breakdown?: Record<string, Record<string, number>>;
+}
+interface TimelineEvent {
+  id: string;
+  timestamp: number;
+  dateStr: string;
+  type: string;
+  title: string;
+  description: string;
+  fairness_score?: number;
+  details: Record<string, unknown>;
+}
 
 const S: Record<string, React.CSSProperties> = {
   header: { display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:16, marginBottom:22 },
@@ -43,19 +84,19 @@ export default function Step9Monitoring() {
   const [loading, setLoading] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [driftFile, setDriftFile] = useState<File | null>(null);
-  const [driftReport, setDriftReport] = useState<any>(null);
+  const [driftReport, setDriftReport] = useState<DriftReportData | null>(null);
   const [driftLoading, setDriftLoading] = useState(false);
-  const [flags, setFlags] = useState<any[]>([]);
+  const [flags, setFlags] = useState<FairnessFlag[]>([]);
   const [viewMode, setViewMode] = useState<'overall' | 'group'>('overall');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
-  const [monitorData, setMonitorData] = useState<any>(null);
-  const [trendData, setTrendData] = useState<any>(null);
+  const [monitorData, setMonitorData] = useState<MonitorData | null>(null);
+  const [trendData, setTrendData] = useState<TrendData | null>(null);
   const navigate = useNavigate();
 
-  const fetchFlags = async () => { try { const r = await api.get(`/monitoring/flags/${projectId}`); setFlags(r.data); } catch {} };
+  const fetchFlags = async () => { try { const r = await api.get(`/monitoring/flags/${projectId}`); setFlags(r.data); } catch { /* ignore */ } };
   useEffect(() => { fetchFlags(); }, [projectId]);
-  const resolveFlag = async (id: number) => { try { await api.patch(`/monitoring/flag/${id}`); fetchFlags(); } catch {} };
+  const resolveFlag = async (id: number) => { try { await api.patch(`/monitoring/flag/${id}`); fetchFlags(); } catch { /* ignore */ } };
 
   const fetchMonitorData = async () => {
     if (projectId) {
@@ -66,7 +107,7 @@ export default function Step9Monitoring() {
         ]);
         setMonitorData(mon.data);
         setTrendData(trn.data);
-      } catch {}
+      } catch { /* ignore */ }
     }
   };
   useEffect(() => { fetchMonitorData(); }, [projectId, monitoringResult]);
@@ -104,8 +145,8 @@ export default function Step9Monitoring() {
        const chunk = rows.slice(i * chunkSize, (i + 1) * chunkSize);
        const predictions = chunk.map(r => {
          const [record_id, prediction, sensitive_attrs, timestamp] = r.split(',');
-         let attrs = {}; try { attrs = JSON.parse(sensitive_attrs); } catch {}
-         return { record_id: Number(record_id), prediction: Number(prediction), sensitive_attrs: attrs, timestamp };
+          let attrs = {}; try { attrs = JSON.parse(sensitive_attrs); } catch { /* ignore */ }
+          return { record_id: Number(record_id), prediction: Number(prediction), sensitive_attrs: attrs, timestamp };
        });
       await api.post('/monitoring/ingest', { project_id: parseInt(projectId ?? '0', 10), predictions });
        await getMonitoringData(); await new Promise(r => setTimeout(r, 500));
@@ -114,29 +155,30 @@ export default function Step9Monitoring() {
 
   // Build timeline
   const timelineEvents = useMemo(() => {
-    const all: any[] = [];
+    const all: TimelineEvent[] = [];
     const now = Date.now();
-    if (monitoringResult?.events) {
-      monitoringResult.events.forEach((e: any, i: number) => {
+    const monEvents = (monitoringResult?.events as unknown as MonitoringEventData[]) || [];
+    if (monEvents) {
+      monEvents.forEach((e, i: number) => {
         const ts = new Date(e.timestamp).getTime();
         all.push({ id:`evt-${i}`, timestamp: ts,
           dateStr: formatTimestamp(ts),
           type: e.alert ? 'alert' : 'info', title: e.alert ? 'Warning Incident Detected' : 'Monitoring Check',
           description: e.alert ? `Fairness dropped to ${e.fairness_score.toFixed(1)}` : `Score: ${e.fairness_score.toFixed(1)}`,
-          fairness_score: e.fairness_score, details: e.group_breakdown });
+          fairness_score: e.fairness_score, details: e.group_breakdown as Record<string, unknown> });
       });
     }
-    flags.forEach((f: any) => {
+    (flags as (FairnessFlag & { timestamp: string })[]).forEach((f) => {
       const ts = new Date(f.timestamp).getTime();
       all.push({ id:`flag-${f.id}`, timestamp: ts,
         dateStr: formatTimestamp(ts),
-        type:'flag', title:`Flagged Record #${f.record_id}`, description:`Reason: ${f.reason}`, details: f });
+        type:'flag', title:`Flagged Record #${f.record_id}`, description:`Reason: ${f.reason}`, details: f as unknown as Record<string, unknown> });
     });
     if (driftReport) {
       all.push({ id:'drift-latest', timestamp: now,
         dateStr: formatTimestamp(now),
         type: driftReport.drift_alert ? 'drift_alert' : 'info', title: driftReport.drift_alert ? 'Drift Warning' : 'Drift Check - Clear',
-        description: driftReport.drift_message, details: driftReport });
+        description: driftReport.drift_message || '', details: driftReport as unknown as Record<string, unknown> });
     }
     return all.sort((a, b) => b.timestamp - a.timestamp);
   }, [monitoringResult, flags, driftReport]);
@@ -146,7 +188,7 @@ export default function Step9Monitoring() {
   // Chart incident markers
   const chartIncidents = useMemo(() => {
     if (!monitoringResult?.events) return [];
-    return monitoringResult.events.filter((e: any) => e.alert).map((e: any) => ({ timestamp: e.timestamp, label: 'Incident', type: 'incident' as const }));
+    return (monitoringResult.events as unknown as MonitoringEventData[]).filter((e) => e.alert).map((e) => ({ timestamp: e.timestamp, label: 'Incident', type: 'incident' as const }));
   }, [monitoringResult]);
 
   // No file guard
@@ -166,7 +208,8 @@ export default function Step9Monitoring() {
     </div>
   );
 
-  const { events, current_risk_level, trend } = monitoringResult;
+  const payload = monitoringResult as MonitoringPayload & { current_risk_level?: string; trend?: string };
+  const { events, current_risk_level, trend } = payload;
   const current = events[events.length - 1] || { fairness_score: 0, alert: false };
   const status = current_risk_level || 'Green';
   const alertCount = timelineEvents.filter(e => e.type === 'alert').length;
@@ -251,7 +294,7 @@ export default function Step9Monitoring() {
 
       {/* Main layout: chart + timeline */}
       <div style={S.mainGrid}>
-        <div style={S.leftCol as any}>
+        <div style={S.leftCol}>
           {/* Chart */}
           <div className="card">
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
@@ -266,9 +309,9 @@ export default function Step9Monitoring() {
               </div>
             </div>
             {events?.length > 0 ? (
-              <MonitoringChart events={events} viewMode={viewMode} incidents={chartIncidents}
-                onDotClick={(evt: any) => {
-                  const idx = events.indexOf(evt);
+              <MonitoringChart events={events as unknown as { timestamp: string; fairness_score: number; alert: boolean; note?: string; group_breakdown?: Record<string, Record<string, number>> }[]} viewMode={viewMode} incidents={chartIncidents}
+                onDotClick={(evt) => {
+                  const idx = (events as unknown as MonitoringEventData[]).indexOf(evt as MonitoringEventData);
                   if (idx >= 0) setSelectedEventId(`evt-${idx}`);
                 }} />
             ) : <div className="helper">No monitoring events recorded yet.</div>}
@@ -296,7 +339,7 @@ export default function Step9Monitoring() {
                   {driftReport.root_cause && driftReport.root_cause.length > 0 && (
                     <div style={{ marginTop: 12 }}>
                       <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: 1, color: 'var(--text-muted)', marginBottom: 6 }}>Top Drift Drivers</div>
-                      {driftReport.root_cause.map((rc: any, idx: number) => (
+                      {driftReport.root_cause.map((rc: { feature: string; change: number }, idx: number) => (
                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', padding: '4px 0' }}>
                           <span>{rc.feature}</span>
                           <span style={{ fontWeight: 600 }}>{(rc.change * 100).toFixed(1)}% shift</span>
@@ -367,10 +410,10 @@ export default function Step9Monitoring() {
                   </div>
                   <div style={{ fontSize:'0.85rem', color:'var(--text-secondary)', marginBottom: 12 }}>{driftReport.drift_results?.drift_message}</div>
                   
-                  {driftReport.drift_results?.root_cause?.length > 0 && (
+                  {(driftReport.drift_results?.root_cause?.length ?? 0) > 0 && (
                     <div style={{ marginTop: 12 }}>
                       <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: 1, color: 'var(--text-muted)', marginBottom: 6 }}>Predicted Drift Drivers</div>
-                      {driftReport.drift_results.root_cause.map((rc: any, idx: number) => (
+                      {driftReport.drift_results?.root_cause?.map((rc: { feature: string; change: number }, idx: number) => (
                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', padding: '4px 0' }}>
                           <span>{rc.feature}</span>
                           <span style={{ fontWeight: 600 }}>{(rc.change * 100).toFixed(1)}% shift</span>
@@ -385,7 +428,7 @@ export default function Step9Monitoring() {
         </div>
 
         {/* Timeline sidebar */}
-        <div className="card" style={S.tlCard as any}>
+        <div className="card" style={S.tlCard}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16, paddingLeft:8 }}>
             <div className="section-title" style={{ marginBottom:0 }}>
               <Clock size={16} style={{ marginRight:6, verticalAlign:'middle' }} /> Event Timeline
@@ -408,13 +451,13 @@ export default function Step9Monitoring() {
           {filteredEvents.length === 0 ? (
             <div className="helper" style={{ paddingLeft:8 }}>No events match this filter.</div>
           ) : (
-            <div style={S.tlLine as any}>
+            <div style={S.tlLine}>
               {filteredEvents.map((ev, idx) => {
                 const sel = selectedEventId === ev.id;
                 const col = COLORS[ev.type] || '#3b82f6';
                 return (
                   <div key={ev.id} style={{ position:'relative', marginBottom: idx === filteredEvents.length - 1 ? 0 : 28 }}>
-                    <div style={{...S.tlNode as any, backgroundColor: col }}>{ICONS[ev.type]}</div>
+                    <div style={{...S.tlNode, backgroundColor: col }}>{ICONS[ev.type]}</div>
                     <div style={{...S.tlContent, ...(sel ? S.tlContentSel : {})}} onClick={() => setSelectedEventId(sel ? null : ev.id)}>
                       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                         <div style={S.tlTitle}>{ev.title}</div>
@@ -427,22 +470,22 @@ export default function Step9Monitoring() {
                     </div>
 
                     {sel && (
-                      <div style={S.detail as any}>
+                      <div style={S.detail}>
                         {ev.type === 'flag' && (
                           <div>
-                            <div style={{ marginBottom:8 }}><strong>Flagged by:</strong> {ev.details.flagged_by}</div>
-                            <button className="btn btn-small" onClick={() => resolveFlag(ev.details.id)} style={{ marginTop:8 }}>
+                            <div style={{ marginBottom:8 }}><strong>Flagged by:</strong> {ev.details.flagged_by as string}</div>
+                            <button className="btn btn-small" onClick={() => resolveFlag(ev.details.id as number)} style={{ marginTop:8 }}>
                               <CheckCircle size={14} /> Mark Resolved
                             </button>
                           </div>
                         )}
                         {(ev.type === 'drift_alert' || (ev.type === 'info' && ev.title.includes('Drift'))) && (
                           <div>
-                            {ev.details.drifted_features?.length > 0 && (
-                              <div style={{ marginBottom:10 }}><strong>Drifted features:</strong> {ev.details.drifted_features.join(', ')}</div>
+                            {((ev.details.drifted_features as string[] | undefined)?.length ?? 0) > 0 && (
+                              <div style={{ marginBottom:10 }}><strong>Drifted features:</strong> {(ev.details.drifted_features as string[] | undefined)?.join(', ')}</div>
                             )}
                             <div style={{ fontWeight:600, marginBottom:6 }}>Distribution Shifts:</div>
-                            {Object.entries(ev.details.sensitive_distribution_shift || {}).map(([col, shift]: [string, any]) => (
+                            {Object.entries((ev.details.sensitive_distribution_shift as Record<string, number> | undefined) || {}).map(([col, shift]) => (
                               <div key={col} style={S.detailRow}>
                                 <span>{col}</span>
                                 <span style={{ fontWeight:600, color: shift > 0.1 ? '#f59e0b' : '#22c55e' }}>{(shift * 100).toFixed(1)}%</span>
@@ -453,10 +496,10 @@ export default function Step9Monitoring() {
                         {(ev.type === 'alert' || ev.type === 'info') && !ev.title.includes('Drift') && ev.details && (
                           <div>
                             <div style={{ fontWeight:600, marginBottom:8 }}>Group Breakdown:</div>
-                            {Object.entries(ev.details).map(([attr, values]: [string, any]) => (
+                            {Object.entries(ev.details).map(([attr, values]) => (
                               <div key={attr} style={{ marginBottom:12 }}>
                                 <div style={{ fontSize:'0.8rem', color:'var(--text-secondary)', marginBottom:4, textTransform:'uppercase' }}>{attr}</div>
-                                {Object.entries(values).map(([val, rate]: [string, any]) => (
+                                {Object.entries(values as Record<string, number>).map(([val, rate]) => (
                                   <div key={val} style={S.detailRow}>
                                     <span>{val}</span>
                                     <span style={{ fontWeight:600 }}>{(rate * 100).toFixed(1)}%</span>

@@ -9,7 +9,6 @@ import {
   Settings2,
   ShieldCheck,
   Upload,
-  LayoutGrid,
 } from 'lucide-react';
 import ProjectSelector from './ProjectSelector';
 import { useAppContext } from '../context/AppContext';
@@ -31,8 +30,6 @@ export default function WorkflowShell({ children }: { children: React.ReactNode 
 
   const isDashboard = location.pathname === '/dashboard';
   const currentStep = STEPS.find((step) => location.pathname.includes(step.to)) || STEPS[0];
-  const currentIdx = Math.max(STEPS.indexOf(currentStep), 0);
-  const progressPct = isDashboard ? 0 : (currentIdx / Math.max(STEPS.length - 1, 1)) * 100;
   const currentLabel = isDashboard ? 'Dashboard overview' : currentStep.label;
   const currentMeta = isDashboard ? 'Workspace' : `Step ${currentStep.id} of ${STEPS.length}`;
 

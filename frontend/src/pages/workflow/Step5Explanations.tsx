@@ -90,8 +90,8 @@ export default function Step5Explanations() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {explainResult.map((item: any) => {
-            const proxyReasons = (item.top_reasons || []).filter((r: any) => r.is_proxy_risk);
+          {(explainResult as unknown as Array<{ record_id: number; decision: string; explanation_type: string; sensitive_attribute: string; human_explanation: string; top_reasons: Array<{ feature: string; shap_value: number; is_proxy_risk: boolean }> }>).map((item) => {
+            const proxyReasons = (item.top_reasons || []).filter((r) => r.is_proxy_risk);
 
             return (
               <div className="card" key={item.record_id} style={{ padding: '24px' }}>
@@ -112,7 +112,7 @@ export default function Step5Explanations() {
                       Top feature contributions (SHAP values).
                     </div>
                     <div style={{ display: 'grid', gap: '12px' }}>
-                      {(item.top_reasons || []).map((reason: any) => (
+                      {(item.top_reasons || []).map((reason) => (
                         <div key={reason.feature}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '4px' }}>
                             <span style={{ fontWeight: 500 }}>{reason.feature}</span>
@@ -151,7 +151,7 @@ export default function Step5Explanations() {
                           Proxy Feature Warnings
                         </div>
                         <ul style={{ paddingLeft: '20px', margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                          {proxyReasons.map((pr: any) => (
+                          {proxyReasons.map((pr) => (
                             <li key={pr.feature} style={{ marginBottom: '4px' }}>
                               The feature <strong>{pr.feature}</strong> is highly correlated with the sensitive attribute and is driving this decision.
                             </li>

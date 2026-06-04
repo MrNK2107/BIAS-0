@@ -1,5 +1,4 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 
 interface AnimatedCardProps {
   children: React.ReactNode;
@@ -9,7 +8,7 @@ interface AnimatedCardProps {
   style?: React.CSSProperties;
 }
 
-export const cardVariants: any = {
+export const cardVariants: Variants = {
   hidden: { opacity: 0, y: 15 },
   visible: (customDelay: number = 0) => ({
     opacity: 1,

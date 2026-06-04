@@ -2,10 +2,11 @@ import React from 'react';
 import { HelpCircle } from 'lucide-react';
 import AnimatedCard from './animations/AnimatedCard';
 import AnimatedNumber from './animations/AnimatedNumber';
+import type { ModelBiasResult, CounterfactualResult } from '../types';
 
 interface FairnessMetricsPanelProps {
-  biasResult: any;
-  counterfactualResult: any;
+  biasResult: ModelBiasResult | null;
+  counterfactualResult: CounterfactualResult | null;
 }
 
 interface MetricItemProps {
@@ -77,11 +78,9 @@ const MetricCard: React.FC<MetricItemProps> = ({ title, value, description, thre
 };
 
 export default function FairnessMetricsPanel({ biasResult, counterfactualResult }: FairnessMetricsPanelProps) {
-  // Use fallbacks if some data is missing
   const dpGap = biasResult?.metrics?.demographic_parity_difference ?? NaN;
   const eoGap = biasResult?.metrics?.equal_opportunity_difference ?? NaN;
-  // Fallback to baseline accuracy from stress tests if not in biasResult
-  const accuracy = biasResult?.metrics?.accuracy ?? NaN; 
+  const accuracy = biasResult?.overall_accuracy ?? NaN;
   const flipRate = counterfactualResult?.flip_rate ?? NaN;
 
   return (

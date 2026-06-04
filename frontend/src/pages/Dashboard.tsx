@@ -3,17 +3,17 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LineChart, Line
+  BarChart, Bar, Tooltip, ResponsiveContainer, Cell, LineChart, Line
 } from 'recharts';
 import { 
   AlertTriangle, CheckCircle2, ShieldAlert, Zap, Search, 
-  Target, Fingerprint, ArrowRight, Info, Activity, History, TrendingUp
+  Target, Fingerprint, Info, Activity, History
 } from 'lucide-react';
 import { api } from '../api/client';
 
 export default function Dashboard() {
   const { pipelineResults, projectId } = useAppContext();
-  const [comparisons, setComparisons] = useState<any[]>([]);
+  const [comparisons, setComparisons] = useState<Array<{ run_id: number; fairness_score: number; accuracy: number; decision: string; timestamp: string }>>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -71,10 +71,11 @@ export default function Dashboard() {
 
   if (!pipelineResults?.scores) return null; // inside the results branch
 
-  const scores = pipelineResults.scores ?? {};
-  const fairness_score = pipelineResults.fairness_score ?? 0;
-  const decision = pipelineResults.decision ?? 'UNKNOWN';
-  const recommendations = pipelineResults.recommendations ?? [];
+  const p = pipelineResults as unknown as { fairness_score?: number; decision?: string; recommendations?: Array<{ issue?: string; fix?: string } | string>; scores?: Record<string, number> };
+  const scores = p.scores ?? {};
+  const fairness_score = p.fairness_score ?? 0;
+  const decision = p.decision ?? 'UNKNOWN';
+  const recommendations = p.recommendations ?? [];
   const chartData = [
     { name: 'Data',     score: scores.data_bias_score     ?? 0 },
     { name: 'Model',    score: scores.model_bias_score    ?? 0 },
@@ -95,7 +96,7 @@ export default function Dashboard() {
     'LOW RISK': { color: '#10b981', icon: CheckCircle2, bg: 'rgba(16, 185, 129, 0.1)' },
   };
 
-  const config = (decisionConfig as any)[decision] || decisionConfig['MODERATE RISK'];
+  const config = decisionConfig[decision as keyof typeof decisionConfig] || decisionConfig['MODERATE RISK'];
   const DecisionIcon = config.icon;
 
   return (
@@ -251,25 +252,28 @@ export default function Dashboard() {
         </div>
         <div className="stack stack-md">
           {recommendations && recommendations.length > 0 ? (
-            recommendations.map((rec: any, i: number) => (
-              <div key={i} className="card-inset" style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
-                <div style={{ 
-                  width: 32, height: 32, borderRadius: '50%', background: 'rgba(212, 163, 115, 0.1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: 'var(--accent)', flexShrink: 0,
-                  fontWeight: 800, border: '1px solid rgba(212, 163, 115, 0.2)'
-                }}>
-                  {i + 1}
+            recommendations.map((rec, i: number) => {
+              const item = rec as { issue?: string; fix?: string };
+              return (
+                <div key={i} className="card-inset" style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+                  <div style={{ 
+                    width: 32, height: 32, borderRadius: '50%', background: 'rgba(212, 163, 115, 0.1)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: 'var(--accent)', flexShrink: 0,
+                    fontWeight: 800, border: '1px solid rgba(212, 163, 115, 0.2)'
+                  }}>
+                    {i + 1}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: 1.5, color: 'var(--yellow)', marginBottom: 4, fontWeight: 700 }}>
+                      {item.issue || 'Audit Insight'}
+                    </div>
+                    <div style={{ fontSize: '1rem', lineHeight: 1.5, color: '#fff' }}>
+                      {item.fix || (typeof rec === 'string' ? rec : 'Continue monitoring.')}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                   <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: 1.5, color: 'var(--yellow)', marginBottom: 4, fontWeight: 700 }}>
-                      {rec.issue || 'Audit Insight'}
-                   </div>
-                   <div style={{ fontSize: '1rem', lineHeight: 1.5, color: '#fff' }}>
-                      {rec.fix || (typeof rec === 'string' ? rec : 'Continue monitoring.')}
-                   </div>
-                </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <p className="helper">No critical recommendations found. Your model shows strong alignment with fairness goals.</p>
           )}

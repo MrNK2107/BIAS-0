@@ -1,5 +1,19 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { formApi, api } from '../api/client';
+import type {
+  DataAuditResult,
+  ProxyResult,
+  ModelBiasResult,
+  ExplanationRecord,
+  CounterfactualResult,
+  StressTestResult,
+  FixRecommendation,
+  SandboxResult,
+  MonitoringPayload,
+  PipelineFullResult,
+  ProjectRecord,
+  CustomScenario,
+} from '../types';
 
 interface AppState {
   file: File | null;
@@ -11,22 +25,20 @@ interface AppState {
   apiUrl: string;
   requestFormat: string;
   metricPriority: string;
-  // Individual result slices (populated by runFullAnalysis)
-  auditResult: any;
-  proxyResult: any;
-  biasResult: any;
-  explainResult: any;
+  auditResult: DataAuditResult | null;
+  proxyResult: ProxyResult | null;
+  biasResult: ModelBiasResult | null;
+  explainResult: ExplanationRecord[] | null;
   explainSummary: string | null;
-  counterfactualResult: any;
-  stressResult: any;
-  recommendResult: any;
-  sandboxResult: any;
-  monitoringResult: any;
-  // Unified pipeline state
-  pipelineResults: any;
+  counterfactualResult: CounterfactualResult | null;
+  stressResult: StressTestResult | null;
+  recommendResult: FixRecommendation[] | null;
+  sandboxResult: SandboxResult | null;
+  monitoringResult: MonitoringPayload | null;
+  pipelineResults: PipelineFullResult | null;
   isAnalyzing: boolean;
   analyzeError: string | null;
-  projects: any[];
+  projects: ProjectRecord[];
   maxStep: number;
 }
 
@@ -40,29 +52,27 @@ interface AppContextType extends AppState {
   setApiUrl: (val: string) => void;
   setRequestFormat: (val: string) => void;
   setMetricPriority: (val: string) => void;
-  setAuditResult: (val: any) => void;
-  setProxyResult: (val: any) => void;
-  setBiasResult: (val: any) => void;
-  setExplainResult: (val: any) => void;
+  setAuditResult: (val: DataAuditResult | null) => void;
+  setProxyResult: (val: ProxyResult | null) => void;
+  setBiasResult: (val: ModelBiasResult | null) => void;
+  setExplainResult: (val: ExplanationRecord[] | null) => void;
   setExplainSummary: (val: string | null) => void;
-  setCounterfactualResult: (val: any) => void;
-  setStressResult: (val: any) => void;
-  setRecommendResult: (val: any) => void;
-  setSandboxResult: (val: any) => void;
-  setMonitoringResult: (val: any) => void;
+  setCounterfactualResult: (val: CounterfactualResult | null) => void;
+  setStressResult: (val: StressTestResult | null) => void;
+  setRecommendResult: (val: FixRecommendation[] | null) => void;
+  setSandboxResult: (val: SandboxResult | null) => void;
+  setMonitoringResult: (val: MonitoringPayload | null) => void;
 
-  // Unified pipeline
   runFullAnalysis: () => Promise<void>;
 
-  // Legacy individual methods (kept for sandbox + monitoring + custom stress)
-  runModelBias: (customStressScenarios?: any[]) => Promise<void>;
+  runModelBias: (customStressScenarios?: CustomScenario[]) => Promise<void>;
   runRecommendFixes: () => Promise<void>;
   runSandboxSimulation: (fixes: string[]) => Promise<void>;
   runMonitoringSimulation: () => Promise<void>;
   getMonitoringData: () => Promise<void>;
   refreshProjects: () => Promise<void>;
   advanceStep: (step: number) => Promise<void>;
-  setResultsFromPipeline: (data: any) => void;
+  setResultsFromPipeline: (data: PipelineFullResult) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -78,21 +88,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [requestFormat, setRequestFormat] = useState('');
   const [metricPriority, setMetricPriority] = useState('balanced');
 
-  const [auditResult, setAuditResult] = useState<any>(null);
-  const [proxyResult, setProxyResult] = useState<any>(null);
-  const [biasResult, setBiasResult] = useState<any>(null);
-  const [explainResult, setExplainResult] = useState<any>(null);
+  const [auditResult, setAuditResult] = useState<DataAuditResult | null>(null);
+  const [proxyResult, setProxyResult] = useState<ProxyResult | null>(null);
+  const [biasResult, setBiasResult] = useState<ModelBiasResult | null>(null);
+  const [explainResult, setExplainResult] = useState<ExplanationRecord[] | null>(null);
   const [explainSummary, setExplainSummary] = useState<string | null>(null);
-  const [counterfactualResult, setCounterfactualResult] = useState<any>(null);
-  const [stressResult, setStressResult] = useState<any>(null);
-  const [recommendResult, setRecommendResult] = useState<any>(null);
-  const [sandboxResult, setSandboxResult] = useState<any>(null);
-  const [monitoringResult, setMonitoringResult] = useState<any>(null);
+  const [counterfactualResult, setCounterfactualResult] = useState<CounterfactualResult | null>(null);
+  const [stressResult, setStressResult] = useState<StressTestResult | null>(null);
+  const [recommendResult, setRecommendResult] = useState<FixRecommendation[] | null>(null);
+  const [sandboxResult, setSandboxResult] = useState<SandboxResult | null>(null);
+  const [monitoringResult, setMonitoringResult] = useState<MonitoringPayload | null>(null);
 
-  const [pipelineResults, setPipelineResults] = useState<any>(null);
+  const [pipelineResults, setPipelineResults] = useState<PipelineFullResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<ProjectRecord[]>([]);
 
   // ── Unified pipeline ────────────────────────────────────────────────────────
   const runFullAnalysis = async () => {
@@ -125,15 +135,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await refreshProjects();
       localStorage.removeItem('active_analysis_task');
 
-    } catch (err: any) {
-      console.error('Analysis pipeline error:', err);
-      const isTimeout = err?.code === 'ECONNABORTED' || err?.message?.includes('timeout');
-      const isNetworkIssue = err?.message?.includes('Network Error');
+    } catch (err) {
+      const e = err as { code?: string; message?: string; response?: { data?: { detail?: string } } };
+      console.error('Analysis pipeline error:', e);
+      const isTimeout = e?.code === 'ECONNABORTED' || e?.message?.includes('timeout');
+      const isNetworkIssue = e?.message?.includes('Network Error');
       const message = isTimeout
         ? 'Analysis timed out. The server is taking longer than expected to finalize results. Please check the terminal logs or try again.'
         : isNetworkIssue
           ? 'Cannot reach backend API. Please make sure the backend server is running.'
-          : err?.response?.data?.detail || err?.message || 'Analysis failed. Please try again.';
+          : e?.response?.data?.detail || e?.message || 'Analysis failed. Please try again.';
       setAnalyzeError(message);
       throw err;
     } finally {
@@ -141,7 +152,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const pollTaskStatus = async (task_id: string): Promise<any> => {
+  const pollTaskStatus = async (task_id: string): Promise<PipelineFullResult> => {
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
       const interval = setInterval(async () => {
@@ -162,8 +173,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
             clearInterval(interval);
             reject(new Error(error || 'Pipeline failed'));
           }
-        } catch (pollErr: any) {
-          if (pollErr?.code === 'ECONNABORTED' || pollErr?.message?.includes('timeout')) {
+        } catch (pollErr) {
+          const pe = pollErr as { code?: string; message?: string };
+          if (pe?.code === 'ECONNABORTED' || pe?.message?.includes('timeout')) {
             clearInterval(interval);
             reject(new Error('Connection timed out while waiting for results. The server may be busy finalizing data.'));
           }
@@ -194,24 +206,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [projectId]);
 
-  const setResultsFromPipeline = (data: any) => {
-    // Handle both direct pipeline result and the wrapped /result/{id} response
-    const result = data?.details ?? data?.result ?? data;
+  const setResultsFromPipeline = (data: PipelineFullResult) => {
+    const result = (data as Record<string, unknown>)?.details ?? (data as Record<string, unknown>)?.result ?? data;
     if (!result) return;
-    
-    // Clear any previous analysis errors when results are successfully set
+
     setAnalyzeError(null);
     setIsAnalyzing(false);
 
-    setAuditResult(result.data_audit ?? null);
-    setProxyResult(result.proxy ?? null);
-    setBiasResult(result.model_bias ?? null);
-    setExplainResult(result.explanations ?? null);
-    setExplainSummary(result.explain_summary ?? null);
-    setCounterfactualResult(result.counterfactual ?? null);
-    setStressResult(result.stress ?? null);
-    setRecommendResult(result.recommendations ?? null);
-    setPipelineResults(result);
+    setAuditResult((result as PipelineFullResult).data_audit ?? null);
+    setProxyResult((result as PipelineFullResult).proxy ?? null);
+    setBiasResult((result as PipelineFullResult).model_bias ?? null);
+    setExplainResult((result as PipelineFullResult).explanations ?? null);
+    setExplainSummary((result as PipelineFullResult).explain_summary ?? null);
+    setCounterfactualResult((result as PipelineFullResult).counterfactual ?? null);
+    setStressResult((result as PipelineFullResult).stress ?? null);
+    setRecommendResult((result as PipelineFullResult).recommendations ?? null);
+    setPipelineResults(result as PipelineFullResult);
   };
 
 
@@ -226,8 +236,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return fd;
   };
 
-  // Used by Step 7 custom scenario re-runs
-  const runModelBias = async (customStressScenarios?: any[]) => {
+  const runModelBias = async (customStressScenarios?: CustomScenario[]) => {
     if (!file) return;
 
     const fd = getFormData();
@@ -350,7 +359,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         })
         .catch(() => { });
 
-      // Ensure we have project info to find max_step
       if (projects.length > 0) {
         const p = projects.find(proj => String(proj.id) === String(projectId));
         if (p && p.max_step > 1) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Network, Shield, Gauge, Layers, Activity, Scale } from 'lucide-react';
+import { Shield, Gauge, Layers, Activity } from 'lucide-react';
 
 const Section = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
   <section className={`hero-section h-screen ${className}`}>{children}</section>

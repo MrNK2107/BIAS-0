@@ -5,11 +5,13 @@ import { motion } from 'framer-motion';
 import AnimatedNumber from '../../components/animations/AnimatedNumber';
 import ScanningSkeleton from '../../components/animations/ScanningSkeleton';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
+import type { CustomScenario } from '../../types';
 
 export default function Step7StressTest() {
   const { pipelineResults, stressResult, biasResult, runModelBias, advanceStep } = useAppContext();
   const [loading, setLoading] = useState(false);
-  const [customScenarios, setCustomScenarios] = useState<any[]>([]);
+  const [customScenarios, setCustomScenarios] = useState<CustomScenario[]>([]);
+  const scenarioBuilder = customScenarios as unknown as Array<{ name: string; type: string; target_group: string; sensitive_col: string; magnitude: number }>;
   const navigate = useNavigate();
   const [newScenario, setNewScenario] = useState({
     name: '',
@@ -22,7 +24,7 @@ export default function Step7StressTest() {
   const availableGroups = useMemo(() => {
     if (!biasResult?.group_performance) return [];
     const groups: { col: string, value: string }[] = [];
-    Object.entries(biasResult.group_performance).forEach(([col, stats]: [string, any]) => {
+    Object.entries(biasResult.group_performance).forEach(([col, stats]) => {
       Object.keys(stats).forEach(val => {
         groups.push({ col, value: val });
       });
@@ -91,7 +93,7 @@ export default function Step7StressTest() {
             className="btn btn-primary"
             onClick={() => {
               setLoading(true);
-              runModelBias(customScenarios.length > 0 ? customScenarios : undefined).finally(() => setLoading(false));
+              runModelBias(customScenarios.length > 0 ? customScenarios : undefined); setLoading(false);
             }}
           >
             {customScenarios.length > 0 ? 'Run Custom Stress Tests' : 'Re-run Default Stress Tests'}
@@ -101,7 +103,7 @@ export default function Step7StressTest() {
         <div className="grid-3">
           <div>
             <label className="helper">Type</label>
-            <select className="select" value={newScenario.type} onChange={e => setNewScenario({ ...newScenario, type: e.target.value as any })}>
+            <select className="select" value={newScenario.type} onChange={e => setNewScenario({ ...newScenario, type: e.target.value })}>
               <option value="undersample">Undersample</option>
               <option value="label_noise">Label Noise</option>
               <option value="shift">Distribution Shift</option>
@@ -131,7 +133,7 @@ export default function Step7StressTest() {
           </div>
           <button className="btn" onClick={() => {
             if (!newScenario.name || !newScenario.target_group) return;
-            setCustomScenarios([...customScenarios, { ...newScenario }]);
+            setCustomScenarios([...customScenarios, newScenario as unknown as CustomScenario]);
             setNewScenario({ ...newScenario, name: '' });
           }}>Add Scenario</button>
         </div>
@@ -140,10 +142,10 @@ export default function Step7StressTest() {
           <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border)' }}>
             <div className="helper">Pending Scenarios:</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
-              {customScenarios.map((s, i) => (
+              {scenarioBuilder.map((s, i) => (
                 <div key={i} className="pill" style={{ background: 'var(--surface-raised)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center' }}>
                   {s.name} ({s.type})
-                  <button style={{ background: 'none', border: 'none', color: 'var(--warning)', cursor: 'pointer', marginLeft: 8, fontSize: '1.2rem', padding: 0 }} onClick={() => setCustomScenarios(customScenarios.filter((_, idx) => idx !== i))}>×</button>
+                  <button style={{ background: 'none', border: 'none', color: 'var(--warning)', cursor: 'pointer', marginLeft: 8, fontSize: '1.2rem', padding: 0 }} onClick={() =>             setCustomScenarios(scenarioBuilder.filter((_, idx) => idx !== i) as unknown as CustomScenario[])}>×</button>
                 </div>
               ))}
             </div>
@@ -158,7 +160,7 @@ export default function Step7StressTest() {
       </div>
 
       <div className="grid-2" style={{ marginBottom: 24, gap: '24px' }}>
-        {scenarios?.map((scenario: any) => {
+        {(scenarios as unknown as Array<{ name: string; fairness_score: number; baseline_fairness_score: number; fragile: boolean; baseline_accuracy: number; accuracy: number }>)?.map((scenario) => {
           const delta = scenario.fairness_score - scenario.baseline_fairness_score;
           const isNegative = delta < 0;
 

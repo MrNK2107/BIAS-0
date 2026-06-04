@@ -133,12 +133,11 @@ export default function Step2Config() {
       // runFullAnalysis handles its own isAnalyzing state internally
       await runFullAnalysis();
       navigate('/workflow/step-3');
-    } catch (err: any) {
-      // If runFullAnalysis fails, it sets analyzeError in context.
-      // We also set localError here to ensure the UI switches to the error state.
+    } catch (err) {
+      const e = err as { response?: { data?: { detail?: string } }; message?: string };
       const msg = analyzeError
-        ?? err?.response?.data?.detail
-        ?? err?.message
+        ?? e.response?.data?.detail
+        ?? e.message
         ?? 'Analysis failed. Please check the backend is running.';
       setLocalError(msg);
     }

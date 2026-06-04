@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, Plus, LayoutGrid, Check } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
-import { api, formApi } from '../api/client';
+import { formApi } from '../api/client';
 
 export default function ProjectSelector() {
   const { projects, projectId, setProjectId, refreshProjects } = useAppContext();
@@ -24,7 +24,7 @@ export default function ProjectSelector() {
       setIsCreating(false);
       setNewName('');
       setIsOpen(false);
-    } catch {}
+    } catch { /* ignore */ }
   };
 
   return (

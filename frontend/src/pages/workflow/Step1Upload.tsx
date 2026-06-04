@@ -1,19 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../api/client';
 import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, LayoutGrid } from 'lucide-react';
 
 export default function Step1Upload() {
   const { 
     file, setFile, 
-    setSensitiveCols, setTargetCol, setDomain,
-    projectId, projects, advanceStep, refreshProjects 
+    projectId, projects, advanceStep 
   } = useAppContext();
 
   const [headers, setHeaders] = useState<string[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
-  const [status, setStatus] = useState('');
+  const [status] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {

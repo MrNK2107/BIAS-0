@@ -3,6 +3,7 @@ import AnimatedBarChart from '../../components/animations/AnimatedBarChart';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
+import type { DataAuditResult, ProxyResult } from '../../types';
 
 export default function Step3DataAudit() {
   const { pipelineResults, auditResult: audit, proxyResult: proxy, advanceStep } = useAppContext();
@@ -10,6 +11,7 @@ export default function Step3DataAudit() {
   const navigate = useNavigate();
 
   const primarySensitive = useMemo(() => Object.keys(audit?.group_stats || {})[0] || 'group', [audit]);
+  const auditData = audit as DataAuditResult & { under_represented_groups?: string[]; risk_reason?: string };
 
   const fairnessScore = useMemo(() => {
     if (!audit) return 0;
@@ -19,11 +21,11 @@ export default function Step3DataAudit() {
 
   const chartData = useMemo(() => {
     if (!audit?.group_stats) return [];
-    // Use the first available sensitive column's stats
-    const firstKey = Object.keys(audit.group_stats)[0];
+    const gs = audit.group_stats as unknown as Record<string, Array<{ group: string; positive_rate: number }>>;
+    const firstKey = Object.keys(gs)[0];
     if (!firstKey) return [];
-    return Object.entries(audit.group_stats[firstKey]).map(
-      ([group, metrics]: [string, any]) => ({
+    return Object.entries(gs[firstKey]).map(
+      ([group, metrics]) => ({
         label: group,
         value: Math.round((metrics.positive_rate ?? 0) * 100)
       })
@@ -31,14 +33,14 @@ export default function Step3DataAudit() {
   }, [audit]);
 
   const underRep = useMemo(
-    () => (audit?.under_represented_groups ?? []).filter((group: string) => {
+    () => (auditData.under_represented_groups ?? []).filter((group: string) => {
       const value = String(group ?? '').trim().toLowerCase();
       return value !== '' && value !== 'nan' && value !== 'null' && value !== 'none' && value !== 'undefined';
     }),
     [audit]
   );
 
-  const proxyFeatures = proxy?.proxy_features ?? [];
+  const proxyFeatures = (proxy as ProxyResult & { proxy_features?: Array<{ feature: string; proxy_score?: number; cluster_proxy_score?: number; combined_score?: number; correlated_with?: string; related_sensitive?: string; warning?: string }> })?.proxy_features ?? [];
 
   if (!pipelineResults || !audit || !proxy) {
     return (
@@ -71,7 +73,7 @@ export default function Step3DataAudit() {
 
       <div className={`banner ${audit.risk_level.toLowerCase()}`} style={{ marginBottom: 16 }}>
         <h2 className="section-title" style={{ margin: 0 }}>{audit.risk_level} risk detected</h2>
-        <p className="helper" style={{ color: 'inherit' }}>{audit.risk_reason}</p>
+        <p className="helper" style={{ color: 'inherit' }}>{auditData.risk_reason}</p>
       </div>
 
       <div className="card section-gap">
@@ -115,7 +117,7 @@ export default function Step3DataAudit() {
           <table className="table">
             <thead><tr><th>Column</th><th>% Missing</th><th>Severity</th></tr></thead>
             <tbody>
-              {Object.entries(audit.missing_data || {}).map(([column, value]: any) => (
+              {Object.entries(audit.missing_data || {}).map(([column, value]) => (
                 <tr key={column}>
                   <td>{column}</td>
                   <td>{(value * 100).toFixed(1)}%</td>
@@ -129,7 +131,7 @@ export default function Step3DataAudit() {
           <div className="section-title">Proxy risk</div>
           <div className="helper">Features that highly correlate with sensitive attributes.</div>
           <div className="notice-list" style={{ marginTop: 12 }}>
-            {proxyFeatures.map((feature: any) => {
+            {proxyFeatures.map((feature: { feature: string; proxy_score?: number; cluster_proxy_score?: number; combined_score?: number; correlated_with?: string; related_sensitive?: string; warning?: string }) => {
               const score = feature.proxy_score ?? feature.cluster_proxy_score ?? feature.combined_score ?? 0;
               const correlatedWith = feature.correlated_with ?? feature.related_sensitive ?? 'sensitive attribute';
               return (

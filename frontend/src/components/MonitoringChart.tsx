@@ -1,4 +1,4 @@
-import { Line, ComposedChart, ReferenceLine, ReferenceArea, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Area, Legend, Dot } from 'recharts';
+import { Line, ComposedChart, ReferenceLine, ReferenceArea, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Area, Legend } from 'recharts';
 
 type EventPoint = {
   timestamp: string;
@@ -21,9 +21,16 @@ interface MonitoringChartProps {
   onDotClick?: (event: EventPoint) => void;
 }
 
-const CustomDot = (props: any) => {
+interface CustomDotProps {
+  cx?: number;
+  cy?: number;
+  payload?: EventPoint;
+  onDotClick?: (event: EventPoint) => void;
+}
+
+const CustomDot = (props: CustomDotProps) => {
   const { cx, cy, payload, onDotClick } = props;
-  if (!payload.alert) return null;
+  if (!payload?.alert) return null;
   return (
     <g onClick={() => onDotClick?.(payload)} style={{ cursor: 'pointer' }}>
       <circle cx={cx} cy={cy} r={10} fill="rgba(188,71,73,0.22)" stroke="none" />
@@ -35,7 +42,7 @@ const CustomDot = (props: any) => {
 export default function MonitoringChart({ events, viewMode, incidents = [], onDotClick }: MonitoringChartProps) {
   const groupLines: string[] = [];
   const transformedData = events.map(event => {
-    const point: any = { ...event };
+    const point: Record<string, unknown> & EventPoint = { ...event };
     if (event.group_breakdown) {
       Object.entries(event.group_breakdown).forEach(([attr, values]) => {
         Object.entries(values).forEach(([val, rate]) => {
@@ -82,7 +89,7 @@ export default function MonitoringChart({ events, viewMode, incidents = [], onDo
           <Tooltip
             contentStyle={{ background: '#161b24', border: '1px solid #2a3347', borderRadius: 12, color: '#f0f4ff' }}
             labelFormatter={(val) => new Date(val).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
-            formatter={(value: any, name: string) => {
+            formatter={(value: number, name: string) => {
               if (name === 'Overall Fairness') return [`${value}`, name];
               return [typeof value === 'number' ? `${value}%` : value, name];
             }}

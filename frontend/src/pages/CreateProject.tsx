@@ -36,9 +36,6 @@ export default function CreateProject() {
   const [dataset, setDataset] = useState<File | null>(null);
   const [modelFile, setModelFile] = useState<File | null>(null);
 
-  // Step 3: Analysis
-  const [taskId, setTaskId] = useState<string | null>(null);
-
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectData.name) return;
@@ -60,8 +57,8 @@ export default function CreateProject() {
       setProjectId(newId);
       setGlobalProjectId(String(newId));
       setStep(2);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to create project');
+    } catch (err) {
+      setError((err as { response?: { data?: { detail?: string } } }).response?.data?.detail || 'Failed to create project');
     } finally {
       setLoading(false);
     }
@@ -78,8 +75,8 @@ export default function CreateProject() {
 
       await formApi.post(`/project/${projectId}/upload`, formData);
       setStep(3);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Upload failed');
+    } catch (err) {
+      setError((err as { response?: { data?: { detail?: string } } }).response?.data?.detail || 'Upload failed');
     } finally {
       setLoading(false);
     }
@@ -94,11 +91,10 @@ export default function CreateProject() {
       formData.append('metric_priority', 'balanced');
 
       const res = await formApi.post(`/project/${projectId}/run`, formData);
-      const newTaskId = res.data.task_id;
-      setTaskId(newTaskId);
+      const newTaskId: string = res.data.task_id;
       pollResult(newTaskId);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Analysis failed to start');
+    } catch (err) {
+      setError((err as { response?: { data?: { detail?: string } } }).response?.data?.detail || 'Analysis failed to start');
       setLoading(false);
     }
   };
@@ -118,7 +114,7 @@ export default function CreateProject() {
         // Continue polling
         setTimeout(() => pollResult(tid), 2000);
       }
-    } catch (err) {
+    } catch {
       setError('Connection lost while polling results');
       setLoading(false);
     }

@@ -5,6 +5,7 @@ import ScoreGauge from '../../components/ScoreGauge';
 import { useAppContext } from '../../context/AppContext';
 import { api } from '../../api/client';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
+import type { CounterfactualResult } from '../../types';
 
 export default function Step6Counterfactual() {
   const { pipelineResults, sensitiveCols, counterfactualResult, projectId, advanceStep } = useAppContext();
@@ -35,7 +36,8 @@ export default function Step6Counterfactual() {
     );
   }
 
-  const { flip_rate, flip_breakdown, interpretation } = counterfactualResult;
+  const cfResult = counterfactualResult as CounterfactualResult & { flip_breakdown?: Record<string, { rate: number; flips: number; total: number }>; interpretation?: string };
+  const { flip_rate, flip_breakdown, interpretation } = cfResult;
 
   return (
     <div>
@@ -81,7 +83,7 @@ export default function Step6Counterfactual() {
       <div className="card" style={{ marginBottom: 24 }}>
         <div className="section-title">Flip breakdown</div>
         <div className="grid-2">
-          {Object.entries(flip_breakdown || {}).map(([name, entry]: [string, any]) => (
+          {(Object.entries(flip_breakdown || {}) as Array<[string, { rate: number; flips: number; total: number }]>).map(([name, entry]) => (
             <div className="notice" key={name}>
               <strong>{name.replace('_', ' to ')}</strong>
               <div className="progress-track" style={{ margin: '10px 0' }}><div className="progress-fill" style={{ width: `${entry.rate * 100}%` }} /></div>
@@ -108,7 +110,7 @@ export default function Step6Counterfactual() {
                 </tr>
               </thead>
               <tbody>
-                {(counterfactualResult.sample_flips || []).map((flip: any, i: number) => {
+                {(counterfactualResult.sample_flips as unknown as Array<{ record_id: number; original_decision: string; flipped_decision: string; original_value: string; flipped_value: string }>).map((flip, i: number) => {
                   const isFlipped = flip.original_decision !== flip.flipped_decision;
                   return (
                     <tr key={i} style={{ borderBottom: '0.5px solid var(--border)', backgroundColor: isFlipped ? 'rgba(188, 71, 73, 0.14)' : 'transparent' }}>
