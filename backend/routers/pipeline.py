@@ -5,6 +5,7 @@ GET  /pipeline/status/{task_id} → returns { status, result? }
 """
 from __future__ import annotations
 
+import threading
 import uuid
 from typing import Any
 
@@ -26,6 +27,15 @@ router = APIRouter(prefix="/pipeline", tags=["pipeline"])
 
 # ── In-memory task store (suitable for single-process dev; swap for Redis in prod) ──
 _task_store: dict[str, dict[str, Any]] = {}
+_task_lock = threading.Lock()
+
+def _store_get(task_id: str) -> dict[str, Any] | None:
+    with _task_lock:
+        return _task_store.get(task_id)
+
+def _store_set(task_id: str, value: dict[str, Any]) -> None:
+    with _task_lock:
+        _task_store[task_id] = value
 
 
 def _run_pipeline(
@@ -44,7 +54,7 @@ def _run_pipeline(
     import pandas as pd
     from models.db import SessionLocal
 
-    _task_store[task_id]["status"] = "processing"
+    _store_set(task_id, {"status": "processing"})
     db: Session = SessionLocal()
 
     try:
@@ -254,7 +264,7 @@ def _run_pipeline(
         db.commit()
         print("DEBUG: Database commit successful.")
 
-        _task_store[task_id] = {"status": "complete", "result": result}
+        _store_set(task_id, {"status": "complete", "result": result})
         print(f"DEBUG: Task {task_id} complete and results available.")
 
 
@@ -262,7 +272,7 @@ def _run_pipeline(
         import traceback
         print(f"ERROR in pipeline task {task_id}:")
         traceback.print_exc()
-        _task_store[task_id] = {"status": "error", "error": str(exc)}
+        _store_set(task_id, {"status": "error", "error": str(exc)})
 
     finally:
         db.close()
@@ -300,7 +310,7 @@ async def run_all(
     metric_weights = get_metric_weights(metric_priority)
 
     task_id = str(uuid.uuid4())
-    _task_store[task_id] = {"status": "queued"}
+    _store_set(task_id, {"status": "queued"})
 
     background_tasks.add_task(
         _run_pipeline,
@@ -321,7 +331,7 @@ async def run_all(
 @router.get("/status/{task_id}")
 async def get_task_status(task_id: str, db: Session = Depends(get_db)) -> dict[str, Any]:
     """Poll this endpoint after calling /pipeline/run-all to retrieve results."""
-    task = _task_store.get(task_id)
+    task = _store_get(task_id)
     if task is not None:
         return task
         
@@ -338,7 +348,7 @@ async def get_task_status(task_id: str, db: Session = Depends(get_db)) -> dict[s
 async def get_task_result(task_id: str, db: Session = Depends(get_db)) -> dict[str, Any]:
     """Fetches the final persistent result of a pipeline run."""
     # Check in-memory first
-    task = _task_store.get(task_id)
+    task = _store_get(task_id)
     if task and task.get("status") in ["queued", "processing"]:
         return {"status": "running"}
 

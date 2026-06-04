@@ -2,26 +2,25 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, UploadFile, File, Form
+import json
+
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from core.monitoring import check_alert_condition, get_monitoring_history, log_monitoring_event
 from core.common import fairness_score_from_gaps
-from models.db import MonitoringEvent, Project, FairnessFlag, MonitoringLog, Alert, get_db
-from fastapi import HTTPException
-import json
-from pydantic import BaseModel, Field
-from typing import List, Dict
+from core.monitoring import check_alert_condition, get_monitoring_history, log_monitoring_event
+from models.db import Alert, FairnessFlag, MonitoringEvent, MonitoringLog, Project, get_db
 
 class IngestPrediction(BaseModel):
     record_id: int
     prediction: float
-    sensitive_attrs: Dict[str, Any]
+    sensitive_attrs: dict[str, Any]
     timestamp: str
 
 class IngestPayload(BaseModel):
     project_id: int = Field(..., description="Project identifier")
-    predictions: List[IngestPrediction]
+    predictions: list[IngestPrediction]
 
 
 router = APIRouter(prefix="/monitoring", tags=["monitoring"])
@@ -63,7 +62,7 @@ def simulate_monitoring(project_id: int, db: Session = Depends(get_db)) -> dict[
 @router.post("/ingest")
 def ingest_monitoring(payload: IngestPayload, db: Session = Depends(get_db)) -> dict[str, Any]:
     # Compute approval rate per sensitive group
-    group_rates: Dict[str, list[float]] = {}
+    group_rates: dict[str, list[float]] = {}
     for pred in payload.predictions:
         group_key = json.dumps(pred.sensitive_attrs, sort_keys=True)
         group_rates.setdefault(group_key, []).append(float(pred.prediction))
@@ -81,9 +80,9 @@ def ingest_monitoring(payload: IngestPayload, db: Session = Depends(get_db)) -> 
     fairness_score = fairness_score_from_gaps(gaps)
 
     # Compute group breakdown per individual attribute
-    breakdown: Dict[str, Dict[str, float]] = {}
+    breakdown: dict[str, dict[str, float]] = {}
     for attr in ["gender", "caste"]: # Simplified for now, or use project's sensitive_cols
-        attr_rates: Dict[str, list[float]] = {}
+        attr_rates: dict[str, list[float]] = {}
         for pred in payload.predictions:
             val = str(pred.sensitive_attrs.get(attr, "unknown"))
             attr_rates.setdefault(val, []).append(float(pred.prediction))

@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from models.db import AuditRun, Project, get_db
 from core.common import get_metric_weights
-from .pipeline import _run_pipeline, _task_store
+from .pipeline import _run_pipeline, _store_set
 
 router = APIRouter(prefix="/project", tags=["project"])
 
@@ -92,7 +92,7 @@ async def run_project_pipeline(
             model_bytes = f.read()
 
     task_id = str(uuid.uuid4())
-    _task_store[task_id] = {"status": "queued"}
+    _store_set(task_id, {"status": "queued"})
     
     metric_weights = get_metric_weights(metric_priority)
 
