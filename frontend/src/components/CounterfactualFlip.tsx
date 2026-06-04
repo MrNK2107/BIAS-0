@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function CounterfactualFlip({ original, flipped }: { original: string; flipped: string }) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
-    setIsFlipped(false);
-    const timer = setTimeout(() => setIsFlipped(true), 600);
-    return () => clearTimeout(timer);
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setIsFlipped(true), 600);
+    return () => clearTimeout(timerRef.current);
   }, [original, flipped]);
 
   return (

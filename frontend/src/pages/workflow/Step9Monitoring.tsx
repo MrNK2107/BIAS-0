@@ -29,6 +29,10 @@ const S: Record<string, React.CSSProperties> = {
 };
 
 const COLORS: Record<string, string> = { alert:'#BC4749', drift_alert:'#BC4749', flag:'#D4A373', info:'#D4A373' };
+
+function formatTimestamp(ts: number): string {
+  return new Date(ts).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
 const ICONS: Record<string, React.ReactNode> = {
   alert: <AlertTriangle size={13} color="#fff" />, drift_alert: <Activity size={13} color="#fff" />,
   flag: <Flag size={13} color="#fff" />, info: <Info size={13} color="#fff" />,
@@ -111,24 +115,27 @@ export default function Step9Monitoring() {
   // Build timeline
   const timelineEvents = useMemo(() => {
     const all: any[] = [];
+    const now = Date.now();
     if (monitoringResult?.events) {
       monitoringResult.events.forEach((e: any, i: number) => {
-        all.push({ id:`evt-${i}`, timestamp: new Date(e.timestamp).getTime(),
-          dateStr: new Date(e.timestamp).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }),
-          type: e.alert ? 'alert' : 'info', title: e.alert ? '⚠ Incident Detected' : 'Monitoring Check',
+        const ts = new Date(e.timestamp).getTime();
+        all.push({ id:`evt-${i}`, timestamp: ts,
+          dateStr: formatTimestamp(ts),
+          type: e.alert ? 'alert' : 'info', title: e.alert ? 'Warning Incident Detected' : 'Monitoring Check',
           description: e.alert ? `Fairness dropped to ${e.fairness_score.toFixed(1)}` : `Score: ${e.fairness_score.toFixed(1)}`,
           fairness_score: e.fairness_score, details: e.group_breakdown });
       });
     }
     flags.forEach((f: any) => {
-      all.push({ id:`flag-${f.id}`, timestamp: new Date(f.timestamp).getTime(),
-        dateStr: new Date(f.timestamp).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }),
-        type:'flag', title:`🚩 Flagged Record #${f.record_id}`, description:`Reason: ${f.reason}`, details: f });
+      const ts = new Date(f.timestamp).getTime();
+      all.push({ id:`flag-${f.id}`, timestamp: ts,
+        dateStr: formatTimestamp(ts),
+        type:'flag', title:`Flagged Record #${f.record_id}`, description:`Reason: ${f.reason}`, details: f });
     });
     if (driftReport) {
-      all.push({ id:'drift-latest', timestamp: Date.now(),
-        dateStr: new Date().toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }),
-        type: driftReport.drift_alert ? 'drift_alert' : 'info', title: driftReport.drift_alert ? '↕ Drift Warning' : 'Drift Check — Clear',
+      all.push({ id:'drift-latest', timestamp: now,
+        dateStr: formatTimestamp(now),
+        type: driftReport.drift_alert ? 'drift_alert' : 'info', title: driftReport.drift_alert ? 'Drift Warning' : 'Drift Check - Clear',
         description: driftReport.drift_message, details: driftReport });
     }
     return all.sort((a, b) => b.timestamp - a.timestamp);

@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import WorkflowShell from './components/WorkflowShell';
 import Step1Upload from './pages/workflow/Step1Upload';
 import Step2Config from './pages/workflow/Step2Config';
@@ -11,31 +11,28 @@ import Step8Sandbox from './pages/workflow/Step8Sandbox';
 
 import Dashboard from './pages/Dashboard';
 import HeroPage from './pages/HeroPage';
-import CreateProject from './pages/CreateProject';
 import PageTransition from './components/animations/PageTransition';
 import BackgroundGrid from './components/animations/BackgroundGrid';
 import { useAppContext } from './context/AppContext';
-import React from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function App() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { projectId, projects } = useAppContext();
-  const [hasResumed, setHasResumed] = React.useState(false);
+  const hasResumed = useRef(false);
 
-  // Safe Auto-Resume Logic
-  React.useEffect(() => {
-    if (projectId && projects.length > 0 && !hasResumed) {
+  useEffect(() => {
+    if (projectId && projects.length > 0 && !hasResumed.current && location.pathname !== '/dashboard') {
       const p = projects.find(proj => String(proj.id) === String(projectId));
       if (p && p.max_step > 1) {
-        if (location.pathname === '/' || location.pathname === '/workflow/step-1') {
+        if (location.pathname === '/' || location.pathname.startsWith('/workflow')) {
           const resumeStep = Math.min(p.max_step, 8);
-          navigate(`/workflow/step-${resumeStep}`);
-          setHasResumed(true);
+          hasResumed.current = true;
+          window.location.href = `/workflow/step-${resumeStep}`;
         }
       }
     }
-  }, [projectId, projects, hasResumed, location.pathname, navigate]);
+  }, [projectId, projects, location.pathname]);
 
   return (
     <>
