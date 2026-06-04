@@ -1,7 +1,8 @@
 import sqlite3
 import os
+from pathlib import Path
 
-db_path = "d:/BIAS-0/backend/unbiased_ai.db"
+db_path = str(Path(__file__).resolve().parent / "unbiased_ai.db")
 
 if os.path.exists(db_path):
     conn = sqlite3.connect(db_path)

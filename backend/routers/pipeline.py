@@ -5,6 +5,7 @@ GET  /pipeline/status/{task_id} → returns { status, result? }
 """
 from __future__ import annotations
 
+import logging
 import threading
 import uuid
 from typing import Any
@@ -22,6 +23,8 @@ from core.model_bias import run_model_bias_analysis
 from core.stress_test import run_stress_tests
 from models.db import AuditRun, Project, MonitoringLog, Alert, get_db
 from utils.model_loader import load_model_from_bytes
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/pipeline", tags=["pipeline"])
 
@@ -58,10 +61,7 @@ def _run_pipeline(
     db: Session = SessionLocal()
 
     try:
-        print(f"DEBUG: Starting pipeline for task {task_id}")
         if not project_id or str(project_id) in ("", "null", "undefined", "None"):
-            print("DEBUG: No project ID provided, creating auto project")
-            # ... (omitted for brevity in replacement, but I will include it)
             project = Project(
                 name="Auto Project",
                 domain=domain,
@@ -75,12 +75,9 @@ def _run_pipeline(
         else:
             project_id = int(project_id)
 
-        print(f"DEBUG: Project ID set to {project_id}")
         df = pd.read_csv(io.BytesIO(df_bytes))
-        print(f"DEBUG: CSV loaded, shape: {df.shape}")
 
         # ── Build / load model ────────────────────────────────────────────────
-        print("DEBUG: Stage 0: Building/Loading model...")
         prepared = prepare_split(df, target_col)
         if model_bytes:
             shared_model = load_model_from_bytes(model_bytes)
@@ -89,18 +86,14 @@ def _run_pipeline(
             shared_model = build_classifier(prepared.X_train, model_type="rf")
             shared_model.fit(prepared.X_train, prepared.y_train)
             model_used = "built_in_rf"
-        print(f"DEBUG: Model ready (using {model_used})")
 
         # ── Stage 1: Data Audit ───────────────────────────────────────────────
-        print("DEBUG: Stage 1: Running Data Audit...")
         data_audit = run_data_audit(df, sensitive_list, target_col)
 
         # ── Stage 2: Proxy Detection ──────────────────────────────────────────
-        print("DEBUG: Stage 2: Running Proxy Detection...")
         proxy = detect_proxy_features(df, sensitive_list)
 
         # ── Stage 3: Model Bias ───────────────────────────────────────────────
-        print("DEBUG: Stage 3: Running Model Bias Analysis...")
         model_bias = run_model_bias_analysis(
             df, sensitive_list, target_col,
             model=shared_model,
@@ -108,17 +101,14 @@ def _run_pipeline(
         )
 
         # ── Stage 4: Explainability (SHAP / contrastive) ─────────────────────
-        print("DEBUG: Stage 4: Running Explainability Analysis (SHAP)...")
         explanations = explain_flagged_decisions(
             df, shared_model, sensitive_list, target_col, n_samples=5
         )
 
         # ── Stage 5: Narrative Summary ────────────────────────────────────────
-        print("DEBUG: Stage 5: Generating Narrative Summary...")
         explain_summary = generate_narrative_summary(explanations, sensitive_list, domain=domain)
 
         # ── Stage 6: Counterfactual (first sensitive col) ─────────────────────
-        print("DEBUG: Stage 6: Running Counterfactual Analysis...")
         primary_sensitive_col = sensitive_list[0] if sensitive_list else target_col
         counterfactual = run_counterfactual_test(
             df, shared_model, primary_sensitive_col, target_col,
@@ -126,11 +116,9 @@ def _run_pipeline(
         )
 
         # ── Stage 7: Stress Tests ─────────────────────────────────────────────
-        print("DEBUG: Stage 7: Running Stress Tests...")
         stress = run_stress_tests(df, shared_model, sensitive_list, target_col)
 
         # ── Scores & Decision Calculation ─────────────────────────────────────
-        print("DEBUG: Calculating unified scores...")
         data_bias_score = round(100 * (1 - data_audit.get("max_gap", 0.0)))
         model_bias_score = round(model_bias.get("fairness_score", 0.0))
         proxy_risk_score = round(100 * (1 - proxy.get("proxy_score", 0.0)))
@@ -158,7 +146,6 @@ def _run_pipeline(
             decision = "LOW RISK"
 
         # ── Stage 8: Fix Recommendations ──────────────────────────────────────
-        print("DEBUG: Stage 8: Generating Fix Recommendations...")
         recommendations = generate_fix_recommendations(
             data_audit, 
             proxy, 
@@ -193,11 +180,6 @@ def _run_pipeline(
         }
 
         # ── Persist to DB ──────────────────────────────────────────────────────
-        print(f"DEBUG: Finalizing Results for task {task_id}...")
-        import time
-        time.sleep(0.1)  # Brief sleep to yield GIL before heavy DB ops
-
-        print("DEBUG: Consolidation Phase: Creating audit_run record...")
         risk_level = data_audit.get("risk_level", "Yellow")
         audit_run = AuditRun(
             project_id=project_id,
@@ -211,7 +193,6 @@ def _run_pipeline(
         )
         db.add(audit_run)
 
-        print("DEBUG: Consolidation Phase: Creating monitoring_log record...")
         log_entry = MonitoringLog(
             project_id=project_id,
             fairness_score=float(unified_fairness_score),
@@ -226,7 +207,6 @@ def _run_pipeline(
         )
         db.add(log_entry)
         
-        print("DEBUG: Consolidation Phase: Checking for alerts...")
         if unified_fairness_score < 50:
             db.add(Alert(
                 project_id=project_id,
@@ -235,7 +215,6 @@ def _run_pipeline(
                 severity="HIGH"
             ))
 
-        print("DEBUG: Consolidation Phase: Querying historical trends...")
         last_log = db.query(MonitoringLog).filter(MonitoringLog.project_id == project_id).order_by(MonitoringLog.timestamp.desc()).first()
         if last_log and last_log.fairness_score > 0:
             drop_pct = (last_log.fairness_score - unified_fairness_score) / last_log.fairness_score
@@ -260,18 +239,13 @@ def _run_pipeline(
                     severity="MEDIUM"
                 ))
 
-        print("DEBUG: Consolidation Phase: Committing to database...")
         db.commit()
-        print("DEBUG: Database commit successful.")
 
         _store_set(task_id, {"status": "complete", "result": result})
-        print(f"DEBUG: Task {task_id} complete and results available.")
 
 
     except Exception as exc:
-        import traceback
-        print(f"ERROR in pipeline task {task_id}:")
-        traceback.print_exc()
+        logger.exception("Pipeline task %s failed", task_id)
         _store_set(task_id, {"status": "error", "error": str(exc)})
 
     finally:

@@ -143,7 +143,6 @@ def fairness_gaps(y_pred: pd.Series, y_true: pd.Series, group: pd.Series) -> dic
     approval_rates = []
     tprs = []
     fprs = []
-    fprs = []
     fnrs = []
     for value in group_values:
         mask = group.astype(str) == value

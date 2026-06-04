@@ -11,26 +11,11 @@ from typing import Any
 from fastapi import APIRouter, File, Form, UploadFile
 
 from core.auto_fix import generate_fix_recommendations
+from core.common import get_metric_weights
 from core.sandbox import run_sandbox_simulation
 from utils.data_io import upload_file_to_dataframe
 
 router = APIRouter(prefix="/fixes", tags=["sandbox"])
-
-
-def _metric_weights_from_priority(metric_priority: str) -> dict[str, float] | None:
-    if metric_priority == "fairness":
-        return {
-            "demographic_parity_difference": 0.4,
-            "equal_opportunity_difference": 0.4,
-            "fpr_gap": 0.2,
-        }
-    if metric_priority == "accuracy":
-        return {
-            "demographic_parity_difference": 0.1,
-            "equal_opportunity_difference": 0.1,
-            "fpr_gap": 0.1,
-        }
-    return None  # balanced / default
 
 
 @router.post("/sandbox")
@@ -54,7 +39,7 @@ async def run_sandbox(
         json.loads(bias_result),
     )
     fixes_to_apply = [r for r in all_recommendations if r["fix_id"] in selected_ids]
-    metric_weights = _metric_weights_from_priority(metric_priority)
+    metric_weights = get_metric_weights(metric_priority)
 
     return run_sandbox_simulation(
         df, sensitive_list, targetCol, fixes_to_apply, metric_weights=metric_weights

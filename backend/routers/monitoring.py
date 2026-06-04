@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from core.common import fairness_score_from_gaps
+from core.common import fairness_score_from_gaps, risk_from_score
 from core.monitoring import check_alert_condition, get_monitoring_history, log_monitoring_event
 from models.db import Alert, FairnessFlag, MonitoringEvent, MonitoringLog, Project, get_db
 
@@ -33,11 +33,10 @@ def monitoring_history(project_id: int, db: Session = Depends(get_db)) -> dict[s
     latest = events[-1]["fairness_score"] if events else baseline
     check = check_alert_condition(latest, baseline)
     trend = "declining" if latest < baseline - 3 else "improving" if latest > baseline + 3 else "stable"
-    current_risk_level = "Red" if latest < 50 else "Yellow" if latest < 75 else "Green"
     return {
         "project_id": project_id,
         "events": events,
-        "current_risk_level": current_risk_level,
+        "current_risk_level": risk_from_score(latest),
         "trend": trend,
         "alert": check,
     }
@@ -61,6 +60,9 @@ def simulate_monitoring(project_id: int, db: Session = Depends(get_db)) -> dict[
 
 @router.post("/ingest")
 def ingest_monitoring(payload: IngestPayload, db: Session = Depends(get_db)) -> dict[str, Any]:
+    project = db.query(Project).filter(Project.id == payload.project_id).first()
+    sensitive_columns: list[str] = project.sensitive_columns if project else []
+
     # Compute approval rate per sensitive group
     group_rates: dict[str, list[float]] = {}
     for pred in payload.predictions:
@@ -81,7 +83,7 @@ def ingest_monitoring(payload: IngestPayload, db: Session = Depends(get_db)) -> 
 
     # Compute group breakdown per individual attribute
     breakdown: dict[str, dict[str, float]] = {}
-    for attr in ["gender", "caste"]: # Simplified for now, or use project's sensitive_cols
+    for attr in sensitive_columns:
         attr_rates: dict[str, list[float]] = {}
         for pred in payload.predictions:
             val = str(pred.sensitive_attrs.get(attr, "unknown"))
