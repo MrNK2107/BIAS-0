@@ -32,12 +32,17 @@ def _apply_fix(df: pd.DataFrame, fix: dict[str, Any], sensitive_cols: list[str],
         from sklearn.preprocessing import LabelEncoder
         
         target = modified.columns[-1]
-        X_mod = modified.drop(columns=[target])
+        X_mod = modified.drop(columns=[target]).copy()
         y_mod = modified[target]
+        
+        # Drop rows with NaN — SMOTE does not accept missing values
+        valid = ~X_mod.isna().any(axis=1)
+        X_mod = X_mod[valid]
+        y_mod = y_mod[valid]
         
         # Encode categoricals for SMOTE
         encoders = {}
-        for col in X_mod.select_dtypes(include="object").columns:
+        for col in X_mod.select_dtypes(include=["object", "str"]).columns:
             le = LabelEncoder()
             X_mod[col] = le.fit_transform(X_mod[col].astype(str))
             encoders[col] = le
