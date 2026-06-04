@@ -8,7 +8,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPExcepti
 from sqlalchemy.orm import Session
 
 from models.db import AuditRun, Project, get_db
-from .pipeline import _run_pipeline, _task_store, _get_metric_weights
+from core.common import get_metric_weights
+from .pipeline import _run_pipeline, _task_store
 
 router = APIRouter(prefix="/project", tags=["project"])
 
@@ -93,7 +94,7 @@ async def run_project_pipeline(
     task_id = str(uuid.uuid4())
     _task_store[task_id] = {"status": "queued"}
     
-    metric_weights = _get_metric_weights(metric_priority)
+    metric_weights = get_metric_weights(metric_priority)
 
     background_tasks.add_task(
         _run_pipeline,

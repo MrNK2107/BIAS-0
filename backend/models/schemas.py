@@ -1,88 +1,15 @@
+"""Pydantic schemas for the Unbiased AI API.
+
+NOTE: Most schemas are currently unused — endpoints use raw Form() parameters.
+Kept for reference and future migration to request body models.
+"""
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Literal
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class ProjectCreate(BaseModel):
     name: str
     domain: str
-    sensitive_columns: list[str] = Field(default_factory=list)
+    sensitive_columns: list[str] = []
     target_column: str
-
-
-class AuditRequest(BaseModel):
-    project_id: int
-    sensitive_cols: list[str]
-    target_col: str
-
-
-class ModelBiasRequest(BaseModel):
-    model_config = {"protected_namespaces": ()}
-    project_id: int
-    sensitive_cols: list[str]
-    target_col: str
-    model_path: str | None = None
-
-
-class ExplainRequest(BaseModel):
-    model_config = {"protected_namespaces": ()}
-    project_id: int
-    sensitive_cols: list[str]
-    target_col: str
-    model_path: str | None = None
-    n_samples: int = 5
-
-
-class CounterfactualRequest(BaseModel):
-    model_config = {"protected_namespaces": ()}
-    project_id: int
-    sensitive_col: str
-    target_col: str
-    model_path: str | None = None
-
-
-class StressRequest(BaseModel):
-    model_config = {"protected_namespaces": ()}
-    project_id: int
-    sensitive_cols: list[str]
-    target_col: str
-    model_path: str | None = None
-
-
-class FixRecommendRequest(BaseModel):
-    audit_result: dict[str, Any]
-    proxy_result: dict[str, Any]
-    bias_result: dict[str, Any]
-
-
-class SandboxRequest(BaseModel):
-    project_id: int
-    sensitive_cols: list[str]
-    target_col: str
-    fixes_to_apply: list[dict[str, Any]]
-
-
-class MonitoringSimulateRequest(BaseModel):
-    baseline_score: float = 72
-
-
-class MonitoringEventOut(BaseModel):
-    timestamp: datetime
-    fairness_score: float
-    alert: bool
-    note: str | None = None
-
-
-class MonitoringHistoryOut(BaseModel):
-    project_id: int
-    events: list[MonitoringEventOut]
-    current_risk_level: Literal["Green", "Yellow", "Red"]
-    trend: Literal["improving", "stable", "declining"]
-
-
-class DemoProjectResponse(BaseModel):
-    file_name: str
-    csv_text: str

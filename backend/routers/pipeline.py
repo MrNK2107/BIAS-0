@@ -16,7 +16,7 @@ from core.counterfactual import run_counterfactual_test
 from core.data_audit import run_data_audit
 from core.explainability import explain_flagged_decisions, generate_narrative_summary
 from core.feature_intelligence import detect_proxy_features
-from core.common import build_classifier, prepare_split
+from core.common import build_classifier, get_metric_weights, prepare_split
 from core.model_bias import run_model_bias_analysis
 from core.stress_test import run_stress_tests
 from models.db import AuditRun, Project, MonitoringLog, Alert, get_db
@@ -26,27 +26,6 @@ router = APIRouter(prefix="/pipeline", tags=["pipeline"])
 
 # ── In-memory task store (suitable for single-process dev; swap for Redis in prod) ──
 _task_store: dict[str, dict[str, Any]] = {}
-
-
-def _get_metric_weights(metric_priority: str) -> dict[str, float]:
-    if metric_priority == "equal_opportunity_first":
-        return {
-            "demographic_parity_difference": 15,
-            "equal_opportunity_difference": 45,
-            "fpr_gap": 15,
-        }
-    elif metric_priority == "demographic_parity_first":
-        return {
-            "demographic_parity_difference": 45,
-            "equal_opportunity_difference": 15,
-            "fpr_gap": 15,
-        }
-    else:  # "balanced" or default
-        return {
-            "demographic_parity_difference": 30,
-            "equal_opportunity_difference": 25,
-            "fpr_gap": 20,
-        }
 
 
 def _run_pipeline(
@@ -318,7 +297,7 @@ async def run_all(
             model_bytes = None
 
     sensitive_list = [col.strip() for col in sensitive_cols.split(",") if col.strip()]
-    metric_weights = _get_metric_weights(metric_priority)
+    metric_weights = get_metric_weights(metric_priority)
 
     task_id = str(uuid.uuid4())
     _task_store[task_id] = {"status": "queued"}

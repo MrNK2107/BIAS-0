@@ -183,6 +183,31 @@ def fairness_score_from_gaps(gaps: dict[str, float], metric_weights: dict[str, f
     return float(max(0.0, min(100.0, 100.0 - raw_penalty)))
 
 
+def get_metric_weights(metric_priority: str = "balanced") -> dict[str, float]:
+    """Convert metric priority string to weights dictionary.
+
+    Shared across pipeline and legacy bias endpoints.
+    """
+    if metric_priority == "equal_opportunity_first":
+        return {
+            "demographic_parity_difference": 15,
+            "equal_opportunity_difference": 45,
+            "fpr_gap": 15,
+        }
+    elif metric_priority == "demographic_parity_first":
+        return {
+            "demographic_parity_difference": 45,
+            "equal_opportunity_difference": 15,
+            "fpr_gap": 15,
+        }
+    else:  # "balanced" or default
+        return {
+            "demographic_parity_difference": 30,
+            "equal_opportunity_difference": 25,
+            "fpr_gap": 20,
+        }
+
+
 def top_correlated_feature(features: pd.DataFrame, sensitive_cols: list[str]) -> tuple[str | None, float]:
     best_feature = None
     best_score = 0.0

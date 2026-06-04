@@ -8,7 +8,7 @@ import requests
 from fastapi import APIRouter, File, Form, UploadFile
 from sklearn.metrics import accuracy_score
 
-from core.common import fairness_gaps, fairness_score_from_gaps, group_metrics, prepare_split, risk_from_score
+from core.common import fairness_gaps, fairness_score_from_gaps, get_metric_weights, group_metrics, prepare_split, risk_from_score
 from core.counterfactual import run_counterfactual_test
 from core.explainability import explain_flagged_decisions, generate_narrative_summary
 from core.model_bias import run_model_bias_analysis
@@ -17,28 +17,6 @@ from pydantic import BaseModel
 from utils.data_io import upload_file_to_dataframe
 
 router = APIRouter(prefix="/bias", tags=["bias"])
-
-
-def get_metric_weights(metric_priority: str = "balanced") -> dict[str, float]:
-    """Convert metric priority string to weights dictionary."""
-    if metric_priority == "equal_opportunity_first":
-        return {
-            "demographic_parity_difference": 15,
-            "equal_opportunity_difference": 45,
-            "fpr_gap": 15,
-        }
-    elif metric_priority == "demographic_parity_first":
-        return {
-            "demographic_parity_difference": 45,
-            "equal_opportunity_difference": 15,
-            "fpr_gap": 15,
-        }
-    else:  # "balanced" or default
-        return {
-            "demographic_parity_difference": 30,
-            "equal_opportunity_difference": 25,
-            "fpr_gap": 20,
-        }
 
 
 @router.post("/model")
