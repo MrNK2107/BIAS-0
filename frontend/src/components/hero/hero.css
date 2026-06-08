@@ -3,8 +3,8 @@
   --hero-bg-2: #171a21;
   --hero-text: #F1F1F1;
   --hero-muted: #8E9196;
-  --hero-copper: #D4A373;
-  --hero-warning: #BC4749;
+  --hero-copper: #C89D7C;
+  --hero-warning: #A24A46;
 }
 
 .hero-viewport {
@@ -13,8 +13,8 @@
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 22% 18%, rgba(212, 163, 115, 0.15), transparent 42%),
-    radial-gradient(circle at 78% 82%, rgba(188, 71, 73, 0.1), transparent 46%),
+    radial-gradient(circle at 22% 18%, rgba(200, 157, 124, 0.15), transparent 42%),
+    radial-gradient(circle at 78% 82%, rgba(162, 74, 70, 0.1), transparent 46%),
     linear-gradient(140deg, var(--hero-bg-1), var(--hero-bg-2));
 }
 
@@ -68,7 +68,7 @@
 .hero-panel {
   background: rgba(26, 29, 35, 0.52);
   backdrop-filter: blur(16px);
-  border: 0.5px solid rgba(212, 163, 115, 0.2);
+  border: 0.5px solid rgba(200, 157, 124, 0.2);
   border-radius: 1.15rem;
   padding: clamp(1rem, 3vw, 2.1rem);
   box-shadow: 0 24px 80px rgba(2, 6, 23, 0.4);
@@ -149,28 +149,28 @@
 
 .cta-enter {
   color: var(--hero-text);
-  border-color: rgba(212, 163, 115, 0.7);
+  border-color: rgba(200, 157, 124, 0.7);
   background: rgba(26, 29, 35, 0.82);
-  box-shadow: 0 0 20px rgba(212, 163, 115, 0.18);
+  box-shadow: 0 0 20px rgba(200, 157, 124, 0.18);
 }
 
 .cta-enter:hover {
   transform: translateY(-1px);
-  background: rgba(212, 163, 115, 0.14);
-  box-shadow: 0 0 30px rgba(212, 163, 115, 0.34);
+  background: rgba(200, 157, 124, 0.14);
+  box-shadow: 0 0 30px rgba(200, 157, 124, 0.34);
 }
 
 .cta-analysis,
 .cta-primary {
   color: #0a0a0a;
   background: var(--hero-copper);
-  box-shadow: 0 0 40px rgba(212, 163, 115, 0.5);
+  box-shadow: 0 0 40px rgba(200, 157, 124, 0.5);
 }
 
 .cta-analysis:hover,
 .cta-primary:hover {
   transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 0 56px rgba(212, 163, 115, 0.62);
+  box-shadow: 0 0 56px rgba(200, 157, 124, 0.62);
 }
 
 @media (max-width: 768px) {

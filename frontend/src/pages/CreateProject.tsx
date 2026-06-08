@@ -133,7 +133,7 @@ export default function CreateProject() {
         <h1 className="page-title">Initialize Fairness Audit</h1>
         
         {step === 1 && (
-          <div className="card-inset" style={{ maxWidth: 520, margin: '20px auto 0', textAlign: 'left', background: 'rgba(212,163,115,0.03)', border: '1px solid var(--border)' }}>
+          <div className="card-inset" style={{ maxWidth: 520, margin: '20px auto 0', textAlign: 'left', background: 'rgba(200, 157, 124,0.03)', border: '1px solid var(--border)' }}>
             <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
                <div className="workflow-brand-badge" style={{ flexShrink: 0 }}><Info size={18} /></div>
                <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
@@ -154,7 +154,7 @@ export default function CreateProject() {
               transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
               border: '1px solid',
               borderColor: step >= s ? 'var(--accent)' : 'var(--border)',
-              boxShadow: step === s ? '0 0 15px rgba(212, 163, 115, 0.3)' : 'none'
+              boxShadow: step === s ? '0 0 15px rgba(200, 157, 124, 0.3)' : 'none'
             }}>
               {step > s ? <CheckCircle2 size={16} /> : s}
             </div>

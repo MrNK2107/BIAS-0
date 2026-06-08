@@ -6,6 +6,7 @@ import AnimatedNumber from '../../components/animations/AnimatedNumber';
 import ScanningSkeleton from '../../components/animations/ScanningSkeleton';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import type { CustomScenario } from '../../types';
+import EmptyState from '../../components/EmptyState';
 
 export default function Step7StressTest() {
   const { pipelineResults, stressResult, biasResult, runModelBias, advanceStep } = useAppContext();
@@ -37,20 +38,25 @@ export default function Step7StressTest() {
       <div>
         <div className="page-header">
           <div>
-            <div className="kicker">Step 7 of 8</div>
+            <div className="kicker">Step 7 of 9</div>
             <h1 className="page-title">Stress Testing</h1>
           </div>
         </div>
-        <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-          <p className="helper" style={{ marginBottom: 24 }}>No analysis data yet. Please run the analysis first.</p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
-            <button className="btn" onClick={() => navigate('/workflow/step-6')}>
-              <ArrowLeft size={16} /> Back
-            </button>
-            <button className="btn btn-primary" onClick={() => navigate('/workflow/step-2')}>
-              Go to Configuration <ArrowRight size={16} />
-            </button>
-          </div>
+        <EmptyState
+          compact
+          kicker="Step 7"
+          title="No stress test results yet"
+          description="Run the full audit pipeline to see how the model holds up against data perturbations and distribution shifts."
+          primaryAction={{ label: 'Go to Configuration', to: '/workflow/step-2' }}
+          secondaryAction={{ label: 'Back', to: '/workflow/step-6' }}
+        />
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 24 }}>
+          <button className="btn" onClick={() => navigate('/workflow/step-6')}>
+            <ArrowLeft size={16} /> Back
+          </button>
+          <button className="btn btn-primary" onClick={() => navigate('/workflow/step-2')}>
+            Go to Configuration <ArrowRight size={16} />
+          </button>
         </div>
       </div>
     );
@@ -74,7 +80,7 @@ export default function Step7StressTest() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 7 of 8</div>
+          <div className="kicker">Step 7 of 9</div>
           <h1 className="page-title">Stress Testing</h1>
           <p className="helper" style={{ marginTop: 8 }}>
             Discover how the model's fairness holds up against data perturbations, missing values, and distribution shifts.
@@ -188,7 +194,7 @@ export default function Step7StressTest() {
                     <AnimatedNumber value={scenario.fairness_score} />
                   </div>
                 </div>
-                <div style={{ padding: '12px', backgroundColor: isNegative ? 'rgba(188,71,73,0.14)' : 'rgba(212,163,115,0.14)', border: '0.5px solid var(--border)', borderRadius: '8px', textAlign: 'center' }}>
+                <div style={{ padding: '12px', backgroundColor: isNegative ? 'rgba(162, 74, 70,0.14)' : 'rgba(200, 157, 124,0.14)', border: '0.5px solid var(--border)', borderRadius: '8px', textAlign: 'center' }}>
                   <div className="helper" style={{ marginBottom: '4px' }}>Change</div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 600, color: isNegative ? 'var(--warning)' : 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                     {isNegative ? '▼' : '▲'}

@@ -9,8 +9,10 @@ import {
   Settings2,
   ShieldCheck,
   Upload,
+  Activity,
 } from 'lucide-react';
 import ProjectSelector from './ProjectSelector';
+import UserMenu from './UserMenu';
 import { useAppContext } from '../context/AppContext';
 
 const STEPS = [
@@ -22,6 +24,7 @@ const STEPS = [
   { id: 6, to: '/workflow/step-6', label: 'Counterfactual', icon: ShieldCheck },
   { id: 7, to: '/workflow/step-7', label: 'Stress Test', icon: Gauge },
   { id: 8, to: '/workflow/step-8', label: 'Sandbox', icon: FlaskConical },
+  { id: 9, to: '/workflow/step-9', label: 'Monitoring', icon: Activity },
 ];
 
 export default function WorkflowShell({ children }: { children: React.ReactNode }) {
@@ -29,7 +32,8 @@ export default function WorkflowShell({ children }: { children: React.ReactNode 
   const { maxStep } = useAppContext();
 
   const isDashboard = location.pathname === '/dashboard';
-  const currentStep = STEPS.find((step) => location.pathname.includes(step.to)) || STEPS[0];
+  const currentStep =
+    STEPS.find((step) => location.pathname.includes(step.to)) ?? STEPS[0];
   const currentLabel = isDashboard ? 'Dashboard overview' : currentStep.label;
   const currentMeta = isDashboard ? 'Workspace' : `Step ${currentStep.id} of ${STEPS.length}`;
 
@@ -58,7 +62,6 @@ export default function WorkflowShell({ children }: { children: React.ReactNode 
             const Icon = step.icon;
             const isActive = location.pathname.includes(step.to);
             const isLocked = step.id > maxStep && step.id > 2;
-            // Allow step 1 and 2 always; lock rest until unlocked
 
             return (
               <Link
@@ -66,11 +69,15 @@ export default function WorkflowShell({ children }: { children: React.ReactNode 
                 to={isLocked ? '#' : step.to}
                 className={`workflow-rail-item ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}`}
                 aria-label={`Step ${step.id}: ${step.label}`}
-                title={isLocked ? `Complete previous steps to unlock: ${step.label}` : `Step ${step.id}: ${step.label}`}
-                style={{ 
+                title={
+                  isLocked
+                    ? `Complete previous steps to unlock: ${step.label}`
+                    : `Step ${step.id}: ${step.label}`
+                }
+                style={{
                   opacity: isLocked ? 0.3 : 1,
                   cursor: isLocked ? 'not-allowed' : 'pointer',
-                  pointerEvents: isLocked ? 'none' : 'auto'
+                  pointerEvents: isLocked ? 'none' : 'auto',
                 }}
               >
                 <Icon size={17} strokeWidth={1.75} />
@@ -81,27 +88,72 @@ export default function WorkflowShell({ children }: { children: React.ReactNode 
       </aside>
 
       <div className="workflow-content-area">
-        <header className="workflow-topbar" style={{ 
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-          padding: '0 32px', height: 72, background: 'rgba(10, 10, 10, 0.8)',
-          backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--border)',
-          position: 'sticky', top: 0, zIndex: 100
-        }}>
+        <header
+          className="workflow-topbar"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 32px',
+            height: 72,
+            background: 'rgba(10, 10, 10, 0.8)',
+            backdropFilter: 'blur(12px)',
+            borderBottom: '1px solid var(--border)',
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <ProjectSelector />
-            <div style={{ width: 1, height: 24, background: 'var(--border)', opacity: 0.3 }} />
+            <div
+              style={{
+                width: 1,
+                height: 24,
+                background: 'var(--border)',
+                opacity: 0.3,
+              }}
+            />
           </div>
 
-          <div style={{ minWidth: 280, textAlign: 'right' }}>
-            <div style={{ 
-              color: '#fff', fontWeight: 700, fontSize: '0.95rem', letterSpacing: '1.5px', 
-              textTransform: 'uppercase', opacity: 0.9 
-            }}>
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+              textAlign: 'center',
+              padding: '0 24px',
+            }}
+          >
+            <div
+              style={{
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                letterSpacing: '1.5px',
+                textTransform: 'uppercase',
+                opacity: 0.9,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
               {currentLabel}
             </div>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.74rem', letterSpacing: '0.18em', marginTop: 4, textTransform: 'uppercase' }}>
+            <div
+              style={{
+                color: 'var(--text-secondary)',
+                fontSize: '0.74rem',
+                letterSpacing: '0.18em',
+                marginTop: 4,
+                textTransform: 'uppercase',
+              }}
+            >
               {currentMeta}
             </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <UserMenu />
           </div>
         </header>
 
@@ -109,7 +161,6 @@ export default function WorkflowShell({ children }: { children: React.ReactNode 
           <div className="workflow-frame">{children}</div>
         </main>
       </div>
-
     </div>
   );
 }

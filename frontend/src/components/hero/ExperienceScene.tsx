@@ -36,10 +36,11 @@ export default function ExperienceScene() {
   }, []);
 
   const tmpColor = useMemo(() => new THREE.Color(), []);
-  const trustCopper = useMemo(() => new THREE.Color('#D4A373'), []);
-  const warningRed = useMemo(() => new THREE.Color('#BC4749'), []);
-  const neutralA = useMemo(() => new THREE.Color('#F1F1F1'), []);
-  const neutralB = useMemo(() => new THREE.Color('#8E9196'), []);
+  const trustCopper = useMemo(() => new THREE.Color('#C89D7C'), []); // Antique Gold
+  const warningRed = useMemo(() => new THREE.Color('#A24A46'), []);  // Crimson Oxide
+  const sageGreen = useMemo(() => new THREE.Color('#8FA89B'), []);   // Sage Green
+  const neutralA = useMemo(() => new THREE.Color('#F3F2F1'), []);
+  const neutralB = useMemo(() => new THREE.Color('#AFAAA6'), []);
 
   const particleCount = isMobile ? 1800 : MAX_PARTICLES;
 
@@ -132,38 +133,72 @@ export default function ExperienceScene() {
       const positions = positionAttr.array as Float32Array;
       const colors = colorAttr.array as Float32Array;
       const activeCount = Math.min(positionAttr.count, particleCount);
+      const time = state.clock.getElapsedTime();
 
       for (let i = 0; i < activeCount; i++) {
         const idx = i * 3;
 
-        let x = chaoticPositions[idx];
-        let y = chaoticPositions[idx + 1];
-        let z = chaoticPositions[idx + 2];
+        // 1. Chaotic positions with slow drift
+        const cx = chaoticPositions[idx] + Math.sin(time * 0.4 + i) * 0.08;
+        const cy = chaoticPositions[idx + 1] + Math.cos(time * 0.3 + i) * 0.08;
+        const cz = chaoticPositions[idx + 2] + Math.sin(time * 0.5 + i) * 0.08;
+
+        // 2. Fluid Liquid Ribbon
+        const pct = i / activeCount;
+        const rx = -3.8 + 7.6 * pct;
+        const ry = Math.sin(pct * Math.PI * 5 + time * 1.6) * 1.3 + Math.cos(pct * Math.PI * 2.2 + time) * 0.35;
+        const rz = Math.cos(pct * Math.PI * 4 + time * 0.9) * 0.65;
+
+        // 3. Double Helix Ring
+        const angle = pct * Math.PI * 2 + time * 0.08;
+        const twist = pct * Math.PI * 22 + time * 1.5;
+        const strand = (i % 2 === 0) ? 1 : -1;
+        const R = isMobile ? 2.1 : 2.6;
+        const r = isMobile ? 0.24 : 0.32;
+        const hx = (R + strand * r * Math.cos(twist)) * Math.cos(angle);
+        const hy = (R + strand * r * Math.cos(twist)) * Math.sin(angle);
+        const hz = strand * r * Math.sin(twist);
+
+        let x = cx;
+        let y = cy;
+        let z = cz;
 
         if (offset >= 0.3 && offset < 0.6) {
-          x = THREE.MathUtils.lerp(chaoticPositions[idx], clusterPositions[idx], phase2);
-          y = THREE.MathUtils.lerp(chaoticPositions[idx + 1], clusterPositions[idx + 1], phase2);
-          z = THREE.MathUtils.lerp(chaoticPositions[idx + 2], clusterPositions[idx + 2], phase2);
+          x = THREE.MathUtils.lerp(cx, rx, phase2);
+          y = THREE.MathUtils.lerp(cy, ry, phase2);
+          z = THREE.MathUtils.lerp(cz, rz, phase2);
         } else if (offset >= 0.6) {
-          x = THREE.MathUtils.lerp(clusterPositions[idx], torusPositions[idx], phase3);
-          y = THREE.MathUtils.lerp(clusterPositions[idx + 1], torusPositions[idx + 1], phase3);
-          z = THREE.MathUtils.lerp(clusterPositions[idx + 2], torusPositions[idx + 2], phase3);
+          x = THREE.MathUtils.lerp(rx, hx, phase3);
+          y = THREE.MathUtils.lerp(ry, hy, phase3);
+          z = THREE.MathUtils.lerp(rz, hz, phase3);
         }
 
         positions[idx] = x;
         positions[idx + 1] = y;
         positions[idx + 2] = z;
 
+        // Determine particle base colors
         tmpColor.setRGB(baseColors[idx], baseColors[idx + 1], baseColors[idx + 2]);
+
+        // Color interpolation based on state
         if (offset >= 0.3 && offset < 0.6) {
           if (biasedMask[i] === 1) {
+            // Highly Biased points turn Crimson Oxide
             tmpColor.lerp(warningRed, phase2);
+          } else if (i % 4 === 0) {
+            // Some points turn Antique Gold
+            tmpColor.lerp(trustCopper, phase2);
           } else {
-            tmpColor.lerp(neutralB, phase2 * 0.4);
+            // The rest turn Sage Green
+            tmpColor.lerp(sageGreen, phase2);
           }
-        }
-        if (offset >= 0.6) {
-          tmpColor.lerp(trustCopper, phase3);
+        } else if (offset >= 0.6) {
+          // Double helix: alternate strands between Sage Green and Antique Gold
+          const targetColor = (i % 2 === 0) ? sageGreen : trustCopper;
+          // Mix with some crimson oxide to show warning spots in helix that are fading
+          const baseStateColor = (biasedMask[i] === 1) ? warningRed : targetColor;
+          const finalColor = baseStateColor.clone().lerp(targetColor, phase3);
+          tmpColor.copy(finalColor);
         }
 
         colors[idx] = tmpColor.r;
@@ -179,7 +214,7 @@ export default function ExperienceScene() {
     <group ref={sceneRef}>
       <ambientLight intensity={0.75} />
       <pointLight position={[6, 5, 8]} intensity={2.2} color="#F1F1F1" />
-      <pointLight position={[-7, -5, -7]} intensity={1.3} color="#D4A373" />
+      <pointLight position={[-7, -5, -7]} intensity={1.3} color="#C89D7C" />
 
       <points ref={pointsRef}>
         <bufferGeometry>

@@ -13,9 +13,9 @@ const SectionConnector = () => (
     <svg viewBox="0 0 100 60" preserveAspectRatio="none" className="section-connector-svg">
       <defs>
         <linearGradient id="connectorGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#D4A373" stopOpacity="0" />
-          <stop offset="50%" stopColor="#D4A373" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#D4A373" stopOpacity="0" />
+          <stop offset="0%" stopColor="#C89D7C" stopOpacity="0" />
+          <stop offset="50%" stopColor="#C89D7C" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#C89D7C" stopOpacity="0" />
         </linearGradient>
       </defs>
       <path

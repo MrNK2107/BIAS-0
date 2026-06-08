@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import type { DataAuditResult, ProxyResult } from '../../types';
+import EmptyState from '../../components/EmptyState';
 
 export default function Step3DataAudit() {
   const { pipelineResults, auditResult: audit, proxyResult: proxy, advanceStep } = useAppContext();
@@ -47,12 +48,19 @@ export default function Step3DataAudit() {
       <div>
         <div className="page-header">
           <div>
-            <div className="kicker">Step 3 of 8</div>
+            <div className="kicker">Step 3 of 9</div>
             <h1 className="page-title">Data Audit</h1>
           </div>
         </div>
-        <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-          <p className="helper" style={{ marginBottom: 24 }}>No analysis data yet. Please run the analysis first.</p>
+        <EmptyState
+          compact
+          kicker="Step 3"
+          title="No analysis data yet"
+          description="Run the full audit pipeline to see representation gaps, missing data, and proxy-feature warnings for your dataset."
+          primaryAction={{ label: 'Go to Configuration', to: '/workflow/step-2' }}
+          secondaryAction={{ label: 'Back', to: '/workflow/step-2' }}
+        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
           <button className="btn btn-primary" onClick={() => navigate('/workflow/step-2')}>
             Go to Configuration <ArrowRight size={16} />
           </button>
@@ -65,7 +73,7 @@ export default function Step3DataAudit() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 3 of 8</div>
+          <div className="kicker">Step 3 of 9</div>
           <h1 className="page-title">Data Audit</h1>
           <p className="page-subtitle">We analyzed your dataset for representation bias and missing data before modeling.</p>
         </div>

@@ -16,9 +16,9 @@ export default function ScanningSkeleton({
       animate={{ 
         opacity: [0.4, 0.8, 0.4],
         boxShadow: [
-          '0 0 8px rgba(212, 163, 115, 0.05)',
-          '0 0 24px rgba(212, 163, 115, 0.15)',
-          '0 0 8px rgba(212, 163, 115, 0.05)',
+          '0 0 8px rgba(200, 157, 124, 0.05)',
+          '0 0 24px rgba(200, 157, 124, 0.15)',
+          '0 0 8px rgba(200, 157, 124, 0.05)',
         ]
       }}
       transition={{
@@ -30,8 +30,8 @@ export default function ScanningSkeleton({
         height, 
         width, 
         borderRadius, 
-        backgroundColor: 'rgba(212, 163, 115, 0.04)', 
-        border: '1px solid rgba(212, 163, 115, 0.1)',
+        backgroundColor: 'rgba(200, 157, 124, 0.04)', 
+        border: '1px solid rgba(200, 157, 124, 0.1)',
       }}
     />
   );

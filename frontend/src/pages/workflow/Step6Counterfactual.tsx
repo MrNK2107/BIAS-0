@@ -6,10 +6,15 @@ import { useAppContext } from '../../context/AppContext';
 import { api } from '../../api/client';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import type { CounterfactualResult } from '../../types';
+import EmptyState from '../../components/EmptyState';
+import FlagDecisionModal from '../../components/FlagDecisionModal';
+import { useToast } from '../../context/ToastContext';
 
 export default function Step6Counterfactual() {
   const { pipelineResults, sensitiveCols, counterfactualResult, projectId, advanceStep } = useAppContext();
+  const { showToast } = useToast();
   const [sensitiveCol, setSensitiveCol] = useState(sensitiveCols[0] || 'gender');
+  const [flagging, setFlagging] = useState<{ recordId: number } | null>(null);
   const navigate = useNavigate();
 
   if (!pipelineResults || !counterfactualResult) {
@@ -17,20 +22,25 @@ export default function Step6Counterfactual() {
       <div>
         <div className="page-header">
           <div>
-            <div className="kicker">Step 6 of 8</div>
+            <div className="kicker">Step 6 of 9</div>
             <h1 className="page-title">Counterfactual Testing</h1>
           </div>
         </div>
-        <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-          <p className="helper" style={{ marginBottom: 24 }}>No analysis data yet. Please run the analysis first.</p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
-            <button className="btn" onClick={() => navigate('/workflow/step-5')}>
-              <ArrowLeft size={16} /> Back
-            </button>
-            <button className="btn btn-primary" onClick={() => navigate('/workflow/step-2')}>
-              Go to Configuration <ArrowRight size={16} />
-            </button>
-          </div>
+        <EmptyState
+          compact
+          kicker="Step 6"
+          title="No analysis data yet"
+          description="Run the analysis pipeline to see how decisions change when sensitive attributes are flipped."
+          primaryAction={{ label: 'Go to Configuration', to: '/workflow/step-2' }}
+          secondaryAction={{ label: 'Back', to: '/workflow/step-5' }}
+        />
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 24 }}>
+          <button className="btn" onClick={() => navigate('/workflow/step-5')}>
+            <ArrowLeft size={16} /> Back
+          </button>
+          <button className="btn btn-primary" onClick={() => navigate('/workflow/step-2')}>
+            Go to Configuration <ArrowRight size={16} />
+          </button>
         </div>
       </div>
     );
@@ -43,7 +53,7 @@ export default function Step6Counterfactual() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 6 of 8</div>
+          <div className="kicker">Step 6 of 9</div>
           <h1 className="page-title">Counterfactual Testing</h1>
           <p className="helper" style={{ marginTop: 8 }}>
             Analyze if individual predictions flip when modifying only the sensitive attribute. This ensures the model isn't using the sensitive attribute as a proxy.
@@ -113,7 +123,7 @@ export default function Step6Counterfactual() {
                 {(counterfactualResult.sample_flips as unknown as Array<{ record_id: number; original_decision: string; flipped_decision: string; original_value: string; flipped_value: string }>).map((flip, i: number) => {
                   const isFlipped = flip.original_decision !== flip.flipped_decision;
                   return (
-                    <tr key={i} style={{ borderBottom: '0.5px solid var(--border)', backgroundColor: isFlipped ? 'rgba(188, 71, 73, 0.14)' : 'transparent' }}>
+                    <tr key={i} style={{ borderBottom: '0.5px solid var(--border)', backgroundColor: isFlipped ? 'rgba(162, 74, 70, 0.14)' : 'transparent' }}>
                       <td style={{ padding: '12px 8px', fontWeight: 500 }}>{flip.record_id}</td>
                       <td style={{ padding: '12px 8px' }}>
                         <span className="pill muted">{flip.original_decision}</span>
@@ -127,18 +137,14 @@ export default function Step6Counterfactual() {
                         <strong>{sensitiveCol}</strong>: <em>{flip.original_value}</em> → <em>{flip.flipped_value}</em>
                       </td>
                       <td style={{ padding: '12px 8px' }}>
-                        <button className="btn btn-small" onClick={() => {
-                          const reason = window.prompt('Enter reason for flagging this decision:');
-                          if (reason && projectId) {
-                            api.post('/monitoring/flag', {
-                              project_id: parseInt(projectId),
-                              record_id: String(flip.record_id),
-                              reason,
-                            }).then(() => {
-                              alert('Decision flagged for review.');
-                            });
-                          }
-                        }}>🚩 Flag</button>
+                        <button
+                          className="btn btn-small"
+                          onClick={() => setFlagging({ recordId: flip.record_id })}
+                          disabled={!projectId}
+                          title={!projectId ? 'Select a project first' : undefined}
+                        >
+                          🚩 Flag
+                        </button>
                       </td>
                     </tr>
                   );
@@ -160,6 +166,28 @@ export default function Step6Counterfactual() {
           Continue to Stress Test <ArrowRight size={16} />
         </button>
       </div>
+
+      <FlagDecisionModal
+        open={flagging !== null}
+        onClose={() => setFlagging(null)}
+        recordId={flagging?.recordId}
+        context="This counterfactual flip shows the model's decision changed when only the sensitive attribute was modified. Flag it for review if this represents a fairness concern."
+        onSubmit={async (reason) => {
+          if (!projectId || !flagging) return;
+          try {
+            await api.post('/monitoring/flag', {
+              project_id: parseInt(projectId, 10),
+              record_id: String(flagging.recordId),
+              reason,
+            });
+            showToast(`Record #${flagging.recordId} flagged for review.`, 'success');
+          } catch (e) {
+            const msg = (e as { message?: string })?.message ?? 'Could not flag this decision.';
+            showToast(msg, 'error');
+            throw e;
+          }
+        }}
+      />
     </div>
   );
 }

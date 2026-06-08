@@ -18,8 +18,8 @@ export default function AnimatedBarChart({
 
   const getBarColor = (value: number, defaultColor?: string) => {
     if (defaultColor) return defaultColor;
-    if (value < 55) return '#BC4749';
-    return '#D4A373';
+    if (value < 55) return '#A24A46';
+    return '#C89D7C';
   };
 
   return (
@@ -82,9 +82,9 @@ export default function AnimatedBarChart({
                 backgroundColor: color,
                 borderRadius: '6px 6px 0 0',
                 boxShadow: isHovered
-                  ? (color === '#BC4749'
-                    ? '0 0 16px rgba(188,71,73,0.55)'
-                    : '0 0 16px rgba(212,163,115,0.55)')
+                  ? (color === '#A24A46'
+                    ? '0 0 16px rgba(162, 74, 70,0.55)'
+                    : '0 0 16px rgba(200, 157, 124,0.55)')
                   : 'none',
                 position: 'relative',
                 overflow: 'hidden'

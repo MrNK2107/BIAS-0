@@ -66,7 +66,7 @@ export default function ProjectSelector() {
                         padding: '10px 12px', cursor: 'pointer', display: 'flex', 
                         justifyContent: 'space-between', alignItems: 'center',
                         marginBottom: 6, border: String(p.id) === String(projectId) ? '1px solid var(--accent)' : '1px solid transparent',
-                        background: String(p.id) === String(projectId) ? 'rgba(212, 163, 115, 0.05)' : 'transparent'
+                        background: String(p.id) === String(projectId) ? 'rgba(200, 157, 124, 0.05)' : 'transparent'
                       }}
                       onClick={() => { setProjectId(String(p.id)); setIsOpen(false); }}
                     >

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
+import { useToast } from '../../context/ToastContext';
 import { formApi } from '../../api/client';
-import { ArrowRight, ArrowLeft, Loader } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader, Wand2 } from 'lucide-react';
 
 const ANALYSIS_STAGES = [
   'Scanning dataset for representation gaps',
@@ -91,6 +92,7 @@ export default function Step2Config() {
   const [headers, setHeaders] = useState<string[]>([]);
   const [localError, setLocalError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (!file) {
@@ -101,12 +103,15 @@ export default function Step2Config() {
       const lines = text.trim().split(/\r?\n/);
       const parsedHeaders = lines[0]?.split(',') ?? [];
       setHeaders(parsedHeaders);
-      // Auto-select last column as target if none selected yet
       if (!targetCol && parsedHeaders.length > 0) {
         setTargetCol(parsedHeaders[parsedHeaders.length - 1]);
       }
+      if (sensitiveCols.length === 0 && parsedHeaders.length > 1) {
+        const guessed = guessSensitiveColumns(parsedHeaders);
+        if (guessed.length > 0) setSensitiveCols(guessed);
+      }
     });
-  }, [file, navigate]);
+  }, [file, navigate, targetCol, sensitiveCols.length, setTargetCol, setSensitiveCols]);
 
   const handleStartAnalysis = async () => {
     setLocalError(null);
@@ -168,11 +173,30 @@ export default function Step2Config() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 2 of 8</div>
+          <div className="kicker">Step 2 of 9</div>
           <h1 className="page-title">Configuration</h1>
           <p className="page-subtitle">Select the sensitive attributes and define how the model should be accessed.</p>
         </div>
       </div>
+
+      {sensitiveCols.length > 0 && (
+        <button
+          className="btn btn-small"
+          onClick={() => {
+            const guessed = guessSensitiveColumns(headers).filter(
+              (c) => !sensitiveCols.includes(c),
+            );
+            if (guessed.length === 0) {
+              showToast('No additional sensitive attributes detected. You can add more manually below.', 'info');
+              return;
+            }
+            setSensitiveCols([...sensitiveCols, ...guessed]);
+          }}
+          style={{ marginBottom: 12 }}
+        >
+          <Wand2 size={13} /> Auto-suggest sensitive attributes
+        </button>
+      )}
 
       <div className="grid-2">
         <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -188,13 +212,13 @@ export default function Step2Config() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 6, 
-                background: 'rgba(212,163,115,0.15)', 
+                background: 'rgba(200, 157, 124,0.15)', 
                 color: 'var(--accent)', 
                 padding: '4px 10px', 
                 borderRadius: '16px',
                 fontSize: '0.85rem',
                 fontWeight: 600,
-                border: '1px solid rgba(212,163,115,0.3)'
+                border: '1px solid rgba(200, 157, 124,0.3)'
               }}>
                 {col}
                 <button 
@@ -287,7 +311,7 @@ export default function Step2Config() {
                 borderRadius: '8px',
                 border: '1px solid var(--border)',
                 cursor: 'pointer',
-                background: metricPriority === p.id ? 'rgba(212,163,115,0.08)' : 'transparent',
+                background: metricPriority === p.id ? 'rgba(200, 157, 124,0.08)' : 'transparent',
                 borderColor: metricPriority === p.id ? 'var(--accent)' : 'var(--border)'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -388,4 +412,17 @@ export default function Step2Config() {
       </div>
     </div>
   );
+}
+
+const SENSITIVE_HINTS = [
+  'gender', 'sex', 'race', 'ethnicity', 'age', 'religion',
+  'nationality', 'citizenship', 'marital', 'disability', 'orientation',
+  'income', 'zip', 'postal', 'region', 'country', 'language',
+];
+
+function guessSensitiveColumns(headers: string[]): string[] {
+  return headers.filter((h) => {
+    const lc = h.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return SENSITIVE_HINTS.some((hint) => lc.includes(hint));
+  });
 }

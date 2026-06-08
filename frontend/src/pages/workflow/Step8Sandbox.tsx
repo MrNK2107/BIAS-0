@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import SandboxComparison from '../../components/SandboxComparison';
 import { useAppContext } from '../../context/AppContext';
 import type { FixRecommendation, SandboxResult } from '../../types';
+import EmptyState from '../../components/EmptyState';
 
 export default function Step8Sandbox() {
   const { file, pipelineResults, recommendResult, runSandboxSimulation, sandboxResult, advanceStep } = useAppContext();
@@ -33,19 +34,39 @@ export default function Step8Sandbox() {
 
   if (!file) {
     return (
-      <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-        <h2 style={{ marginBottom: 16 }}>No dataset uploaded</h2>
-        <p className="helper" style={{ marginBottom: 24 }}>Please go back and upload a dataset to begin.</p>
-        <button className="btn btn-primary" onClick={() => navigate('/workflow/step-1')}>Go to Upload</button>
+      <div>
+        <div className="page-header">
+          <div>
+            <div className="kicker">Step 8 of 9</div>
+            <h1 className="page-title">Sandbox Fixes</h1>
+          </div>
+        </div>
+        <EmptyState
+          compact
+          kicker="Step 8"
+          title="No dataset uploaded"
+          description="Upload a CSV in Step 1 to unlock the sandbox and test mitigations against your model."
+          primaryAction={{ label: 'Go to Upload', to: '/workflow/step-1' }}
+        />
       </div>
     );
   }
 
   if (loading || !pipelineResults || !recommendResult) {
     return (
-      <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-        <h2>Generating fix recommendations...</h2>
-        <p className="helper">Analyzing bias and stress test results to suggest actionable fixes.</p>
+      <div>
+        <div className="page-header">
+          <div>
+            <div className="kicker">Step 8 of 9</div>
+            <h1 className="page-title">Sandbox Fixes</h1>
+          </div>
+        </div>
+        <EmptyState
+          compact
+          kicker="Step 8"
+          title="Generating fix recommendations..."
+          description="Analyzing bias and stress-test results to suggest actionable fixes. This usually takes a few seconds."
+        />
       </div>
     );
   }
@@ -72,7 +93,7 @@ export default function Step8Sandbox() {
             const rationale = fix.mitigation_options?.[0]?.rationale || 'Addresses identified bias patterns directly.';
 
             return (
-              <div className="card" key={fix.fix_id} style={{ display: 'flex', flexDirection: 'column', height: '100%', border: isApplied ? '0.5px solid rgba(212,163,115,0.72)' : '0.5px solid var(--border)' }}>
+              <div className="card" key={fix.fix_id} style={{ display: 'flex', flexDirection: 'column', height: '100%', border: isApplied ? '0.5px solid rgba(200, 157, 124,0.72)' : '0.5px solid var(--border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                   <div style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                     {fix.fix_type.replace(/_/g, ' ').toUpperCase()}
@@ -124,7 +145,7 @@ export default function Step8Sandbox() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 8 of 8</div>
+          <div className="kicker">Step 8 of 9</div>
           <h1 className="page-title">Sandbox Fixes</h1>
           <p className="helper" style={{ marginTop: 8 }}>
             Review AI-generated recommendations to mitigate bias. Apply fixes to your sandbox environment to simulate their impact.

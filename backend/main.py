@@ -2,6 +2,13 @@ from __future__ import annotations
 
 import os
 import warnings
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+env_path = Path(__file__).resolve().parent / ".env"
+if env_path.exists():
+    load_dotenv(env_path)
 
 # Suppress Pydantic v2 protected namespace warnings for fields like model_path, model_file
 # in schemas and FastAPI endpoint parameters before any modules are imported.
@@ -12,8 +19,8 @@ from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 from fastapi.responses import FileResponse  # noqa: E402
 
-from models.db import Base, engine  # noqa: E402
-from routers import audit, bias, fixes, monitoring, pipeline, sandbox, project  # noqa: E402
+from firebase.client import init_firebase  # noqa: E402
+from routers import audit, auth, bias, fixes, monitoring, pipeline, sandbox, project  # noqa: E402
 
 app = FastAPI(title="Unbiased AI Decision Platform")
 
@@ -38,6 +45,7 @@ app.add_middleware(
 app.include_router(project.router, prefix="/api")
 app.include_router(audit.router, prefix="/api")
 app.include_router(bias.router, prefix="/api")
+app.include_router(auth.router, prefix="/api")
 app.include_router(fixes.router, prefix="/api")
 app.include_router(sandbox.router, prefix="/api")
 app.include_router(monitoring.router, prefix="/api")
@@ -45,7 +53,7 @@ app.include_router(pipeline.router, prefix="/api")
 
 @app.on_event("startup")
 def startup_seed() -> None:
-    Base.metadata.create_all(bind=engine)
+    init_firebase()
 
 
 @app.get("/health")

@@ -47,7 +47,7 @@ const ForensicBento = () => {
       icon: Layers,
       title: 'Deep Neural Layer Mapping',
       desc: 'Trace decision paths through 12+ hidden layers to pinpoint exactly where bias propagates.',
-      color: '#D4A373',
+      color: '#C89D7C',
     },
     {
       icon: Gauge,
@@ -59,7 +59,7 @@ const ForensicBento = () => {
       icon: Shield,
       title: 'Regulatory Compliance',
       desc: 'EU AI Act & GDPR ready. Automated audit trails and documentation for every decision.',
-      color: '#BC4749',
+      color: '#A24A46',
     },
   ];
 

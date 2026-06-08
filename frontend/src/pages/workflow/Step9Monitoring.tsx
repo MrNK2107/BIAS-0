@@ -5,6 +5,7 @@ import { useAppContext } from '../../context/AppContext';
 import { formApi, api } from '../../api/client';
 import { AlertTriangle, Flag, Activity, Info, CheckCircle, Clock, TrendingUp, TrendingDown, Shield, ChevronDown, ChevronUp, Zap } from 'lucide-react';
 import type { FairnessFlag, MonitoringPayload } from '../../types';
+import EmptyState from '../../components/EmptyState';
 
 interface DriftReportData {
   drift_alert?: boolean;
@@ -69,7 +70,7 @@ const S: Record<string, React.CSSProperties> = {
   badge: { display:'inline-flex', alignItems:'center', gap:4, padding:'3px 10px', borderRadius:999, fontSize:'0.72rem', fontWeight:600 },
 };
 
-const COLORS: Record<string, string> = { alert:'#BC4749', drift_alert:'#BC4749', flag:'#D4A373', info:'#D4A373' };
+const COLORS: Record<string, string> = { alert:'#A24A46', drift_alert:'#A24A46', flag:'#C89D7C', info:'#C89D7C' };
 
 function formatTimestamp(ts: number): string {
   return new Date(ts).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
@@ -192,21 +193,45 @@ export default function Step9Monitoring() {
   }, [monitoringResult]);
 
   // No file guard
-  if (!file) return (
-    <div className="card" style={{ padding:40, textAlign:'center' }}>
-      <h2 style={{ marginBottom:16 }}>No dataset uploaded</h2>
-      <p className="helper" style={{ marginBottom:24 }}>Please go back and upload a dataset to begin.</p>
-      <button className="btn btn-primary" onClick={() => navigate('/workflow/step-1')}>Go to Upload</button>
-    </div>
-  );
+  if (!file) {
+    return (
+      <div>
+        <div className="page-header">
+          <div>
+            <div className="kicker">Step 9 of 9</div>
+            <h1 className="page-title">Continuous Monitoring</h1>
+          </div>
+        </div>
+        <EmptyState
+          compact
+          kicker="Step 9"
+          title="No dataset uploaded"
+          description="Upload a CSV in Step 1 to start tracking fairness over time and detect drift."
+          primaryAction={{ label: 'Go to Upload', to: '/workflow/step-1' }}
+        />
+      </div>
+    );
+  }
 
   // Loading guard
-  if (loading || !monitoringResult) return (
-    <div className="card" style={{ padding:40, textAlign:'center' }}>
-      <h2>Loading Monitoring Data...</h2>
-      <p className="helper">Fetching historical performance and tracking alerts.</p>
-    </div>
-  );
+  if (loading || !monitoringResult) {
+    return (
+      <div>
+        <div className="page-header">
+          <div>
+            <div className="kicker">Step 9 of 9</div>
+            <h1 className="page-title">Continuous Monitoring</h1>
+          </div>
+        </div>
+        <EmptyState
+          compact
+          kicker="Step 9"
+          title="Loading monitoring data..."
+          description="Fetching historical performance and tracking alerts. This should only take a moment."
+        />
+      </div>
+    );
+  }
 
   const payload = monitoringResult as MonitoringPayload & { current_risk_level?: string; trend?: string };
   const { events, current_risk_level, trend } = payload;
@@ -224,7 +249,7 @@ export default function Step9Monitoring() {
   return (
     <div>
       {(driftDetected || degradationDetected) && (
-        <div style={{ background: 'rgba(188,71,73,0.15)', border: '1px solid #bc4749', borderRadius: 12, padding: '12px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ background: 'rgba(162, 74, 70,0.15)', border: '1px solid #bc4749', borderRadius: 12, padding: '12px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16 }}>
           <AlertTriangle color="#bc4749" size={24} />
           <div>
             <strong style={{ color: '#bc4749', fontSize: '1.05rem' }}>
@@ -329,7 +354,7 @@ export default function Step9Monitoring() {
                 </button>
               </div>
               {driftReport && (
-                <div style={{ flex:1, padding:16, borderRadius:12, border:`0.5px solid ${driftReport.drift_alert ? 'rgba(188,71,73,0.45)' : 'rgba(212,163,115,0.45)'}`, background: driftReport.drift_alert ? 'rgba(188,71,73,0.1)' : 'rgba(212,163,115,0.1)' }}>
+                <div style={{ flex:1, padding:16, borderRadius:12, border:`0.5px solid ${driftReport.drift_alert ? 'rgba(162, 74, 70,0.45)' : 'rgba(200, 157, 124,0.45)'}`, background: driftReport.drift_alert ? 'rgba(162, 74, 70,0.1)' : 'rgba(200, 157, 124,0.1)' }}>
                   <div style={{ fontWeight:600, marginBottom:8, color: driftReport.drift_alert ? '#ef4444' : 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
                     {driftReport.drift_alert ? <AlertTriangle size={16} /> : <CheckCircle size={16} />}
                     {driftReport.drift_alert ? 'Significant Drift Detected' : 'No Significant Drift'}
@@ -398,7 +423,7 @@ export default function Step9Monitoring() {
                 </button>
               </div>
               {driftReport && driftReport.status === 'simulation_complete' && (
-                <div style={{ flex:1, padding:16, borderRadius:12, border:`0.5px solid ${driftReport.drift_results?.drift_alert ? 'rgba(188,71,73,0.45)' : 'rgba(212,163,115,0.45)'}`, background: driftReport.drift_results?.drift_alert ? 'rgba(188,71,73,0.1)' : 'rgba(212,163,115,0.1)' }}>
+                <div style={{ flex:1, padding:16, borderRadius:12, border:`0.5px solid ${driftReport.drift_results?.drift_alert ? 'rgba(162, 74, 70,0.45)' : 'rgba(200, 157, 124,0.45)'}`, background: driftReport.drift_results?.drift_alert ? 'rgba(162, 74, 70,0.1)' : 'rgba(200, 157, 124,0.1)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                     <div style={{ fontWeight:600, color: driftReport.drift_results?.drift_alert ? '#ef4444' : 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
                       {driftReport.drift_results?.drift_alert ? <AlertTriangle size={16} /> : <CheckCircle size={16} />}
@@ -441,7 +466,7 @@ export default function Step9Monitoring() {
             {[{k:'all',l:'All'},{k:'alert',l:'Incidents'},{k:'drift_alert',l:'Drift'},{k:'flag',l:'Flags'},{k:'info',l:'Checks'}].map(f => (
               <button key={f.k} onClick={() => setFilterType(f.k)}
                 style={{...S.badge, background: filterType === f.k ? 'rgba(79,142,247,0.15)' : 'rgba(255,255,255,0.04)',
-                  border: `0.5px solid ${filterType === f.k ? 'rgba(212,163,115,0.65)' : 'var(--border)'}`,
+                  border: `0.5px solid ${filterType === f.k ? 'rgba(200, 157, 124,0.65)' : 'var(--border)'}`,
                   color: filterType === f.k ? 'var(--accent)' : 'var(--text-secondary)', cursor:'pointer' }}>
                 {f.l}
               </button>

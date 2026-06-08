@@ -4,6 +4,7 @@ import FairnessMetricsPanel from '../../components/FairnessMetricsPanel';
 import HiddenBiasExplorer from '../../components/HiddenBiasExplorer';
 import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
+import EmptyState from '../../components/EmptyState';
 
 export default function Step4ModelBias() {
   const { pipelineResults, biasResult, counterfactualResult, advanceStep } = useAppContext();
@@ -14,12 +15,19 @@ export default function Step4ModelBias() {
       <div>
         <div className="page-header">
           <div>
-            <div className="kicker">Step 4 of 8</div>
+            <div className="kicker">Step 4 of 9</div>
             <h1 className="page-title">Model Bias</h1>
           </div>
         </div>
-        <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-          <p className="helper" style={{ marginBottom: 24 }}>No analysis data yet. Please run the analysis first.</p>
+        <EmptyState
+          compact
+          kicker="Step 4"
+          title="No model bias results yet"
+          description="Run the full audit pipeline to evaluate how the model performs across different demographic groups."
+          primaryAction={{ label: 'Go to Configuration', to: '/workflow/step-2' }}
+          secondaryAction={{ label: 'Back', to: '/workflow/step-3' }}
+        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
           <button className="btn btn-primary" onClick={() => navigate('/workflow/step-2')}>
             Go to Configuration <ArrowRight size={16} />
           </button>
@@ -39,7 +47,7 @@ export default function Step4ModelBias() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 4 of 8</div>
+          <div className="kicker">Step 4 of 9</div>
           <h1 className="page-title">Model Bias</h1>
           <p className="page-subtitle">We evaluated the model across different groups to check for disparate impact.</p>
         </div>

@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { 
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+import {
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area
 } from 'recharts';
-import { 
-  Activity, TrendingUp, TrendingDown, 
+import {
+  Activity, TrendingUp, TrendingDown,
   ShieldCheck, ShieldAlert, BarChart3, Search
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useAppContext } from '../context/AppContext';
+import EmptyState from '../components/EmptyState';
 
 export default function MonitoringDashboard() {
   const { projectId } = useAppContext();
@@ -36,12 +37,22 @@ export default function MonitoringDashboard() {
 
   if (!projectId) {
     return (
-      <div style={{ maxWidth: 800, margin: '0 auto', paddingTop: 80, textAlign: 'center' }}>
-        <img src="/logo.png" alt="BIAS LAB Logo" style={{ width: 80, height: 80, margin: '0 auto 24px', display: 'block' }} />
-        <h1 className="page-title">Monitoring Dashboard</h1>
-        <p className="helper" style={{ maxWidth: 500, margin: '0 auto 40px' }}>
-          Please select or initialize a project to view real-time fairness monitoring and drift intelligence.
-        </p>
+      <div style={{ maxWidth: 800, margin: '0 auto', paddingTop: 80 }}>
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <img src="/logo.png" alt="BIAS LAB Logo" style={{ width: 80, height: 80, margin: '0 auto 24px', display: 'block' }} />
+          <h1 className="page-title">Live Monitoring</h1>
+          <p className="page-subtitle" style={{ maxWidth: 500, margin: '0 auto' }}>
+            Real-time tracking of model bias, feature distribution, and drift intelligence.
+          </p>
+        </div>
+        <EmptyState
+          compact
+          icon={<Activity size={26} />}
+          title="No project selected"
+          description="Select or create a project from the top bar to view its real-time fairness monitoring and drift intelligence."
+          primaryAction={{ label: 'Go to Dashboard', to: '/dashboard' }}
+          secondaryAction={{ label: 'My projects', to: '/profile' }}
+        />
       </div>
     );
   }

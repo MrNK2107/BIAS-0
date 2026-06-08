@@ -17,3 +17,5 @@ httpx
 python-dotenv
 imbalanced-learn>=0.12
 requests
+firebase-admin>=6.0
+google-cloud-firestore>=2.0

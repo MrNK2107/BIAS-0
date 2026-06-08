@@ -61,3 +61,6 @@ backend/unbiased_ai.db
 
 # Generated data
 data/
+
+# Firebase service account credentials (raw JSON, never commit)
+*firebase-adminsdk*.json

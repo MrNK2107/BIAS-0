@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { formApi, api } from '../api/client';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { formApi, api, setUnauthorizedHandler } from '../api/client';
+import { useToast } from './ToastContext';
 import type {
   DataAuditResult,
   ProxyResult,
@@ -78,6 +80,20 @@ interface AppContextType extends AppState {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const { showToast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      const path = window.location.pathname;
+      if (path !== '/' && path !== '/login' && path !== '/signup') {
+        showToast('Your session has expired. Please sign in again.', 'error');
+        navigate('/login', { replace: true });
+      }
+    });
+    return () => setUnauthorizedHandler(null);
+  }, [showToast, navigate]);
+
   const [file, setFile] = useState<File | null>(null);
   const [sensitiveCols, setSensitiveCols] = useState<string[]>([]);
   const [targetCol, setTargetCol] = useState('');

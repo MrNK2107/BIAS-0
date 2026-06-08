@@ -1,43 +1,63 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import { ArrowRight, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { api } from '../../api/client';
+import EmptyState from '../../components/EmptyState';
+import FlagDecisionModal from '../../components/FlagDecisionModal';
+import { useToast } from '../../context/ToastContext';
 
 export default function Step5Explanations() {
   const { pipelineResults, explainResult, explainSummary, projectId, advanceStep } = useAppContext();
+  const { showToast } = useToast();
   const navigate = useNavigate();
+
+  const [flagging, setFlagging] = useState<{
+    recordId: number;
+    decision: string;
+  } | null>(null);
 
   if (!pipelineResults || !explainResult || explainResult.length === 0) {
     return (
       <div>
         <div className="page-header">
           <div>
-            <div className="kicker">Step 5 of 8</div>
+            <div className="kicker">Step 5 of 9</div>
             <h1 className="page-title">Explanations</h1>
           </div>
         </div>
-        <div className="card" style={{ padding: 40, textAlign: 'center' }}>
-          <p className="helper" style={{ marginBottom: 8 }}>
-            {pipelineResults
-              ? 'No flagged decisions were found for explanation.'
-              : 'No analysis data yet. Please run the analysis first.'}
-          </p>
-          {!pipelineResults && (
-            <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => navigate('/workflow/step-2')}>
-              Go to Configuration <ArrowRight size={16} />
-            </button>
-          )}
-          <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', gap: 16 }}>
-            <button className="btn" onClick={() => navigate('/workflow/step-4')}>
-              <ArrowLeft size={16} /> Back
-            </button>
-            <button className="btn btn-primary" onClick={async () => {
+        {pipelineResults ? (
+          <EmptyState
+            compact
+            kicker="Step 5"
+            title="No flagged decisions to explain"
+            description="The analysis didn't surface any decisions with high risk. That's a good sign — your model is making decisions without obvious disparate impact for these records."
+            primaryAction={{ label: 'Continue to Counterfactuals', to: '/workflow/step-6' }}
+            secondaryAction={{ label: 'Back to Model Bias', to: '/workflow/step-4' }}
+          />
+        ) : (
+          <EmptyState
+            compact
+            kicker="Step 5"
+            title="No analysis data yet"
+            description="Run the analysis pipeline first to generate explanations for flagged decisions."
+            primaryAction={{ label: 'Go to Configuration', to: '/workflow/step-2' }}
+            secondaryAction={{ label: 'Back', to: '/workflow/step-4' }}
+          />
+        )}
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>
+          <button className="btn" onClick={() => navigate('/workflow/step-4')}>
+            <ArrowLeft size={16} /> Back
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={async () => {
               await advanceStep(6);
               navigate('/workflow/step-6');
-            }}>
-              Next: Run Counterfactuals <ArrowRight size={16} />
-            </button>
-          </div>
+            }}
+          >
+            Next: Run Counterfactuals <ArrowRight size={16} />
+          </button>
         </div>
       </div>
     );
@@ -47,15 +67,15 @@ export default function Step5Explanations() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 5 of 8</div>
+          <div className="kicker">Step 5 of 9</div>
           <h1 className="page-title">Explanations</h1>
           <p className="page-subtitle">Understand why the model made certain decisions and review high-risk flags.</p>
         </div>
       </div>
 
       <div style={{
-        backgroundColor: 'rgba(188, 71, 73, 0.1)',
-        border: '0.5px solid rgba(188, 71, 73, 0.5)',
+        backgroundColor: 'rgba(162, 74, 70, 0.1)',
+        border: '0.5px solid rgba(162, 74, 70, 0.5)',
         borderRadius: '8px',
         padding: '16px',
         marginBottom: '24px',
@@ -163,17 +183,12 @@ export default function Step5Explanations() {
                     <div style={{ marginTop: '24px' }}>
                       <button
                         className="btn btn-small"
-                        style={{ backgroundColor: 'rgba(188,71,73,0.14)', color: 'var(--warning)', border: '0.5px solid rgba(188,71,73,0.6)' }}
-                        onClick={() => {
-                          const reason = window.prompt('Enter reason for flagging this decision:');
-                          if (reason && projectId) {
-                            api.post('/monitoring/flag', {
-                              project_id: parseInt(projectId),
-                              record_id: String(item.record_id),
-                              reason,
-                            });
-                          }
-                        }}
+                        style={{ backgroundColor: 'rgba(162, 74, 70,0.14)', color: 'var(--warning)', border: '0.5px solid rgba(162, 74, 70,0.6)' }}
+                        onClick={() =>
+                          setFlagging({ recordId: item.record_id, decision: item.decision })
+                        }
+                        disabled={!projectId}
+                        title={!projectId ? 'Select a project first' : undefined}
                       >
                         🚩 Flag this decision for review
                       </button>
@@ -197,6 +212,29 @@ export default function Step5Explanations() {
           Next: Run Counterfactuals <ArrowRight size={16} />
         </button>
       </div>
+
+      <FlagDecisionModal
+        open={flagging !== null}
+        onClose={() => setFlagging(null)}
+        recordId={flagging?.recordId}
+        recordLabel={flagging?.decision}
+        context="Flagging sends this record to the Monitoring team. Provide a short, specific reason so reviewers can act quickly."
+        onSubmit={async (reason) => {
+          if (!projectId || !flagging) return;
+          try {
+            await api.post('/monitoring/flag', {
+              project_id: parseInt(projectId, 10),
+              record_id: String(flagging.recordId),
+              reason,
+            });
+            showToast(`Record #${flagging.recordId} flagged for review.`, 'success');
+          } catch (e) {
+            const msg = (e as { message?: string })?.message ?? 'Could not flag this decision.';
+            showToast(msg, 'error');
+            throw e;
+          }
+        }}
+      />
     </div>
   );
 }

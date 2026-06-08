@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
-import { ArrowRight, LayoutGrid } from 'lucide-react';
+import { ArrowRight, LayoutGrid, Upload as UploadIcon } from 'lucide-react';
+import EmptyState from '../../components/EmptyState';
 
 export default function Step1Upload() {
-  const { 
-    file, setFile, 
-    projectId, projects, advanceStep 
+  const {
+    file, setFile,
+    projectId, projects, advanceStep
   } = useAppContext();
 
   const [headers, setHeaders] = useState<string[]>([]);
@@ -44,7 +45,7 @@ export default function Step1Upload() {
     <div>
       <div className="page-header">
         <div>
-          <div className="kicker">Step 1 of 8</div>
+          <div className="kicker">Step 1 of 9</div>
           <h1 className="page-title">Upload Dataset {projectId ? `for ${projects.find(p => String(p.id) === String(projectId))?.name}` : ''}</h1>
           {!projectId && (
             <div className="banner yellow" style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -55,6 +56,17 @@ export default function Step1Upload() {
           <p className="page-subtitle">Provide the dataset you want to audit for fairness. We support CSV files.</p>
         </div>
       </div>
+
+      {!projectId && (
+        <EmptyState
+          compact
+          icon={<UploadIcon size={26} />}
+          kicker="Before you upload"
+          title="Select or create a project first"
+          description="Datasets are scoped to a project. Open the 'Select Project' button at the top of the page to choose one or create a new project. Once that's set, come back here to drop in your CSV."
+          primaryAction={{ label: 'Back to Dashboard', to: '/dashboard' }}
+        />
+      )}
 
       <div className="card" style={{ marginBottom: 24 }}>
         <div className="dropzone" onDragOver={(event) => event.preventDefault()} onDrop={onDrop}>
@@ -73,7 +85,7 @@ export default function Step1Upload() {
               Browse Files
             </label>
             {file && (
-              <div style={{ marginTop: 16, padding: 12, background: 'rgba(212, 163, 115, 0.1)', borderRadius: 8 }}>
+              <div style={{ marginTop: 16, padding: 12, background: 'rgba(200, 157, 124, 0.1)', borderRadius: 8 }}>
                 <strong style={{ color: 'var(--accent)' }}>Loaded {file.name}</strong>
                 <p className="helper" style={{ margin: '4px 0 0' }}>Detected {rowCount.toLocaleString()} rows and {headers.length} columns.</p>
               </div>

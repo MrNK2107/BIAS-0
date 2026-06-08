@@ -11,9 +11,10 @@ import uuid
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile
-from sqlalchemy.orm import Session
+from google.cloud.firestore import SERVER_TIMESTAMP
 
 from core.auto_fix import generate_fix_recommendations
+from core.auth import require_user
 from core.counterfactual import run_counterfactual_test
 from core.data_audit import run_data_audit
 from core.explainability import explain_flagged_decisions, generate_narrative_summary
@@ -21,24 +22,110 @@ from core.feature_intelligence import detect_proxy_features
 from core.common import build_classifier, get_metric_weights, prepare_split
 from core.model_bias import run_model_bias_analysis
 from core.stress_test import run_stress_tests
-from models.db import AuditRun, Project, MonitoringLog, Alert, get_db
+from firebase.repositories import audit_run_repo, monitoring_log_repo, alert_repo
 from utils.model_loader import load_model_from_bytes
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/pipeline", tags=["pipeline"])
 
-# ── In-memory task store (suitable for single-process dev; swap for Redis in prod) ──
+# ── In-memory task store for fast polling ──
 _task_store: dict[str, dict[str, Any]] = {}
 _task_lock = threading.Lock()
+
 
 def _store_get(task_id: str) -> dict[str, Any] | None:
     with _task_lock:
         return _task_store.get(task_id)
 
+
 def _store_set(task_id: str, value: dict[str, Any]) -> None:
     with _task_lock:
         _task_store[task_id] = value
+
+
+def _persist_pipeline_result(
+    project_id: str,
+    task_id: str,
+    uid: str,
+    result: dict[str, Any],
+    unified_fairness_score: float,
+    model_bias: dict[str, Any],
+    data_audit: dict[str, Any],
+    decision: str,
+) -> None:
+    risk_level = data_audit.get("risk_level", "Yellow")
+
+    audit_run_repo.create({
+        "projectId": project_id,
+        "userId": uid,
+        "fairnessScore": float(unified_fairness_score),
+        "accuracy": float(model_bias.get("overall_accuracy", 0.0)),
+        "riskLevel": risk_level,
+        "decision": decision,
+        "fullResultJson": result,
+        "taskId": task_id,
+        "timestamp": SERVER_TIMESTAMP,
+    })
+
+    monitoring_log_repo.create({
+        "projectId": project_id,
+        "userId": uid,
+        "fairnessScore": float(unified_fairness_score),
+        "dataDriftScore": 0.0,
+        "predictionDriftScore": 0.0,
+        "keyMetrics": {
+            "accuracy": float(model_bias.get("overall_accuracy", 0.0)),
+            "disparate_impact": model_bias.get("metrics", {}).get("disparate_impact"),
+            "demographic_parity": model_bias.get("metrics", {}).get("demographic_parity_difference"),
+            "max_gap": data_audit.get("max_gap", 0.0),
+        },
+        "timestamp": SERVER_TIMESTAMP,
+    })
+
+    if unified_fairness_score < 50:
+        alert_repo.create({
+            "projectId": project_id,
+            "userId": uid,
+            "type": "BIAS",
+            "message": f"Critical bias detected. Fairness score: {unified_fairness_score:.1f}.",
+            "severity": "HIGH",
+            "timestamp": SERVER_TIMESTAMP,
+        })
+
+    # Check for drift and degradation from previous logs
+    prev_logs = monitoring_log_repo.list(
+        filters=[("projectId", "==", project_id)],
+        order_by=("timestamp", "DESCENDING"),
+        limit=2,
+    )
+    if len(prev_logs) >= 1:
+        last = prev_logs[0]
+        last_score = last.get("fairnessScore", 0)
+        if last_score > 0:
+            drop_pct = (last_score - unified_fairness_score) / last_score
+            if drop_pct > 0.15:
+                alert_repo.create({
+                    "projectId": project_id,
+                    "userId": uid,
+                    "type": "DRIFT",
+                    "message": f"Critical score drift: {drop_pct * 100:.1f}% drop from previous.",
+                    "severity": "HIGH",
+                    "timestamp": SERVER_TIMESTAMP,
+                })
+
+    if len(prev_logs) == 2:
+        s1 = prev_logs[1].get("fairnessScore", 0)
+        s2 = prev_logs[0].get("fairnessScore", 0)
+        if s1 > s2 > unified_fairness_score:
+            alert_repo.create({
+                "projectId": project_id,
+                "userId": uid,
+                "type": "DEGRADATION",
+                "message": "Sequential degradation detected over 3+ runs.",
+                "severity": "MEDIUM",
+                "timestamp": SERVER_TIMESTAMP,
+            })
 
 
 def _run_pipeline(
@@ -47,34 +134,20 @@ def _run_pipeline(
     filename: str,
     sensitive_list: list[str],
     target_col: str,
-    project_id: int | str,
+    project_id: str,
     metric_weights: dict[str, float],
     model_bytes: bytes | None,
     domain: str,
+    uid: str,
 ) -> None:
-    """Background worker: runs all 8 stages and writes result to task_store."""
+    """Background worker: runs all 8 stages and persists to Firestore."""
     import io
+
     import pandas as pd
-    from models.db import SessionLocal
 
     _store_set(task_id, {"status": "processing"})
-    db: Session = SessionLocal()
 
     try:
-        if not project_id or str(project_id) in ("", "null", "undefined", "None"):
-            project = Project(
-                name="Auto Project",
-                domain=domain,
-                sensitive_columns=sensitive_list,
-                target_column=target_col,
-            )
-            db.add(project)
-            db.commit()
-            db.refresh(project)
-            project_id = project.id
-        else:
-            project_id = int(project_id)
-
         df = pd.read_csv(io.BytesIO(df_bytes))
 
         # ── Build / load model ────────────────────────────────────────────────
@@ -147,12 +220,12 @@ def _run_pipeline(
 
         # ── Stage 8: Fix Recommendations ──────────────────────────────────────
         recommendations = generate_fix_recommendations(
-            data_audit, 
-            proxy, 
+            data_audit,
+            proxy,
             model_bias,
             counterfactual_score=counterfactual_score,
             stress_test_score=stress_test_score,
-            proxy_risk_score=proxy_risk_score
+            proxy_risk_score=proxy_risk_score,
         )
 
         scores = {
@@ -179,77 +252,32 @@ def _run_pipeline(
             "model_used": model_used,
         }
 
-        # ── Persist to DB ──────────────────────────────────────────────────────
-        risk_level = data_audit.get("risk_level", "Yellow")
-        audit_run = AuditRun(
-            project_id=project_id,
-            fairness_score=float(unified_fairness_score),
-            accuracy=float(model_bias.get("overall_accuracy", 0.0)),
-            risk_level=risk_level,
-            decision=decision,
-            results_json={},  # Clear old field to save space/time
-            full_result_json=result,
+        import json
+        logger.info("=== RESULT SIZE DEBUG ===")
+        for k, v in result.items():
+            try:
+                size = len(json.dumps(v))
+                logger.info("Key: %s, Size in JSON bytes: %d", k, size)
+            except Exception as e:
+                logger.error("Key: %s failed to serialize: %s", k, str(e))
+
+        # ── Persist to Firestore ──────────────────────────────────────────────
+        _persist_pipeline_result(
+            project_id=str(project_id),
             task_id=task_id,
+            uid=uid,
+            result=result,
+            unified_fairness_score=unified_fairness_score,
+            model_bias=model_bias,
+            data_audit=data_audit,
+            decision=decision,
         )
-        db.add(audit_run)
-
-        log_entry = MonitoringLog(
-            project_id=project_id,
-            fairness_score=float(unified_fairness_score),
-            data_drift_score=0.0,
-            prediction_drift_score=0.0,
-            key_metrics={
-                "accuracy": float(model_bias.get("overall_accuracy", 0.0)),
-                "disparate_impact": model_bias.get("metrics", {}).get("disparate_impact"),
-                "demographic_parity": model_bias.get("metrics", {}).get("demographic_parity_difference"),
-                "max_gap": data_audit.get("max_gap", 0.0)
-            }
-        )
-        db.add(log_entry)
-        
-        if unified_fairness_score < 50:
-            db.add(Alert(
-                project_id=project_id,
-                type="BIAS",
-                message=f"Critical bias detected. Fairness score: {unified_fairness_score:.1f}.",
-                severity="HIGH"
-            ))
-
-        last_log = db.query(MonitoringLog).filter(MonitoringLog.project_id == project_id).order_by(MonitoringLog.timestamp.desc()).first()
-        if last_log and last_log.fairness_score > 0:
-            drop_pct = (last_log.fairness_score - unified_fairness_score) / last_log.fairness_score
-            if drop_pct > 0.15:
-                db.add(Alert(
-                    project_id=project_id,
-                    type="DRIFT",
-                    message=f"Critical score drift: {drop_pct*100:.1f}% drop from previous.",
-                    severity="HIGH"
-                ))
-
-        prev_logs = db.query(MonitoringLog).filter(MonitoringLog.project_id == project_id).order_by(MonitoringLog.timestamp.desc()).limit(2).all()
-        if len(prev_logs) == 2:
-            s1 = prev_logs[1].fairness_score 
-            s2 = prev_logs[0].fairness_score 
-            s3 = unified_fairness_score
-            if s1 > s2 > s3:
-                db.add(Alert(
-                    project_id=project_id,
-                    type="DEGRADATION",
-                    message="Sequential degradation detected over 3+ runs.",
-                    severity="MEDIUM"
-                ))
-
-        db.commit()
 
         _store_set(task_id, {"status": "complete", "result": result})
-
 
     except Exception as exc:
         logger.exception("Pipeline task %s failed", task_id)
         _store_set(task_id, {"status": "error", "error": str(exc)})
-
-    finally:
-        db.close()
 
 
 @router.post("/run-all")
@@ -258,19 +286,14 @@ async def run_all(
     file: UploadFile = File(...),
     sensitive_cols: str = Form(...),
     target_col: str = Form(...),
-    # Accept any string so "null"/"undefined" from the frontend don't 422
     project_id: str = Form(default=""),
     metric_priority: str = Form(default="balanced"),
     domain: str = Form(default="general"),
     custom_model_file: UploadFile | None = None,
+    uid: str = Depends(require_user),
 ) -> dict[str, str]:
-    """
-    Accepts the CSV and optional model file, immediately returns a task_id.
-    The heavy computation runs in a background thread.
-    """
     df_bytes = await file.read()
 
-    # ── Safe model_file read ──────────────────────────────────────────────────
     model_bytes: bytes | None = None
     if custom_model_file is not None:
         try:
@@ -297,48 +320,45 @@ async def run_all(
         metric_weights=metric_weights,
         model_bytes=model_bytes,
         domain=domain,
+        uid=uid,
     )
 
     return {"task_id": task_id, "status": "processing"}
 
 
 @router.get("/status/{task_id}")
-async def get_task_status(task_id: str, db: Session = Depends(get_db)) -> dict[str, Any]:
-    """Poll this endpoint after calling /pipeline/run-all to retrieve results."""
+async def get_task_status(task_id: str) -> dict[str, Any]:
     task = _store_get(task_id)
     if task is not None:
         return task
-        
-    # If not in memory, check if it was completed and saved to DB (e.g., after server restart)
-    from models.db import AuditRun
-    audit = db.query(AuditRun).filter(AuditRun.task_id == task_id).first()
-    if audit:
-        return {"status": "complete", "result": audit.full_result_json}
-        
+
+    # Check Firestore for completed tasks from prior runs
+    runs = audit_run_repo.list(filters=[("taskId", "==", task_id)], limit=1)
+    if runs:
+        return {"status": "complete", "result": runs[0].get("fullResultJson", {})}
+
     raise HTTPException(status_code=404, detail="Task not found")
 
 
 @router.get("/result/{task_id}")
-async def get_task_result(task_id: str, db: Session = Depends(get_db)) -> dict[str, Any]:
-    """Fetches the final persistent result of a pipeline run."""
-    # Check in-memory first
+async def get_task_result(task_id: str) -> dict[str, Any]:
     task = _store_get(task_id)
     if task and task.get("status") in ["queued", "processing"]:
         return {"status": "running"}
 
-    # Fetch from DB for persistence
-    audit = db.query(AuditRun).filter(AuditRun.task_id == task_id).first()
-    if not audit:
+    runs = audit_run_repo.list(filters=[("taskId", "==", task_id)], limit=1)
+    if not runs:
         if task and task.get("status") == "error":
             return {"status": "error", "error": task.get("error")}
-        raise HTTPException(status_code=404, detail="Audit result not found in database")
+        raise HTTPException(status_code=404, detail="Audit result not found")
 
-    res = audit.full_result_json
+    run = runs[0]
+    res = run.get("fullResultJson", {})
     return {
         "status": "completed",
-        "fairness_score": audit.fairness_score,
-        "decision": audit.decision,
+        "fairness_score": run.get("fairnessScore", 0),
+        "decision": run.get("decision", "UNKNOWN"),
         "scores": res.get("scores", {}),
         "recommendations": res.get("recommendations", []),
-        "details": res
+        "details": res,
     }
