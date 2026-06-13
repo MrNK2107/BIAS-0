@@ -7,11 +7,11 @@ import {
   useRef,
   useState,
   type ReactNode,
-} from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle2, AlertTriangle, Info, X } from 'lucide-react';
+} from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { CheckCircle2, AlertTriangle, Info, X } from "lucide-react";
 
-type ToastVariant = 'success' | 'error' | 'info';
+type ToastVariant = "success" | "error" | "info";
 
 interface ToastItem {
   id: number;
@@ -25,23 +25,26 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 
-const VARIANT_STYLES: Record<ToastVariant, { bg: string; border: string; color: string; icon: ReactNode }> = {
+const VARIANT_STYLES: Record<
+  ToastVariant,
+  { bg: string; border: string; color: string; icon: ReactNode }
+> = {
   success: {
-    bg: 'rgba(200, 157, 124, 0.14)',
-    border: 'rgba(200, 157, 124, 0.55)',
-    color: 'var(--accent)',
+    bg: "rgba(200, 157, 124, 0.14)",
+    border: "rgba(200, 157, 124, 0.55)",
+    color: "var(--accent)",
     icon: <CheckCircle2 size={16} />,
   },
   error: {
-    bg: 'rgba(162, 74, 70, 0.16)',
-    border: 'rgba(162, 74, 70, 0.55)',
-    color: 'var(--warning)',
+    bg: "rgba(162, 74, 70, 0.16)",
+    border: "rgba(162, 74, 70, 0.55)",
+    color: "var(--warning)",
     icon: <AlertTriangle size={16} />,
   },
   info: {
-    bg: 'rgba(255, 255, 255, 0.06)',
-    border: 'var(--border)',
-    color: 'var(--text-primary)',
+    bg: "rgba(255, 255, 255, 0.06)",
+    border: "var(--border)",
+    color: "var(--text-primary)",
     icon: <Info size={16} />,
   },
 };
@@ -61,8 +64,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const showToast = useCallback<ToastContextValue['showToast']>(
-    (message, variant = 'success') => {
+  const showToast = useCallback<ToastContextValue["showToast"]>(
+    (message, variant = "success") => {
       const id = ++_id;
       setToasts((cur) => [...cur, { id, message, variant }]);
       timersRef.current[id] = setTimeout(() => dismiss(id), 4200);
@@ -84,15 +87,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         style={{
-          position: 'fixed',
+          position: "fixed",
           top: 20,
           right: 20,
           zIndex: 1100,
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
           gap: 10,
-          pointerEvents: 'none',
-          maxWidth: 'min(92vw, 360px)',
+          pointerEvents: "none",
+          maxWidth: "min(92vw, 360px)",
         }}
       >
         <AnimatePresence>
@@ -107,35 +110,37 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                 role="status"
                 style={{
-                  pointerEvents: 'auto',
-                  display: 'flex',
-                  alignItems: 'flex-start',
+                  pointerEvents: "auto",
+                  display: "flex",
+                  alignItems: "flex-start",
                   gap: 10,
-                  padding: '12px 14px',
+                  padding: "12px 14px",
                   background: s.bg,
                   border: `0.5px solid ${s.border}`,
                   borderRadius: 12,
                   color: s.color,
-                  fontSize: '0.88rem',
+                  fontSize: "0.88rem",
                   lineHeight: 1.4,
-                  boxShadow: '0 14px 36px rgba(0,0,0,0.45)',
-                  backdropFilter: 'blur(10px)',
+                  boxShadow: "0 14px 36px rgba(0,0,0,0.45)",
+                  backdropFilter: "blur(10px)",
                 }}
               >
                 <span style={{ flexShrink: 0, marginTop: 1 }}>{s.icon}</span>
-                <span style={{ flex: 1, color: 'var(--text-primary)' }}>{t.message}</span>
+                <span style={{ flex: 1, color: "var(--text-primary)" }}>
+                  {t.message}
+                </span>
                 <button
                   type="button"
                   aria-label="Dismiss"
                   onClick={() => dismiss(t.id)}
                   style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: 'var(--text-secondary)',
-                    cursor: 'pointer',
+                    background: "transparent",
+                    border: "none",
+                    color: "var(--text-secondary)",
+                    cursor: "pointer",
                     padding: 0,
-                    display: 'flex',
-                    alignItems: 'center',
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   <X size={14} />
@@ -152,7 +157,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 export function useToast(): ToastContextValue {
   const ctx = useContext(ToastContext);
   if (!ctx) {
-    throw new Error('useToast must be used within a ToastProvider');
+    throw new Error("useToast must be used within a ToastProvider");
   }
   return ctx;
 }

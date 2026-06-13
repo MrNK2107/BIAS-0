@@ -1,8 +1,8 @@
-import { motion, Variants } from 'framer-motion';
+import { motion, Variants } from "framer-motion";
 
 interface AnimatedCardProps {
   children: React.ReactNode;
-  severity?: 'green' | 'amber' | 'red' | 'gray';
+  severity?: "green" | "amber" | "red" | "gray";
   delay?: number;
   className?: string;
   style?: React.CSSProperties;
@@ -23,14 +23,24 @@ export const cardVariants: Variants = {
 
 const getSeverityColor = (sev: string) => {
   switch (sev) {
-    case 'green': return '#8FA89B'; // Sage Green
-    case 'amber': return '#C89D7C'; // Antique Gold
-    case 'red': return '#A24A46';   // Crimson Oxide
-    default: return 'var(--border-strong)';
+    case "green":
+      return "#8FA89B"; // Sage Green
+    case "amber":
+      return "#C89D7C"; // Antique Gold
+    case "red":
+      return "#A24A46"; // Crimson Oxide
+    default:
+      return "var(--border-strong)";
   }
 };
 
-export default function AnimatedCard({ children, severity = 'gray', delay = 0, className = 'card', style }: AnimatedCardProps) {
+export default function AnimatedCard({
+  children,
+  severity = "gray",
+  delay = 0,
+  className = "card",
+  style,
+}: AnimatedCardProps) {
   const borderColor = getSeverityColor(severity);
 
   return (
@@ -39,16 +49,20 @@ export default function AnimatedCard({ children, severity = 'gray', delay = 0, c
       initial="hidden"
       animate="visible"
       custom={delay}
-      whileHover={{ 
-        scale: 1.02, 
-        borderColor: severity !== 'gray' ? borderColor : 'rgba(255, 255, 255, 0.1)',
-        boxShadow: severity !== 'gray' ? `0 8px 32px ${borderColor}20` : '0 8px 32px rgba(0,0,0,0.2)'
+      whileHover={{
+        scale: 1.02,
+        borderColor:
+          severity !== "gray" ? borderColor : "rgba(255, 255, 255, 0.1)",
+        boxShadow:
+          severity !== "gray"
+            ? `0 8px 32px ${borderColor}20`
+            : "0 8px 32px rgba(0,0,0,0.2)",
       }}
       className={className}
       style={{
         ...style,
         borderTop: `4px solid ${borderColor}`,
-        transformOrigin: 'center center',
+        transformOrigin: "center center",
       }}
     >
       {children}

@@ -1,0 +1,1465 @@
+{
+  "nodes": [
+    {
+      "id": "file:.understand-anything/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "Project file",
+      "tags": [
+        "unknown",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 51
+    },
+    {
+      "id": "file:backend/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/__init__.py",
+      "summary": "Backend module: __init__",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/core/__init__.py",
+      "summary": "Core backend module for __init__",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/auth.py",
+      "type": "file",
+      "name": "auth.py",
+      "filePath": "backend/core/auth.py",
+      "summary": "Core backend module for auth",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 62
+    },
+    {
+      "id": "function:backend/core/auth.py:verify_token",
+      "type": "function",
+      "name": "verify_token",
+      "filePath": "backend/core/auth.py",
+      "summary": "Function verify_token",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/auth.py:require_user",
+      "type": "function",
+      "name": "require_user",
+      "filePath": "backend/core/auth.py",
+      "summary": "Function require_user",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/auth.py:_ensure_dev_user",
+      "type": "function",
+      "name": "_ensure_dev_user",
+      "filePath": "backend/core/auth.py",
+      "summary": "Function _ensure_dev_user",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/auto_fix.py",
+      "type": "file",
+      "name": "auto_fix.py",
+      "filePath": "backend/core/auto_fix.py",
+      "summary": "Core backend module for auto_fix",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 120
+    },
+    {
+      "id": "function:backend/core/auto_fix.py:_safe",
+      "type": "function",
+      "name": "_safe",
+      "filePath": "backend/core/auto_fix.py",
+      "summary": "Function _safe",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/auto_fix.py:_is_numeric_feature",
+      "type": "function",
+      "name": "_is_numeric_feature",
+      "filePath": "backend/core/auto_fix.py",
+      "summary": "Function _is_numeric_feature",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/auto_fix.py:generate_fix_recommendations",
+      "type": "function",
+      "name": "generate_fix_recommendations",
+      "filePath": "backend/core/auto_fix.py",
+      "summary": "Function generate_fix_recommendations",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/common.py",
+      "type": "file",
+      "name": "common.py",
+      "filePath": "backend/core/common.py",
+      "summary": "Core backend module for common",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 534
+    },
+    {
+      "id": "function:backend/core/common.py:_domain_thresholds",
+      "type": "function",
+      "name": "_domain_thresholds",
+      "filePath": "backend/core/common.py",
+      "summary": "Function _domain_thresholds",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/core/common.py:DatasetQualityReport",
+      "type": "class",
+      "name": "DatasetQualityReport",
+      "filePath": "backend/core/common.py",
+      "summary": "Class DatasetQualityReport",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:check_dataset_quality",
+      "type": "function",
+      "name": "check_dataset_quality",
+      "filePath": "backend/core/common.py",
+      "summary": "Function check_dataset_quality",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:bootstrap_fairness_gaps",
+      "type": "function",
+      "name": "bootstrap_fairness_gaps",
+      "filePath": "backend/core/common.py",
+      "summary": "Function bootstrap_fairness_gaps",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:permutation_fairness_pvalue",
+      "type": "function",
+      "name": "permutation_fairness_pvalue",
+      "filePath": "backend/core/common.py",
+      "summary": "Function permutation_fairness_pvalue",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:build_classifier",
+      "type": "function",
+      "name": "build_classifier",
+      "filePath": "backend/core/common.py",
+      "summary": "Function build_classifier",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:train_multiple_models",
+      "type": "function",
+      "name": "train_multiple_models",
+      "filePath": "backend/core/common.py",
+      "summary": "Function train_multiple_models",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/core/common.py:PreparedData",
+      "type": "class",
+      "name": "PreparedData",
+      "filePath": "backend/core/common.py",
+      "summary": "Class PreparedData",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:normalize_target_binary",
+      "type": "function",
+      "name": "normalize_target_binary",
+      "filePath": "backend/core/common.py",
+      "summary": "Function normalize_target_binary",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:risk_from_gap",
+      "type": "function",
+      "name": "risk_from_gap",
+      "filePath": "backend/core/common.py",
+      "summary": "Function risk_from_gap",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:risk_from_score",
+      "type": "function",
+      "name": "risk_from_score",
+      "filePath": "backend/core/common.py",
+      "summary": "Function risk_from_score",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:encode_sensitive_series",
+      "type": "function",
+      "name": "encode_sensitive_series",
+      "filePath": "backend/core/common.py",
+      "summary": "Function encode_sensitive_series",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:infer_numeric_and_categorical",
+      "type": "function",
+      "name": "infer_numeric_and_categorical",
+      "filePath": "backend/core/common.py",
+      "summary": "Function infer_numeric_and_categorical",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:make_feature_frame",
+      "type": "function",
+      "name": "make_feature_frame",
+      "filePath": "backend/core/common.py",
+      "summary": "Function make_feature_frame",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:prepare_split",
+      "type": "function",
+      "name": "prepare_split",
+      "filePath": "backend/core/common.py",
+      "summary": "Function prepare_split",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:_drop_nan",
+      "type": "function",
+      "name": "_drop_nan",
+      "filePath": "backend/core/common.py",
+      "summary": "Function _drop_nan",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:group_metrics",
+      "type": "function",
+      "name": "group_metrics",
+      "filePath": "backend/core/common.py",
+      "summary": "Function group_metrics",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:fairness_gaps",
+      "type": "function",
+      "name": "fairness_gaps",
+      "filePath": "backend/core/common.py",
+      "summary": "Function fairness_gaps",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:fairness_score_from_gaps",
+      "type": "function",
+      "name": "fairness_score_from_gaps",
+      "filePath": "backend/core/common.py",
+      "summary": "Function fairness_score_from_gaps",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:get_metric_weights",
+      "type": "function",
+      "name": "get_metric_weights",
+      "filePath": "backend/core/common.py",
+      "summary": "Function get_metric_weights",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/common.py:top_correlated_feature",
+      "type": "function",
+      "name": "top_correlated_feature",
+      "filePath": "backend/core/common.py",
+      "summary": "Function top_correlated_feature",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/config.py",
+      "type": "file",
+      "name": "config.py",
+      "filePath": "backend/core/config.py",
+      "summary": "Core backend module for config",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 9
+    },
+    {
+      "id": "function:backend/core/config.py:is_firebase_enabled",
+      "type": "function",
+      "name": "is_firebase_enabled",
+      "filePath": "backend/core/config.py",
+      "summary": "Function is_firebase_enabled",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/counterfactual.py",
+      "type": "file",
+      "name": "counterfactual.py",
+      "filePath": "backend/core/counterfactual.py",
+      "summary": "Core backend module for counterfactual",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 87
+    },
+    {
+      "id": "function:backend/core/counterfactual.py:run_counterfactual_test",
+      "type": "function",
+      "name": "run_counterfactual_test",
+      "filePath": "backend/core/counterfactual.py",
+      "summary": "Function run_counterfactual_test",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/data_audit.py",
+      "type": "file",
+      "name": "data_audit.py",
+      "filePath": "backend/core/data_audit.py",
+      "summary": "Core backend module for data_audit",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 138
+    },
+    {
+      "id": "function:backend/core/data_audit.py:run_data_audit",
+      "type": "function",
+      "name": "run_data_audit",
+      "filePath": "backend/core/data_audit.py",
+      "summary": "Function run_data_audit",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/explainability.py",
+      "type": "file",
+      "name": "explainability.py",
+      "filePath": "backend/core/explainability.py",
+      "summary": "Core backend module for explainability",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 303
+    },
+    {
+      "id": "function:backend/core/explainability.py:_get_shap_values",
+      "type": "function",
+      "name": "_get_shap_values",
+      "filePath": "backend/core/explainability.py",
+      "summary": "Function _get_shap_values",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/explainability.py:explain_flagged_decisions",
+      "type": "function",
+      "name": "explain_flagged_decisions",
+      "filePath": "backend/core/explainability.py",
+      "summary": "Function explain_flagged_decisions",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/explainability.py:_build_default",
+      "type": "function",
+      "name": "_build_default",
+      "filePath": "backend/core/explainability.py",
+      "summary": "Function _build_default",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/explainability.py:generate_narrative_summary",
+      "type": "function",
+      "name": "generate_narrative_summary",
+      "filePath": "backend/core/explainability.py",
+      "summary": "Function generate_narrative_summary",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/feature_intelligence.py",
+      "type": "file",
+      "name": "feature_intelligence.py",
+      "filePath": "backend/core/feature_intelligence.py",
+      "summary": "Core backend module for feature_intelligence",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 277
+    },
+    {
+      "id": "function:backend/core/feature_intelligence.py:_cramers_v",
+      "type": "function",
+      "name": "_cramers_v",
+      "filePath": "backend/core/feature_intelligence.py",
+      "summary": "Function _cramers_v",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/feature_intelligence.py:_chi2_pvalue",
+      "type": "function",
+      "name": "_chi2_pvalue",
+      "filePath": "backend/core/feature_intelligence.py",
+      "summary": "Function _chi2_pvalue",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/feature_intelligence.py:_mutual_information_score",
+      "type": "function",
+      "name": "_mutual_information_score",
+      "filePath": "backend/core/feature_intelligence.py",
+      "summary": "Function _mutual_information_score",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/feature_intelligence.py:_safe_numeric_series",
+      "type": "function",
+      "name": "_safe_numeric_series",
+      "filePath": "backend/core/feature_intelligence.py",
+      "summary": "Function _safe_numeric_series",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/feature_intelligence.py:detect_proxy_via_clustering",
+      "type": "function",
+      "name": "detect_proxy_via_clustering",
+      "filePath": "backend/core/feature_intelligence.py",
+      "summary": "Function detect_proxy_via_clustering",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/feature_intelligence.py:detect_proxy_features",
+      "type": "function",
+      "name": "detect_proxy_features",
+      "filePath": "backend/core/feature_intelligence.py",
+      "summary": "Function detect_proxy_features",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/model_bias.py",
+      "type": "file",
+      "name": "model_bias.py",
+      "filePath": "backend/core/model_bias.py",
+      "summary": "Core backend module for model_bias",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 276
+    },
+    {
+      "id": "function:backend/core/model_bias.py:run_model_bias_analysis",
+      "type": "function",
+      "name": "run_model_bias_analysis",
+      "filePath": "backend/core/model_bias.py",
+      "summary": "Function run_model_bias_analysis",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/model_bias.py:_compute_intersectional_bias",
+      "type": "function",
+      "name": "_compute_intersectional_bias",
+      "filePath": "backend/core/model_bias.py",
+      "summary": "Function _compute_intersectional_bias",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/monitoring.py",
+      "type": "file",
+      "name": "monitoring.py",
+      "filePath": "backend/core/monitoring.py",
+      "summary": "Core backend module for monitoring",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 227
+    },
+    {
+      "id": "function:backend/core/monitoring.py:_psi",
+      "type": "function",
+      "name": "_psi",
+      "filePath": "backend/core/monitoring.py",
+      "summary": "Function _psi",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/monitoring.py:_jensen_shannon",
+      "type": "function",
+      "name": "_jensen_shannon",
+      "filePath": "backend/core/monitoring.py",
+      "summary": "Function _jensen_shannon",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/monitoring.py:detect_data_drift",
+      "type": "function",
+      "name": "detect_data_drift",
+      "filePath": "backend/core/monitoring.py",
+      "summary": "Function detect_data_drift",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/monitoring.py:log_monitoring_event",
+      "type": "function",
+      "name": "log_monitoring_event",
+      "filePath": "backend/core/monitoring.py",
+      "summary": "Function log_monitoring_event",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/monitoring.py:get_monitoring_history",
+      "type": "function",
+      "name": "get_monitoring_history",
+      "filePath": "backend/core/monitoring.py",
+      "summary": "Function get_monitoring_history",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/monitoring.py:check_alert_condition",
+      "type": "function",
+      "name": "check_alert_condition",
+      "filePath": "backend/core/monitoring.py",
+      "summary": "Function check_alert_condition",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/sandbox.py",
+      "type": "file",
+      "name": "sandbox.py",
+      "filePath": "backend/core/sandbox.py",
+      "summary": "Core backend module for sandbox",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 158
+    },
+    {
+      "id": "function:backend/core/sandbox.py:_apply_fix",
+      "type": "function",
+      "name": "_apply_fix",
+      "filePath": "backend/core/sandbox.py",
+      "summary": "Function _apply_fix",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/sandbox.py:_apply_threshold_tuning",
+      "type": "function",
+      "name": "_apply_threshold_tuning",
+      "filePath": "backend/core/sandbox.py",
+      "summary": "Function _apply_threshold_tuning",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/sandbox.py:run_sandbox_simulation",
+      "type": "function",
+      "name": "run_sandbox_simulation",
+      "filePath": "backend/core/sandbox.py",
+      "summary": "Function run_sandbox_simulation",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/storage.py",
+      "type": "file",
+      "name": "storage.py",
+      "filePath": "backend/core/storage.py",
+      "summary": "Core backend module for storage",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 50
+    },
+    {
+      "id": "function:backend/core/storage.py:get_local_storage_dir",
+      "type": "function",
+      "name": "get_local_storage_dir",
+      "filePath": "backend/core/storage.py",
+      "summary": "Function get_local_storage_dir",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/storage.py:upload_file",
+      "type": "function",
+      "name": "upload_file",
+      "filePath": "backend/core/storage.py",
+      "summary": "Function upload_file",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/storage.py:download_file_bytes",
+      "type": "function",
+      "name": "download_file_bytes",
+      "filePath": "backend/core/storage.py",
+      "summary": "Function download_file_bytes",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/core/stress_test.py",
+      "type": "file",
+      "name": "stress_test.py",
+      "filePath": "backend/core/stress_test.py",
+      "summary": "Core backend module for stress_test",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 194
+    },
+    {
+      "id": "function:backend/core/stress_test.py:_minority_group",
+      "type": "function",
+      "name": "_minority_group",
+      "filePath": "backend/core/stress_test.py",
+      "summary": "Function _minority_group",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/stress_test.py:_pick_first_numeric_col",
+      "type": "function",
+      "name": "_pick_first_numeric_col",
+      "filePath": "backend/core/stress_test.py",
+      "summary": "Function _pick_first_numeric_col",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/core/stress_test.py:run_stress_tests",
+      "type": "function",
+      "name": "run_stress_tests",
+      "filePath": "backend/core/stress_test.py",
+      "summary": "Function run_stress_tests",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/firebase/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/firebase/__init__.py",
+      "summary": "Firebase integration for __init__",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/firebase/client.py",
+      "type": "file",
+      "name": "client.py",
+      "filePath": "backend/firebase/client.py",
+      "summary": "Firebase integration for client",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 85
+    },
+    {
+      "id": "function:backend/firebase/client.py:_build_cred_from_env",
+      "type": "function",
+      "name": "_build_cred_from_env",
+      "filePath": "backend/firebase/client.py",
+      "summary": "Function _build_cred_from_env",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/firebase/client.py:init_firebase",
+      "type": "function",
+      "name": "init_firebase",
+      "filePath": "backend/firebase/client.py",
+      "summary": "Function init_firebase",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/firebase/client.py:get_firestore",
+      "type": "function",
+      "name": "get_firestore",
+      "filePath": "backend/firebase/client.py",
+      "summary": "Function get_firestore",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/firebase/client.py:get_storage_bucket",
+      "type": "function",
+      "name": "get_storage_bucket",
+      "filePath": "backend/firebase/client.py",
+      "summary": "Function get_storage_bucket",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/firebase/repositories/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/firebase/repositories/__init__.py",
+      "summary": "Firebase integration for __init__",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 14
+    },
+    {
+      "id": "file:backend/firebase/repositories/alert_repo.py",
+      "type": "file",
+      "name": "alert_repo.py",
+      "filePath": "backend/firebase/repositories/alert_repo.py",
+      "summary": "Firebase integration for alert_repo",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 3
+    },
+    {
+      "id": "file:backend/firebase/repositories/audit_run_repo.py",
+      "type": "file",
+      "name": "audit_run_repo.py",
+      "filePath": "backend/firebase/repositories/audit_run_repo.py",
+      "summary": "Firebase integration for audit_run_repo",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 3
+    },
+    {
+      "id": "file:backend/firebase/repositories/flag_repo.py",
+      "type": "file",
+      "name": "flag_repo.py",
+      "filePath": "backend/firebase/repositories/flag_repo.py",
+      "summary": "Firebase integration for flag_repo",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 3
+    },
+    {
+      "id": "file:backend/firebase/repositories/monitoring_repo.py",
+      "type": "file",
+      "name": "monitoring_repo.py",
+      "filePath": "backend/firebase/repositories/monitoring_repo.py",
+      "summary": "Firebase integration for monitoring_repo",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 4
+    },
+    {
+      "id": "file:backend/firebase/repositories/project_repo.py",
+      "type": "file",
+      "name": "project_repo.py",
+      "filePath": "backend/firebase/repositories/project_repo.py",
+      "summary": "Firebase integration for project_repo",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 3
+    },
+    {
+      "id": "file:backend/firebase/repository.py",
+      "type": "file",
+      "name": "repository.py",
+      "filePath": "backend/firebase/repository.py",
+      "summary": "Firebase integration for repository",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 129
+    },
+    {
+      "id": "class:backend/firebase/repository.py:Serializer",
+      "type": "class",
+      "name": "Serializer",
+      "filePath": "backend/firebase/repository.py",
+      "summary": "Class Serializer",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/firebase/repository.py:FirestoreRepository",
+      "type": "class",
+      "name": "FirestoreRepository",
+      "filePath": "backend/firebase/repository.py",
+      "summary": "Class FirestoreRepository",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/core/auth.py",
+      "target": "function:backend/core/auth.py:verify_token",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/auth.py",
+      "target": "function:backend/core/auth.py:require_user",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/auth.py",
+      "target": "function:backend/core/auth.py:_ensure_dev_user",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/auto_fix.py",
+      "target": "function:backend/core/auto_fix.py:_safe",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/auto_fix.py",
+      "target": "function:backend/core/auto_fix.py:_is_numeric_feature",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/auto_fix.py",
+      "target": "function:backend/core/auto_fix.py:generate_fix_recommendations",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:_domain_thresholds",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "class:backend/core/common.py:DatasetQualityReport",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:check_dataset_quality",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:bootstrap_fairness_gaps",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:permutation_fairness_pvalue",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:build_classifier",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:train_multiple_models",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "class:backend/core/common.py:PreparedData",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:normalize_target_binary",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:risk_from_gap",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:risk_from_score",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:encode_sensitive_series",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:infer_numeric_and_categorical",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:make_feature_frame",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:prepare_split",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:_drop_nan",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:group_metrics",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:fairness_gaps",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:fairness_score_from_gaps",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:get_metric_weights",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/common.py",
+      "target": "function:backend/core/common.py:top_correlated_feature",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/config.py",
+      "target": "function:backend/core/config.py:is_firebase_enabled",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/counterfactual.py",
+      "target": "function:backend/core/counterfactual.py:run_counterfactual_test",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/data_audit.py",
+      "target": "function:backend/core/data_audit.py:run_data_audit",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/explainability.py",
+      "target": "function:backend/core/explainability.py:_get_shap_values",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/explainability.py",
+      "target": "function:backend/core/explainability.py:explain_flagged_decisions",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/explainability.py",
+      "target": "function:backend/core/explainability.py:_build_default",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/explainability.py",
+      "target": "function:backend/core/explainability.py:generate_narrative_summary",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/feature_intelligence.py",
+      "target": "function:backend/core/feature_intelligence.py:_cramers_v",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/feature_intelligence.py",
+      "target": "function:backend/core/feature_intelligence.py:_chi2_pvalue",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/feature_intelligence.py",
+      "target": "function:backend/core/feature_intelligence.py:_mutual_information_score",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/feature_intelligence.py",
+      "target": "function:backend/core/feature_intelligence.py:_safe_numeric_series",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/feature_intelligence.py",
+      "target": "function:backend/core/feature_intelligence.py:detect_proxy_via_clustering",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/feature_intelligence.py",
+      "target": "function:backend/core/feature_intelligence.py:detect_proxy_features",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/model_bias.py",
+      "target": "function:backend/core/model_bias.py:run_model_bias_analysis",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/model_bias.py",
+      "target": "function:backend/core/model_bias.py:_compute_intersectional_bias",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/monitoring.py",
+      "target": "function:backend/core/monitoring.py:_psi",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/monitoring.py",
+      "target": "function:backend/core/monitoring.py:_jensen_shannon",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/monitoring.py",
+      "target": "function:backend/core/monitoring.py:detect_data_drift",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/monitoring.py",
+      "target": "function:backend/core/monitoring.py:log_monitoring_event",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/monitoring.py",
+      "target": "function:backend/core/monitoring.py:get_monitoring_history",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/monitoring.py",
+      "target": "function:backend/core/monitoring.py:check_alert_condition",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/sandbox.py",
+      "target": "function:backend/core/sandbox.py:_apply_fix",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/sandbox.py",
+      "target": "function:backend/core/sandbox.py:_apply_threshold_tuning",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/sandbox.py",
+      "target": "function:backend/core/sandbox.py:run_sandbox_simulation",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/storage.py",
+      "target": "function:backend/core/storage.py:get_local_storage_dir",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/storage.py",
+      "target": "function:backend/core/storage.py:upload_file",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/storage.py",
+      "target": "function:backend/core/storage.py:download_file_bytes",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/stress_test.py",
+      "target": "function:backend/core/stress_test.py:_minority_group",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/stress_test.py",
+      "target": "function:backend/core/stress_test.py:_pick_first_numeric_col",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/core/stress_test.py",
+      "target": "function:backend/core/stress_test.py:run_stress_tests",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/firebase/client.py",
+      "target": "function:backend/firebase/client.py:_build_cred_from_env",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/firebase/client.py",
+      "target": "function:backend/firebase/client.py:init_firebase",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/firebase/client.py",
+      "target": "function:backend/firebase/client.py:get_firestore",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/firebase/client.py",
+      "target": "function:backend/firebase/client.py:get_storage_bucket",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/firebase/repository.py",
+      "target": "class:backend/firebase/repository.py:Serializer",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/firebase/repository.py",
+      "target": "class:backend/firebase/repository.py:FirestoreRepository",
+      "type": "contains",
+      "weight": 1
+    }
+  ]
+}

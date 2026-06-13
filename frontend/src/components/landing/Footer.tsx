@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export default function Footer() {
   const navigate = useNavigate();
@@ -9,7 +9,12 @@ export default function Footer() {
         <div className="landing-footer-grid">
           <div className="landing-footer-brand">
             <div className="landing-brand">
-              <img src="/logo.png" alt="BIAS LAB Logo" className="landing-brand-logo" style={{ width: '32px', height: '32px', marginRight: '10px' }} />
+              <img
+                src="/logo.png"
+                alt="BIAS LAB Logo"
+                className="landing-brand-logo"
+                style={{ width: "32px", height: "32px", marginRight: "10px" }}
+              />
               <span className="landing-brand-text">BIAS</span>
               <span className="landing-brand-tag">LAB</span>
             </div>
@@ -42,7 +47,10 @@ export default function Footer() {
 
         <div className="landing-footer-bottom">
           <p>© 2026 BIAS.LAB. All rights reserved.</p>
-          <button className="btn btn-ghost btn-small" onClick={() => navigate('/dashboard')}>
+          <button
+            className="btn btn-ghost btn-small"
+            onClick={() => navigate("/dashboard")}
+          >
             Start Your Analysis →
           </button>
         </div>

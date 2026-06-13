@@ -1,20 +1,20 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 const steps = [
   {
-    num: '01',
-    title: 'Upload Data',
-    desc: 'Drop your CSV. We parse headers and extract column metadata instantly.',
+    num: "01",
+    title: "Upload Data",
+    desc: "Drop your CSV. We parse headers and extract column metadata instantly.",
   },
   {
-    num: '02',
-    title: 'Configure',
-    desc: 'Select sensitive columns, target variable, and fairness priorities.',
+    num: "02",
+    title: "Configure",
+    desc: "Select sensitive columns, target variable, and fairness priorities.",
   },
   {
-    num: '03',
-    title: 'Analyze',
-    desc: '8-stage pipeline runs: audit, proxy detection, bias, SHAP, counterfactual, stress, fix.',
+    num: "03",
+    title: "Analyze",
+    desc: "8-stage pipeline runs: audit, proxy detection, bias, SHAP, counterfactual, stress, fix.",
   },
 ];
 

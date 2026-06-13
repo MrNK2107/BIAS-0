@@ -1,0 +1,562 @@
+{
+  "nodes": [
+    {
+      "id": "file:frontend/src/pages/HeroPage.tsx",
+      "type": "file",
+      "name": "HeroPage.tsx",
+      "filePath": "frontend/src/pages/HeroPage.tsx",
+      "summary": "Page component: HeroPage",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 5
+    },
+    {
+      "id": "class:frontend/src/pages/HeroPage.tsx:HeroPage",
+      "type": "class",
+      "name": "HeroPage",
+      "filePath": "frontend/src/pages/HeroPage.tsx",
+      "summary": "Class HeroPage",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/Login.tsx",
+      "type": "file",
+      "name": "Login.tsx",
+      "filePath": "frontend/src/pages/Login.tsx",
+      "summary": "Page component: Login",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 115
+    },
+    {
+      "id": "class:frontend/src/pages/Login.tsx:Login",
+      "type": "class",
+      "name": "Login",
+      "filePath": "frontend/src/pages/Login.tsx",
+      "summary": "Class Login",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/MonitoringDashboard.tsx",
+      "type": "file",
+      "name": "MonitoringDashboard.tsx",
+      "filePath": "frontend/src/pages/MonitoringDashboard.tsx",
+      "summary": "Page component: MonitoringDashboard",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 220
+    },
+    {
+      "id": "class:frontend/src/pages/MonitoringDashboard.tsx:MonitoringDashboard",
+      "type": "class",
+      "name": "MonitoringDashboard",
+      "filePath": "frontend/src/pages/MonitoringDashboard.tsx",
+      "summary": "Class MonitoringDashboard",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/NotFound.tsx",
+      "type": "file",
+      "name": "NotFound.tsx",
+      "filePath": "frontend/src/pages/NotFound.tsx",
+      "summary": "Page component: NotFound",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 87
+    },
+    {
+      "id": "class:frontend/src/pages/NotFound.tsx:NotFound",
+      "type": "class",
+      "name": "NotFound",
+      "filePath": "frontend/src/pages/NotFound.tsx",
+      "summary": "Class NotFound",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/Profile.tsx",
+      "type": "file",
+      "name": "Profile.tsx",
+      "filePath": "frontend/src/pages/Profile.tsx",
+      "summary": "Page component: Profile",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 323
+    },
+    {
+      "id": "class:frontend/src/pages/Profile.tsx:Profile",
+      "type": "class",
+      "name": "Profile",
+      "filePath": "frontend/src/pages/Profile.tsx",
+      "summary": "Class Profile",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/Signup.tsx",
+      "type": "file",
+      "name": "Signup.tsx",
+      "filePath": "frontend/src/pages/Signup.tsx",
+      "summary": "Page component: Signup",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 95
+    },
+    {
+      "id": "class:frontend/src/pages/Signup.tsx:Signup",
+      "type": "class",
+      "name": "Signup",
+      "filePath": "frontend/src/pages/Signup.tsx",
+      "summary": "Class Signup",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/workflow/Step1Upload.tsx",
+      "type": "file",
+      "name": "Step1Upload.tsx",
+      "filePath": "frontend/src/pages/workflow/Step1Upload.tsx",
+      "summary": "Workflow step: Step1Upload",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 112
+    },
+    {
+      "id": "class:frontend/src/pages/workflow/Step1Upload.tsx:Step1Upload",
+      "type": "class",
+      "name": "Step1Upload",
+      "filePath": "frontend/src/pages/workflow/Step1Upload.tsx",
+      "summary": "Class Step1Upload",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/workflow/Step2Config.tsx",
+      "type": "file",
+      "name": "Step2Config.tsx",
+      "filePath": "frontend/src/pages/workflow/Step2Config.tsx",
+      "summary": "Workflow step: Step2Config",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 446
+    },
+    {
+      "id": "class:frontend/src/pages/workflow/Step2Config.tsx:Step2Config",
+      "type": "class",
+      "name": "Step2Config",
+      "filePath": "frontend/src/pages/workflow/Step2Config.tsx",
+      "summary": "Class Step2Config",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/workflow/Step3DataAudit.tsx",
+      "type": "file",
+      "name": "Step3DataAudit.tsx",
+      "filePath": "frontend/src/pages/workflow/Step3DataAudit.tsx",
+      "summary": "Workflow step: Step3DataAudit",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 224
+    },
+    {
+      "id": "class:frontend/src/pages/workflow/Step3DataAudit.tsx:Step3DataAudit",
+      "type": "class",
+      "name": "Step3DataAudit",
+      "filePath": "frontend/src/pages/workflow/Step3DataAudit.tsx",
+      "summary": "Class Step3DataAudit",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/workflow/Step4ModelBias.tsx",
+      "type": "file",
+      "name": "Step4ModelBias.tsx",
+      "filePath": "frontend/src/pages/workflow/Step4ModelBias.tsx",
+      "summary": "Workflow step: Step4ModelBias",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 152
+    },
+    {
+      "id": "class:frontend/src/pages/workflow/Step4ModelBias.tsx:Step4ModelBias",
+      "type": "class",
+      "name": "Step4ModelBias",
+      "filePath": "frontend/src/pages/workflow/Step4ModelBias.tsx",
+      "summary": "Class Step4ModelBias",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/workflow/Step5Explanations.tsx",
+      "type": "file",
+      "name": "Step5Explanations.tsx",
+      "filePath": "frontend/src/pages/workflow/Step5Explanations.tsx",
+      "summary": "Workflow step: Step5Explanations",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 240
+    },
+    {
+      "id": "class:frontend/src/pages/workflow/Step5Explanations.tsx:Step5Explanations",
+      "type": "class",
+      "name": "Step5Explanations",
+      "filePath": "frontend/src/pages/workflow/Step5Explanations.tsx",
+      "summary": "Class Step5Explanations",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/workflow/Step6Counterfactual.tsx",
+      "type": "file",
+      "name": "Step6Counterfactual.tsx",
+      "filePath": "frontend/src/pages/workflow/Step6Counterfactual.tsx",
+      "summary": "Workflow step: Step6Counterfactual",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 193
+    },
+    {
+      "id": "class:frontend/src/pages/workflow/Step6Counterfactual.tsx:Step6Counterfactual",
+      "type": "class",
+      "name": "Step6Counterfactual",
+      "filePath": "frontend/src/pages/workflow/Step6Counterfactual.tsx",
+      "summary": "Class Step6Counterfactual",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/workflow/Step7StressTest.tsx",
+      "type": "file",
+      "name": "Step7StressTest.tsx",
+      "filePath": "frontend/src/pages/workflow/Step7StressTest.tsx",
+      "summary": "Workflow step: Step7StressTest",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 252
+    },
+    {
+      "id": "class:frontend/src/pages/workflow/Step7StressTest.tsx:Step7StressTest",
+      "type": "class",
+      "name": "Step7StressTest",
+      "filePath": "frontend/src/pages/workflow/Step7StressTest.tsx",
+      "summary": "Class Step7StressTest",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/workflow/Step8Sandbox.tsx",
+      "type": "file",
+      "name": "Step8Sandbox.tsx",
+      "filePath": "frontend/src/pages/workflow/Step8Sandbox.tsx",
+      "summary": "Workflow step: Step8Sandbox",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 195
+    },
+    {
+      "id": "class:frontend/src/pages/workflow/Step8Sandbox.tsx:Step8Sandbox",
+      "type": "class",
+      "name": "Step8Sandbox",
+      "filePath": "frontend/src/pages/workflow/Step8Sandbox.tsx",
+      "summary": "Class Step8Sandbox",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/workflow/Step9Monitoring.tsx",
+      "type": "file",
+      "name": "Step9Monitoring.tsx",
+      "filePath": "frontend/src/pages/workflow/Step9Monitoring.tsx",
+      "summary": "Workflow step: Step9Monitoring",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 574
+    },
+    {
+      "id": "class:frontend/src/pages/workflow/Step9Monitoring.tsx:Step9Monitoring",
+      "type": "class",
+      "name": "Step9Monitoring",
+      "filePath": "frontend/src/pages/workflow/Step9Monitoring.tsx",
+      "summary": "Class Step9Monitoring",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/styles/globals.css",
+      "type": "file",
+      "name": "globals.css",
+      "filePath": "frontend/src/styles/globals.css",
+      "summary": "Frontend source module",
+      "tags": [
+        "css",
+        "markup"
+      ],
+      "complexity": "complex",
+      "sizeLines": 2460
+    },
+    {
+      "id": "file:frontend/src/types.ts",
+      "type": "file",
+      "name": "types.ts",
+      "filePath": "frontend/src/types.ts",
+      "summary": "Frontend source module",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 267
+    },
+    {
+      "id": "file:frontend/src/vite-env.d.ts",
+      "type": "file",
+      "name": "vite-env.d.ts",
+      "filePath": "frontend/src/vite-env.d.ts",
+      "summary": "Frontend source module",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 1
+    },
+    {
+      "id": "config:frontend/test-results/.last-run.json",
+      "type": "config",
+      "name": ".last-run.json",
+      "filePath": "frontend/test-results/.last-run.json",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple",
+      "sizeLines": 5
+    },
+    {
+      "id": "document:frontend/test-results/e2e-E2E-Audit-Sequence-Workflow-chromium/error-context.md",
+      "type": "document",
+      "name": "error-context.md",
+      "filePath": "frontend/test-results/e2e-E2E-Audit-Sequence-Workflow-chromium/error-context.md",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "markdown",
+        "docs"
+      ],
+      "complexity": "complex",
+      "sizeLines": 243
+    },
+    {
+      "id": "file:frontend/tests/e2e.spec.ts",
+      "type": "file",
+      "name": "e2e.spec.ts",
+      "filePath": "frontend/tests/e2e.spec.ts",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 129
+    },
+    {
+      "id": "file:frontend/vite.config.ts",
+      "type": "file",
+      "name": "vite.config.ts",
+      "filePath": "frontend/vite.config.ts",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 15
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:frontend/src/pages/HeroPage.tsx",
+      "target": "class:frontend/src/pages/HeroPage.tsx:HeroPage",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/Login.tsx",
+      "target": "class:frontend/src/pages/Login.tsx:Login",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/MonitoringDashboard.tsx",
+      "target": "class:frontend/src/pages/MonitoringDashboard.tsx:MonitoringDashboard",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/NotFound.tsx",
+      "target": "class:frontend/src/pages/NotFound.tsx:NotFound",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/Profile.tsx",
+      "target": "class:frontend/src/pages/Profile.tsx:Profile",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/Signup.tsx",
+      "target": "class:frontend/src/pages/Signup.tsx:Signup",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/workflow/Step1Upload.tsx",
+      "target": "class:frontend/src/pages/workflow/Step1Upload.tsx:Step1Upload",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/workflow/Step2Config.tsx",
+      "target": "class:frontend/src/pages/workflow/Step2Config.tsx:Step2Config",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/workflow/Step3DataAudit.tsx",
+      "target": "class:frontend/src/pages/workflow/Step3DataAudit.tsx:Step3DataAudit",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/workflow/Step4ModelBias.tsx",
+      "target": "class:frontend/src/pages/workflow/Step4ModelBias.tsx:Step4ModelBias",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/workflow/Step5Explanations.tsx",
+      "target": "class:frontend/src/pages/workflow/Step5Explanations.tsx:Step5Explanations",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/workflow/Step6Counterfactual.tsx",
+      "target": "class:frontend/src/pages/workflow/Step6Counterfactual.tsx:Step6Counterfactual",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/workflow/Step7StressTest.tsx",
+      "target": "class:frontend/src/pages/workflow/Step7StressTest.tsx:Step7StressTest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/workflow/Step8Sandbox.tsx",
+      "target": "class:frontend/src/pages/workflow/Step8Sandbox.tsx:Step8Sandbox",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/workflow/Step9Monitoring.tsx",
+      "target": "class:frontend/src/pages/workflow/Step9Monitoring.tsx:Step9Monitoring",
+      "type": "contains",
+      "weight": 1
+    }
+  ]
+}

@@ -3,17 +3,27 @@ from __future__ import annotations
 import json
 from typing import Any
 
+import httpx
 import pandas as pd
-import requests
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
+from pydantic import BaseModel
 from sklearn.metrics import accuracy_score
 
-from core.common import fairness_gaps, fairness_score_from_gaps, get_metric_weights, group_metrics, prepare_split, risk_from_score
+from core.auth import require_user
+from core.common import (
+    fairness_gaps,
+    fairness_score_from_gaps,
+    get_metric_weights,
+    group_metrics,
+    prepare_split,
+    risk_from_score,
+)
 from core.counterfactual import run_counterfactual_test
+from core.deps import require_project
 from core.explainability import explain_flagged_decisions, generate_narrative_summary
+from core.metrics import ZERO_GAPS
 from core.model_bias import run_model_bias_analysis
 from core.stress_test import run_stress_tests
-from pydantic import BaseModel
 from utils.data_io import upload_file_to_dataframe
 
 router = APIRouter(prefix="/bias", tags=["bias"])
@@ -21,91 +31,102 @@ router = APIRouter(prefix="/bias", tags=["bias"])
 
 @router.post("/model")
 async def bias_model(
+    project_id: str = Form(...),
     sensitive_cols: str = Form(...),
     target_col: str = Form(...),
     file: UploadFile = File(...),
     model_path: str | None = Form(None),
     metric_priority: str = Form(default="balanced"),
+    uid: str = Depends(require_user),
 ) -> dict[str, Any]:
+    await require_project(project_id, uid)
     df = await upload_file_to_dataframe(file)
-    sensitive_list = [item.strip() for item in sensitive_cols.split(",") if item.strip()]
+    sensitive_list = [
+        item.strip() for item in sensitive_cols.split(",") if item.strip()
+    ]
     metric_weights = get_metric_weights(metric_priority)
-    return run_model_bias_analysis(df, sensitive_list, target_col, model_path=model_path, metric_weights=metric_weights)
+    return run_model_bias_analysis(
+        df,
+        sensitive_list,
+        target_col,
+        model_path=model_path,
+        metric_weights=metric_weights,
+    )
 
 
 @router.post("/model-from-api")
 async def bias_model_from_api(
+    project_id: str = Form(...),
     api_url: str = Form(...),
     api_request_format: str = Form(...),
     sensitive_cols: str = Form(...),
     target_col: str = Form(...),
     file: UploadFile = File(...),
     metric_priority: str = Form(default="balanced"),
+    uid: str = Depends(require_user),
 ) -> dict[str, Any]:
     """
     Analyze bias using predictions from an external API endpoint.
-    
-    api_request_format should be a JSON template with column names as placeholders.
-    Example: {"input": "{feature1}", "age": {age}, "score": {score}}
     """
+    await require_project(project_id, uid)
     df = await upload_file_to_dataframe(file)
-    sensitive_list = [item.strip() for item in sensitive_cols.split(",") if item.strip()]
+    sensitive_list = [
+        item.strip() for item in sensitive_cols.split(",") if item.strip()
+    ]
     metric_weights = get_metric_weights(metric_priority)
-    
+
     # Prepare data split
     prepared = prepare_split(df, target_col)
     X_test = prepared.X_test
     y_test = prepared.y_test
-    
+
     # Parse the request template
     request_template = json.loads(api_request_format)
-    
-    # Collect predictions from API
+
+    # Collect predictions from API using async HTTP client
     predictions = []
-    for idx, row in X_test.iterrows():
-        # Replace placeholders in template with actual row values
-        request_data = _substitute_template(request_template, row)
-        
-        try:
-            response = requests.post(api_url, json=request_data, timeout=30)
-            response.raise_for_status()
-            pred = response.json()
-            # Assume the API returns a dict with 'prediction' key
-            # Adjust this based on your API response format
-            if isinstance(pred, dict) and "prediction" in pred:
-                predictions.append(pred["prediction"])
-            elif isinstance(pred, (int, float)):
-                predictions.append(int(pred))
-            else:
-                # Try to extract a single numeric value
-                predictions.append(int(list(pred.values())[0]))
-        except Exception as e:
-            raise ValueError(f"Failed to get prediction for row {idx} from {api_url}: {str(e)}")
-    
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        for idx, row in X_test.iterrows():
+            request_data = _substitute_template(request_template, row)
+            try:
+                response = await client.post(api_url, json=request_data)
+                response.raise_for_status()
+                pred = response.json()
+                if isinstance(pred, dict) and "prediction" in pred:
+                    predictions.append(pred["prediction"])
+                elif isinstance(pred, (int, float)):
+                    predictions.append(int(pred))
+                else:
+                    predictions.append(int(list(pred.values())[0]))
+            except Exception as e:
+                raise ValueError(
+                    f"Failed to get prediction for row {idx} from {api_url}: {str(e)}"
+                )
+
     # Create predictions series
     y_pred = pd.Series(predictions, index=y_test.index)
-    
+
     # Calculate bias metrics
     overall_accuracy = float(accuracy_score(y_test, y_pred))
-    
-    metrics = {"demographic_parity_difference": 0.0, "equal_opportunity_difference": 0.0, "fpr_gap": 0.0}
+
+    metrics = dict(ZERO_GAPS)
     for sensitive in sensitive_list:
         if sensitive not in df.columns:
             continue
         current_metrics = fairness_gaps(y_pred, y_test, df.loc[y_test.index, sensitive])
         for key, value in current_metrics.items():
             metrics[key] = max(metrics[key], value)
-    
+
     fairness_score = fairness_score_from_gaps(metrics, metric_weights=metric_weights)
     risk_level = risk_from_score(fairness_score)
-    
+
     group_performance: dict[str, Any] = {}
     for sensitive in sensitive_list:
         if sensitive not in df.columns:
             continue
         group_series = df.loc[y_test.index, sensitive]
         group_performance[sensitive] = group_metrics(y_test, y_pred, group_series)
-    
+
     return {
         "overall_accuracy": round(overall_accuracy, 4),
         "fairness_score": round(fairness_score),
@@ -139,15 +160,22 @@ def _substitute_template(template: Any, row: pd.Series) -> Any:
 
 @router.post("/explain")
 async def bias_explain(
+    project_id: str = Form(...),
     sensitive_cols: str = Form(...),
     target_col: str = Form(...),
     file: UploadFile = File(...),
     model_path: str | None = Form(None),
     n_samples: int = Form(5),
+    uid: str = Depends(require_user),
 ) -> list[dict[str, Any]]:
+    await require_project(project_id, uid)
     df = await upload_file_to_dataframe(file)
-    sensitive_list = [item.strip() for item in sensitive_cols.split(",") if item.strip()]
-    return explain_flagged_decisions(df, None, sensitive_list, target_col, n_samples=n_samples)
+    sensitive_list = [
+        item.strip() for item in sensitive_cols.split(",") if item.strip()
+    ]
+    return explain_flagged_decisions(
+        df, None, sensitive_list, target_col, n_samples=n_samples
+    )
 
 
 class ExplainSummaryRequest(BaseModel):
@@ -158,40 +186,54 @@ class ExplainSummaryRequest(BaseModel):
 
 @router.post("/explain-summary")
 async def explain_summary(request: ExplainSummaryRequest) -> dict[str, str]:
-    summary = generate_narrative_summary(request.flagged_list, request.sensitive_cols, request.domain)
+    summary = generate_narrative_summary(
+        request.flagged_list, request.sensitive_cols, request.domain
+    )
     return {"summary": summary}
 
 
 @router.post("/counterfactual")
 async def bias_counterfactual(
+    project_id: str = Form(...),
     sensitive_col: str = Form(...),
     target_col: str = Form(...),
     file: UploadFile = File(...),
     model_path: str | None = Form(None),
     metric_priority: str = Form(default="balanced"),
+    uid: str = Depends(require_user),
 ) -> dict[str, Any]:
+    await require_project(project_id, uid)
     df = await upload_file_to_dataframe(file)
     metric_weights = get_metric_weights(metric_priority)
-    return run_counterfactual_test(df, None, sensitive_col, target_col, metric_weights=metric_weights)
+    return run_counterfactual_test(
+        df, None, sensitive_col, target_col, metric_weights=metric_weights
+    )
 
 
 @router.post("/stress")
 async def bias_stress(
+    project_id: str = Form(...),
     sensitive_cols: str = Form(...),
     target_col: str = Form(...),
     file: UploadFile = File(...),
     model_path: str | None = Form(None),
     metric_priority: str = Form(default="balanced"),
     custom_scenarios: str | None = Form(None),
+    uid: str = Depends(require_user),
 ) -> dict[str, Any]:
+    await require_project(project_id, uid)
     df = await upload_file_to_dataframe(file)
-    sensitive_list = [item.strip() for item in sensitive_cols.split(",") if item.strip()]
-    
+    sensitive_list = [
+        item.strip() for item in sensitive_cols.split(",") if item.strip()
+    ]
+
     custom_list = None
     if custom_scenarios:
         try:
             custom_list = json.loads(custom_scenarios)
         except json.JSONDecodeError:
             pass
-            
-    return run_stress_tests(df, None, sensitive_list, target_col, custom_scenarios=custom_list)
+
+    return run_stress_tests(
+        df, None, sensitive_list, target_col, custom_scenarios=custom_list
+    )

@@ -21,8 +21,7 @@ This file is the **single source of truth** for the AI coding agent building thi
 **Core user story:**
 > A bank data scientist uploads a loan dataset + trained model. The platform tells them *where* bias hides, *how bad* it is, suggests *concrete fixes*, simulates each fix in a sandbox, and keeps watching the deployed model afterward.
 
-**Target domains:** Loan approval · Hiring · Insurance · Healthcare prioritization  
-**Tech stack:** Python (FastAPI) backend · React (Vite + TypeScript) frontend · SQLite (dev) / PostgreSQL (prod)
+**Tech stack:** Python (FastAPI) backend · React (Vite + TypeScript) frontend · Firebase (Firestore + Firebase Storage)
 
 ---
 
@@ -46,8 +45,7 @@ unbiased-ai/
 │   │   ├── sandbox.py           # Step 8B logic
 │   │   └── monitoring.py        # Step 9 logic
 │   ├── models/
-│   │   ├── schemas.py           # Pydantic request/response models
-│   │   └── db.py                # SQLAlchemy models + DB init
+│   │   └── schemas.py           # Pydantic request/response models
 │   ├── routers/
 │   │   ├── upload.py
 │   │   ├── audit.py
@@ -116,8 +114,7 @@ unbiased-ai/
    scikit-learn>=1.4
    shap
    fairlearn
-   sqlalchemy
-   alembic
+   firebase-admin
    pydantic>=2.0
    python-multipart
    joblib
@@ -133,12 +130,8 @@ unbiased-ai/
    - Mount all routers from `backend/routers/`
    - Include a `/health` GET endpoint returning `{"status": "ok"}`
 
-3. Create `backend/models/db.py`:
-   - SQLAlchemy engine pointing to `sqlite:///./unbiased_ai.db` (dev)
-   - Tables: `Project`, `AuditRun`, `MonitoringEvent`
-   - `Project`: id, name, domain, created_at, sensitive_columns (JSON), target_column
-   - `AuditRun`: id, project_id, timestamp, fairness_score, risk_level, results_json
-   - `MonitoringEvent`: id, project_id, timestamp, fairness_score, alert_triggered, note
+3. Create `backend/firebase/`:
+   - Setup Firestore repository models for `Project`, `AuditRun`, `MonitoringEvent` data stores.
 
 **Acceptance:** `uvicorn main:app --reload` starts without errors; `/health` returns 200.
 
@@ -813,7 +806,6 @@ This allows judges or users to see the full platform without uploading anything.
 
 Create `.env` in `backend/`:
 ```
-DATABASE_URL=sqlite:///./unbiased_ai.db
 DEMO_DATA_PATH=../data/
 MODEL_CACHE_DIR=./model_cache/
 ```

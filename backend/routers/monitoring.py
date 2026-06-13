@@ -1,22 +1,31 @@
 from __future__ import annotations
 
+import io
 import json
 from typing import Any
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-from google.cloud.firestore import SERVER_TIMESTAMP
+import numpy as np
+import pandas as pd
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
 
 from core.auth import require_user, verify_token
 from core.common import fairness_score_from_gaps, risk_from_score
-from core.monitoring import check_alert_condition, get_monitoring_history_fire, log_monitoring_event_fire
-from firebase.repositories import (
+from core.deps import require_project
+from core.monitoring import (
+    check_alert_condition,
+    detect_data_drift,
+    get_monitoring_history,
+    log_monitoring_event,
+)
+from repositories import (
     alert_repo,
     flag_repo,
     monitoring_event_repo,
     monitoring_log_repo,
     project_repo,
 )
+from utils.data_io import upload_file_to_dataframe
 
 
 class IngestPrediction(BaseModel):
@@ -46,11 +55,15 @@ def monitoring_history(
     uid: str = Depends(require_user),
 ) -> dict[str, Any]:
     _check_project_owner(project_id, uid)
-    events = get_monitoring_history_fire(project_id)
+    events = get_monitoring_history(project_id)
     baseline = events[0]["fairnessScore"] if events else 72
     latest = events[-1]["fairnessScore"] if events else baseline
     check = check_alert_condition(latest, baseline)
-    trend = "declining" if latest < baseline - 3 else "improving" if latest > baseline + 3 else "stable"
+    trend = (
+        "declining"
+        if latest < baseline - 3
+        else "improving" if latest > baseline + 3 else "stable"
+    )
     return {
         "project_id": project_id,
         "events": events,
@@ -64,17 +77,31 @@ def monitoring_history(
 def simulate_monitoring(
     project_id: str,
     uid: str = Depends(require_user),
+    force: bool = Query(False),
 ) -> dict[str, Any]:
     _check_project_owner(project_id, uid)
+    if not force:
+        raise HTTPException(
+            status_code=400,
+            detail="This will delete ALL existing monitoring data and replace it with simulated data. "
+                   "Set ?force=true to confirm.",
+        )
     monitoring_event_repo.delete_all([("projectId", "==", project_id)])
     base = 76.0
     for day in range(30):
-        fairness = base - day * 0.55 + (1 if day % 7 < 3 else -2) + (0.8 if day < 8 else -0.5)
+        fairness = (
+            base - day * 0.55 + (1 if day % 7 < 3 else -2) + (0.8 if day < 8 else -0.5)
+        )
         breakdown = {
-            "gender": {"male": round(0.72 + (day % 5) * 0.02, 2), "female": round(0.68 - (day % 3) * 0.03, 2)},
+            "gender": {
+                "male": round(0.72 + (day % 5) * 0.02, 2),
+                "female": round(0.68 - (day % 3) * 0.03, 2),
+            },
         }
         note = "Score dropped from baseline." if fairness < base - 15 else ""
-        log_monitoring_event_fire(project_id, uid, fairness, note=note, group_breakdown=breakdown)
+        log_monitoring_event(
+            project_id, uid, fairness, note=note, group_breakdown=breakdown
+        )
     return monitoring_history(project_id, uid)
 
 
@@ -84,7 +111,9 @@ def ingest_monitoring(
     uid: str = Depends(require_user),
 ) -> dict[str, Any]:
     project = project_repo.get(payload.project_id)
-    sensitive_columns: list[str] = project.get("sensitiveColumns", []) if project else []
+    sensitive_columns: list[str] = (
+        project.get("sensitiveColumns", []) if project else []
+    )
 
     group_rates: dict[str, list[float]] = {}
     for pred in payload.predictions:
@@ -110,8 +139,14 @@ def ingest_monitoring(
         if attr_rates:
             breakdown[attr] = {k: sum(v) / len(v) for k, v in attr_rates.items()}
 
-    log_monitoring_event_fire(payload.project_id, uid, fairness_score, note="Ingest batch", group_breakdown=breakdown)
-    events = get_monitoring_history_fire(payload.project_id)
+    log_monitoring_event(
+        payload.project_id,
+        uid,
+        fairness_score,
+        note="Ingest batch",
+        group_breakdown=breakdown,
+    )
+    events = get_monitoring_history(payload.project_id)
     baseline = events[0]["fairnessScore"] if events else fairness_score
     latest = events[-1]["fairnessScore"] if events else fairness_score
     alert = check_alert_condition(latest, baseline)
@@ -124,22 +159,24 @@ async def simulate_monitoring_data(
     file: UploadFile = File(...),
     uid: str = Depends(require_user),
 ) -> dict[str, Any]:
-    import pandas as pd
-
-    from core.monitoring import detect_data_drift
-    from utils.data_io import upload_file_to_dataframe
-
     project = _check_project_owner(project_id, uid)
 
     if not project.get("datasetPath"):
-        raise HTTPException(status_code=400, detail="Baseline dataset not found for this project")
+        raise HTTPException(
+            status_code=400, detail="Baseline dataset not found for this project"
+        )
 
     # Download baseline from Firebase Storage
     from firebase.client import get_storage_bucket
+
     bucket = get_storage_bucket()
-    blob_name = project["datasetPath"].replace(f"gs://{bucket.name}/", "", 1) if project["datasetPath"].startswith("gs://") else project["datasetPath"]
+    blob_name = (
+        project["datasetPath"].replace(f"gs://{bucket.name}/", "", 1)
+        if project["datasetPath"].startswith("gs://")
+        else project["datasetPath"]
+    )
     baseline_bytes = bucket.blob(blob_name).download_as_bytes()
-    baseline_df = pd.read_csv(pd.io.common.BytesIO(baseline_bytes))
+    baseline_df = pd.read_csv(io.BytesIO(baseline_bytes))
 
     simulation_df = await upload_file_to_dataframe(file)
 
@@ -150,7 +187,9 @@ async def simulate_monitoring_data(
         project.get("targetColumn", ""),
     )
 
-    avg_shift = sum(drift_results.get("sensitive_distribution_shift", {}).values()) / max(len(project.get("sensitiveColumns", [])), 1)
+    avg_shift = sum(
+        drift_results.get("sensitive_distribution_shift", {}).values()
+    ) / max(len(project.get("sensitiveColumns", [])), 1)
     predicted_fairness = max(0.0, 80.0 - (avg_shift * 100))
 
     return {
@@ -166,15 +205,16 @@ def create_flag(
     payload: FlagPayload,
     uid: str = Depends(require_user),
 ) -> dict[str, Any]:
-    doc_id = flag_repo.create({
-        "projectId": payload.project_id,
-        "userId": uid,
-        "recordId": payload.record_id,
-        "reason": payload.reason,
-        "flaggedBy": "user",
-        "resolved": False,
-        "timestamp": SERVER_TIMESTAMP,
-    })
+    doc_id = flag_repo.create(
+        {
+            "projectId": payload.project_id,
+            "userId": uid,
+            "recordId": payload.record_id,
+            "reason": payload.reason,
+            "flaggedBy": "user",
+            "resolved": False,
+        }
+    )
     return {"id": doc_id, "message": "Flag created"}
 
 
@@ -184,10 +224,12 @@ def get_unresolved_flags(
     uid: str = Depends(require_user),
 ) -> list[dict[str, Any]]:
     _check_project_owner(project_id, uid)
-    flags = flag_repo.list(filters=[
-        ("projectId", "==", project_id),
-        ("resolved", "==", False),
-    ])
+    flags = flag_repo.list(
+        filters=[
+            ("projectId", "==", project_id),
+            ("resolved", "==", False),
+        ]
+    )
     return [
         {
             "id": f.get("id"),
@@ -265,18 +307,14 @@ def get_monitoring_logs(
 
 @router.post("/drift")
 async def detect_drift(
+    project_id: str = Form(...),
     baseline_file: UploadFile = File(...),
     current_file: UploadFile = File(...),
     sensitive_cols: str = Form(...),
     target_col: str = Form(...),
-    uid: str = Depends(verify_token),
+    uid: str = Depends(require_user),
 ):
-    import io
-
-    import pandas as pd
-
-    from core.monitoring import detect_data_drift
-
+    await require_project(project_id, uid)
     baseline_bytes = await baseline_file.read()
     current_bytes = await current_file.read()
     baseline_df = pd.read_csv(io.BytesIO(baseline_bytes))
@@ -291,8 +329,6 @@ def get_project_trend(
     limit: int = 10,
     uid: str = Depends(require_user),
 ) -> dict[str, Any]:
-    import numpy as np
-
     _check_project_owner(project_id, uid)
     logs = monitoring_log_repo.list(
         filters=[("projectId", "==", project_id)],
@@ -301,7 +337,11 @@ def get_project_trend(
     )
 
     if not logs:
-        return {"trend": "STABLE", "stability_score": 100.0, "degradation_detected": False}
+        return {
+            "trend": "STABLE",
+            "stability_score": 100.0,
+            "degradation_detected": False,
+        }
 
     scores = [log.get("fairnessScore", 0) for log in reversed(logs)]
 
@@ -363,5 +403,3 @@ def _check_project_owner(project_id: str, uid: str) -> dict[str, Any]:
     if not project or project.get("userId") != uid:
         raise HTTPException(status_code=404, detail="Project not found")
     return project
-
-

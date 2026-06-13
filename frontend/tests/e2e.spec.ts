@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 import path from 'path';
 
 test('E2E Audit Sequence Workflow', async ({ page }) => {
-  page.on('console', msg => console.log('BROWSER CONSOLE:', msg.text()));
   // 1. Visit Hero Page
   await page.goto('/');
   await expect(page).toHaveTitle(/BIAS LAB/i);

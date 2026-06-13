@@ -1,0 +1,31 @@
+{
+  "nodes": [
+    {
+      "id": "config:.dockerignore",
+      "type": "config",
+      "name": ".dockerignore",
+      "filePath": ".dockerignore",
+      "summary": "Project file",
+      "tags": [
+        "unknown",
+        "infra"
+      ],
+      "complexity": "simple",
+      "sizeLines": 13
+    },
+    {
+      "id": "service:Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "Dockerfile",
+      "summary": "Container definition for the application",
+      "tags": [
+        "dockerfile",
+        "infra"
+      ],
+      "complexity": "simple",
+      "sizeLines": 31
+    }
+  ],
+  "edges": []
+}

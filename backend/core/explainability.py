@@ -4,76 +4,66 @@ Uses SHAP TreeExplainer when the model supports it, automatically
 falls back to SHAP KernelExplainer for SVMs, Logistic Regression,
 or any non-tree model loaded via joblib.
 """
+
 from __future__ import annotations
 
+import logging
+from collections import Counter
 from typing import Any
 
 import numpy as np
 import pandas as pd
 
-from .common import build_classifier, prepare_split
+from .common import build_and_fit_default, normalize_target_binary, prepare_split
 from .feature_intelligence import detect_proxy_features
 
+logger = logging.getLogger(__name__)
 
-def _get_shap_values(model, X_background: pd.DataFrame, X_explain: pd.DataFrame) -> np.ndarray | None:
+
+def _get_shap_values(
+    model, X_background: pd.DataFrame, X_explain: pd.DataFrame
+) -> np.ndarray | None:
     """Try TreeExplainer first; fall back to KernelExplainer for non-tree models."""
     try:
         import shap  # type: ignore
     except ImportError:
         return None
 
-    # Try TreeExplainer (works for RF, XGBoost, LightGBM, ExtraTrees, etc.)
-    try:
-        # Extract the actual estimator if inside a sklearn Pipeline
-        estimator = model
-        if hasattr(model, "named_steps"):
-            estimator = model.named_steps.get("model", model)
+    is_pipeline = hasattr(model, "named_steps")
+    is_sklearn = hasattr(model, "predict") and hasattr(model, "fit")
 
-        explainer = shap.TreeExplainer(estimator)
-        # Transform features through pipeline preprocessor if present
-        X_transformed = (
-            model.named_steps["preprocessor"].transform(X_explain)
-            if hasattr(model, "named_steps") and "preprocessor" in model.named_steps
-            else X_explain.to_numpy()
-        )
-        sv = explainer.shap_values(X_transformed)
-        # Binary classifiers return [class0, class1]; take class1
-        if isinstance(sv, list) and len(sv) == 2:
-            return sv[1]
-        return sv
-    except Exception:
-        pass
+    def _extract_estimator(m):
+        return m.named_steps.get("model", m) if is_pipeline else m
+
+    def _transform(m, X: pd.DataFrame) -> np.ndarray:
+        if is_pipeline and "preprocessor" in m.named_steps:
+            return m.named_steps["preprocessor"].transform(X)
+        return X.to_numpy()
+
+    # Try TreeExplainer (works for RF, XGBoost, LightGBM, ExtraTrees, etc.)
+    if is_sklearn:
+        try:
+            estimator = _extract_estimator(model)
+            explainer = shap.TreeExplainer(estimator)
+            X_t = _transform(model, X_explain)
+            sv = explainer.shap_values(X_t)
+            if isinstance(sv, list) and len(sv) == 2:
+                return sv[1]
+            return sv
+        except Exception as exc:
+            logger.debug("TreeExplainer failed, trying KernelExplainer: %s", exc)
 
     # KernelExplainer fallback (model-agnostic, slower)
     try:
         import shap  # type: ignore
 
-        # Separate the preprocessor from the final estimator so that
-        # predict_fn receives pre-transformed numpy arrays (what KernelExplainer
-        # passes) instead of raw DataFrames with named columns.
-        has_preprocessor = hasattr(model, "named_steps") and "preprocessor" in model.named_steps
-        model_step = (
-            model.named_steps.get("model", model)
-            if hasattr(model, "named_steps")
-            else model
-        )
+        model_step = _extract_estimator(model)
+        X_bg_np = _transform(model, X_background)
+        X_ex_np = _transform(model, X_explain)
 
-        X_bg_np = (
-            model.named_steps["preprocessor"].transform(X_background)
-            if has_preprocessor
-            else X_background.to_numpy()
-        )
-        X_ex_np = (
-            model.named_steps["preprocessor"].transform(X_explain)
-            if has_preprocessor
-            else X_explain.to_numpy()
-        )
-
-        # Ensure at least 1 background sample (guard for tiny datasets)
         n_bg = max(1, min(50, len(X_bg_np)))
         bg_sample = shap.sample(X_bg_np, n_bg)
 
-        # predict_fn works on pre-transformed numpy arrays → use model_step only
         def predict_fn(data: np.ndarray) -> np.ndarray:
             if hasattr(model_step, "predict_proba"):
                 return model_step.predict_proba(data)[:, 1]
@@ -81,7 +71,8 @@ def _get_shap_values(model, X_background: pd.DataFrame, X_explain: pd.DataFrame)
 
         explainer = shap.KernelExplainer(predict_fn, bg_sample)
         return explainer.shap_values(X_ex_np, nsamples=100)
-    except Exception:
+    except Exception as exc:
+        logger.debug("KernelExplainer fallback also failed: %s", exc)
         return None
 
 
@@ -91,10 +82,15 @@ def explain_flagged_decisions(
     sensitive_cols: list[str],
     target_col: str,
     n_samples: int = 5,
+    proxy_result: dict | None = None,
 ) -> list[dict[str, Any]]:
+    normalize_target_binary(df, target_col)
     prepared = prepare_split(df, target_col)
-    proxy_result = detect_proxy_features(df, sensitive_cols)
-    proxy_features = {item["feature"] for item in proxy_result.get("proxy_features", [])}
+    if proxy_result is None:
+        proxy_result = detect_proxy_features(df, sensitive_cols)
+    proxy_features = {
+        item["feature"] for item in proxy_result.get("proxy_features", [])
+    }
 
     pipeline = model if model is not None else _build_default(prepared)
 
@@ -126,18 +122,19 @@ def explain_flagged_decisions(
                 coefs = np.abs(model_step.coef_)
                 coefs = coefs[0] if getattr(coefs, "ndim", 1) > 1 else coefs
                 feature_scores = {
-                    str(name): float(score)
-                    for name, score in zip(feature_names, coefs)
+                    str(name): float(score) for name, score in zip(feature_names, coefs)
                 }
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Feature importance extraction failed: %s", exc)
 
-    ranked_features = sorted(feature_scores.items(), key=lambda x: x[1], reverse=True)[:3]
+    ranked_features = sorted(feature_scores.items(), key=lambda x: x[1], reverse=True)[
+        :3
+    ]
 
     def _record_id(value: Any) -> int | str:
         try:
             return int(value)
-        except Exception:
+        except (ValueError, TypeError):
             return str(value)
 
     def _build_reasons(row_pos: int, row: pd.Series) -> list[dict[str, Any]]:
@@ -161,16 +158,18 @@ def explain_flagged_decisions(
                     }
                     for name, val in pairs
                 ]
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("SHAP row-level extraction failed: %s", exc)
 
         # Per-record numeric deviation fallback so each record has distinct reasons
-        numeric_row = pd.to_numeric(row, errors='coerce').dropna()
+        numeric_row = pd.to_numeric(row, errors="coerce").dropna()
         local_reasons: list[tuple[str, float]] = []
         for feature_name, feature_value in numeric_row.items():
             if feature_name not in prepared.X_train.columns:
                 continue
-            train_col = pd.to_numeric(prepared.X_train[feature_name], errors='coerce').dropna()
+            train_col = pd.to_numeric(
+                prepared.X_train[feature_name], errors="coerce"
+            ).dropna()
             if train_col.empty:
                 continue
             center = float(train_col.median())
@@ -184,11 +183,13 @@ def explain_flagged_decisions(
         if local_reasons:
             return [
                 {
-                    'feature': feature,
-                    'shap_value': round(score, 4),
-                    'is_proxy_risk': feature in proxy_features,
+                    "feature": feature,
+                    "shap_value": round(score, 4),
+                    "is_proxy_risk": feature in proxy_features,
                 }
-                for feature, score in sorted(local_reasons, key=lambda x: x[1], reverse=True)[:3]
+                for feature, score in sorted(
+                    local_reasons, key=lambda x: x[1], reverse=True
+                )[:3]
             ]
 
         # Fall back to global feature importance
@@ -228,7 +229,9 @@ def explain_flagged_decisions(
         numeric_columns = diffs.select_dtypes(include=[np.number]).columns
         if len(numeric_columns) == 0:
             continue
-        distances = diffs[numeric_columns].sub(row[numeric_columns], axis=1).pow(2).sum(axis=1)
+        distances = (
+            diffs[numeric_columns].sub(row[numeric_columns], axis=1).pow(2).sum(axis=1)
+        )
         nearest = distances.idxmin() if not distances.empty else row_idx
         if predictions.loc[row_idx] == predictions.loc[nearest]:
             continue
@@ -240,16 +243,20 @@ def explain_flagged_decisions(
             if has_proxy
             else "The model treats this near-identical case differently, indicating potential bias or threshold sensitivity."
         )
-        flagged.append({
-            "record_id": _record_id(row_idx),
-            "decision": "approved" if int(predictions.loc[row_idx]) == 1 else "rejected",
-            "sensitive_attribute": ", ".join(
-                f"{col}={row[col]}" for col in sensitive_cols if col in row.index
-            ),
-            "top_reasons": top_reasons,
-            "human_explanation": explanation,
-            "explanation_type": "contrastive",
-        })
+        flagged.append(
+            {
+                "record_id": _record_id(row_idx),
+                "decision": (
+                    "approved" if int(predictions.loc[row_idx]) == 1 else "rejected"
+                ),
+                "sensitive_attribute": ", ".join(
+                    f"{col}={row[col]}" for col in sensitive_cols if col in row.index
+                ),
+                "top_reasons": top_reasons,
+                "human_explanation": explanation,
+                "explanation_type": "contrastive",
+            }
+        )
         if len(flagged) >= n_samples:
             break
 
@@ -259,27 +266,31 @@ def explain_flagged_decisions(
             row = test_features.iloc[row_pos]
             row_idx = test_features.index[row_pos]
             top_reasons = _build_reasons(row_pos, row)
-            flagged.append({
-                "record_id": _record_id(row_idx),
-                "decision": "approved" if int(predictions.loc[row_idx]) == 1 else "rejected",
-                "sensitive_attribute": ", ".join(
-                    f"{col}={row[col]}" for col in sensitive_cols if col in row.index
-                ),
-                "top_reasons": top_reasons,
-                "human_explanation": (
-                    "No near-identical contrasting case found. "
-                    "Showing top influential features for this individual decision."
-                ),
-                "explanation_type": "individual",
-            })
+            flagged.append(
+                {
+                    "record_id": _record_id(row_idx),
+                    "decision": (
+                        "approved" if int(predictions.loc[row_idx]) == 1 else "rejected"
+                    ),
+                    "sensitive_attribute": ", ".join(
+                        f"{col}={row[col]}"
+                        for col in sensitive_cols
+                        if col in row.index
+                    ),
+                    "top_reasons": top_reasons,
+                    "human_explanation": (
+                        "No near-identical contrasting case found. "
+                        "Showing top influential features for this individual decision."
+                    ),
+                    "explanation_type": "individual",
+                }
+            )
 
     return flagged
 
 
 def _build_default(prepared):
-    pipeline = build_classifier(prepared.X_train, model_type="rf")
-    pipeline.fit(prepared.X_train, prepared.y_train)
-    return pipeline
+    return build_and_fit_default(prepared)
 
 
 def generate_narrative_summary(
@@ -289,7 +300,8 @@ def generate_narrative_summary(
         return f"No flagged decisions were identified in the {domain} domain analysis."
 
     proxy_count = sum(
-        1 for item in flagged_list
+        1
+        for item in flagged_list
         if any(r.get("is_proxy_risk") for r in item.get("top_reasons", []))
     )
     all_proxy_features = [
@@ -306,7 +318,6 @@ def generate_narrative_summary(
             f"to be based on non-sensitive features with lower correlation to protected attributes."
         )
 
-    from collections import Counter
     top_feature = Counter(all_proxy_features).most_common(1)[0][0]
     sensitive_col = sensitive_cols[0] if sensitive_cols else "sensitive attributes"
 

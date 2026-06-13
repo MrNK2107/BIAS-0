@@ -1,1 +1,1 @@
-export { default as BiasNetworkHero } from './BiasNetworkHero';
+export { default as BiasNetworkHero } from "./BiasNetworkHero";

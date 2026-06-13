@@ -1,0 +1,7049 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "0b1544f6c2c9b63c94e6cf7d0660b573c5134c4c",
+  "generatedAt": "2026-06-11T07:00:46.559Z",
+  "files": {
+    ".dockerignore": {
+      "filePath": ".dockerignore",
+      "contentHash": "33ac9d1a87e55f839c82eee56d9b831699c3ac51cdefb64ddaa02ee30628f68b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    ".understand-anything/.understandignore": {
+      "filePath": ".understand-anything/.understandignore",
+      "contentHash": "6f678e0559933e396a76af68fb24c7babd3908edcc9224efc5198c3daa74cf62",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 52,
+      "hasStructuralAnalysis": false
+    },
+    "backend/__init__.py": {
+      "filePath": "backend/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/.env.example": {
+      "filePath": "backend/.env.example",
+      "contentHash": "1b016a79775dd52ae661dfe063d2f9d3833f3e04a773915ed63380e794f56ba2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/__init__.py": {
+      "filePath": "backend/core/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/auth.py": {
+      "filePath": "backend/core/auth.py",
+      "contentHash": "e6cd456891b9ca8b9950e05bcaa7b6bbbd1c0ae0bb8eb17d2c4dccb75d3b7294",
+      "functions": [
+        {
+          "name": "verify_token",
+          "params": [
+            "credentials"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "require_user",
+          "params": [
+            "uid"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "Depends",
+            "HTTPException",
+            "Security"
+          ]
+        },
+        {
+          "source": "fastapi.security",
+          "specifiers": [
+            "HTTPAuthorizationCredentials",
+            "HTTPBearer"
+          ]
+        }
+      ],
+      "exports": [
+        "verify_token",
+        "require_user"
+      ],
+      "totalLines": 45,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/auto_fix.py": {
+      "filePath": "backend/core/auto_fix.py",
+      "contentHash": "17dd3570dcec65a79cfea2efa2140472664efdad1c05235dbba1509db881c4f8",
+      "functions": [
+        {
+          "name": "_safe",
+          "params": [
+            "val"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_is_numeric_feature",
+          "params": [
+            "feature_name"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "generate_fix_recommendations",
+          "params": [
+            "audit_result",
+            "proxy_result",
+            "bias_result",
+            "counterfactual_score",
+            "stress_test_score",
+            "proxy_risk_score"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 130
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        }
+      ],
+      "exports": [
+        "_safe",
+        "_is_numeric_feature",
+        "generate_fix_recommendations"
+      ],
+      "totalLines": 164,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/common.py": {
+      "filePath": "backend/core/common.py",
+      "contentHash": "fbff7c86cb7370ff4e2c041aa48ea5db73132d90a1e5f8137ade3a0b4e426ed0",
+      "functions": [
+        {
+          "name": "utcnow_iso",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": ".data",
+          "specifiers": [
+            "PreparedData",
+            "_drop_nan",
+            "encode_sensitive_series",
+            "infer_numeric_and_categorical",
+            "make_feature_frame",
+            "normalize_target_binary",
+            "prepare_split"
+          ]
+        },
+        {
+          "source": ".metrics",
+          "specifiers": [
+            "ZERO_GAPS",
+            "fairness_gaps",
+            "fairness_score_from_gaps",
+            "get_metric_weights",
+            "group_metrics",
+            "top_correlated_feature"
+          ]
+        },
+        {
+          "source": ".models",
+          "specifiers": [
+            "build_and_fit_default",
+            "build_classifier",
+            "train_multiple_models"
+          ]
+        },
+        {
+          "source": ".quality",
+          "specifiers": [
+            "DatasetQualityReport",
+            "check_dataset_quality"
+          ]
+        },
+        {
+          "source": ".statistics",
+          "specifiers": [
+            "bootstrap_fairness_gaps",
+            "permutation_fairness_pvalue"
+          ]
+        },
+        {
+          "source": ".thresholds",
+          "specifiers": [
+            "DEFAULT_THRESHOLDS",
+            "DOMAIN_THRESHOLDS",
+            "_domain_thresholds",
+            "risk_from_gap",
+            "risk_from_score"
+          ]
+        }
+      ],
+      "exports": [
+        "utcnow_iso"
+      ],
+      "totalLines": 88,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/config.py": {
+      "filePath": "backend/core/config.py",
+      "contentHash": "f731bd9bbd3c21993184d618c000ba616db10e60bb4556b9b17a3b04706608ff",
+      "functions": [
+        {
+          "name": "configure_logging",
+          "params": [
+            "level",
+            "force"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 22
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "dotenv",
+          "specifiers": [
+            "load_dotenv"
+          ]
+        }
+      ],
+      "exports": [
+        "configure_logging"
+      ],
+      "totalLines": 56,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/counterfactual.py": {
+      "filePath": "backend/core/counterfactual.py",
+      "contentHash": "9d6072fecdd6396aa142ad1cd726a88168438f1d3e70fcc301c6e3ef810a9c8a",
+      "functions": [
+        {
+          "name": "run_counterfactual_test",
+          "params": [
+            "df",
+            "model",
+            "sensitive_col",
+            "target_col",
+            "metric_weights"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 103
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "sklearn.metrics",
+          "specifiers": [
+            "accuracy_score"
+          ]
+        },
+        {
+          "source": ".common",
+          "specifiers": [
+            "build_and_fit_default",
+            "fairness_gaps",
+            "fairness_score_from_gaps",
+            "normalize_target_binary",
+            "prepare_split"
+          ]
+        },
+        {
+          "source": ".metrics",
+          "specifiers": [
+            "ZERO_GAPS"
+          ]
+        }
+      ],
+      "exports": [
+        "run_counterfactual_test"
+      ],
+      "totalLines": 121,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/data_audit.py": {
+      "filePath": "backend/core/data_audit.py",
+      "contentHash": "d14f7f1315ca026393bb4303dfbc0437bb0eec340ab4bee8a09c4e5c1959c054",
+      "functions": [
+        {
+          "name": "run_data_audit",
+          "params": [
+            "df",
+            "sensitive_cols",
+            "target_col",
+            "domain"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 131
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": ".common",
+          "specifiers": [
+            "check_dataset_quality",
+            "normalize_target_binary",
+            "risk_from_gap"
+          ]
+        }
+      ],
+      "exports": [
+        "run_data_audit"
+      ],
+      "totalLines": 148,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/explainability.py": {
+      "filePath": "backend/core/explainability.py",
+      "contentHash": "7f1e79e4ee18a292516d6831dc6f3b8f1ba86311d4e089d4abefda28a67f03a9",
+      "functions": [
+        {
+          "name": "_get_shap_values",
+          "params": [
+            "model",
+            "X_background",
+            "X_explain"
+          ],
+          "returnType": "np.ndarray | None",
+          "exported": true,
+          "lineCount": 54
+        },
+        {
+          "name": "explain_flagged_decisions",
+          "params": [
+            "df",
+            "model",
+            "sensitive_cols",
+            "target_col",
+            "n_samples"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 209
+        },
+        {
+          "name": "_build_default",
+          "params": [
+            "prepared"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "generate_narrative_summary",
+          "params": [
+            "flagged_list",
+            "sensitive_cols",
+            "domain"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 35
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "Counter"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": ".common",
+          "specifiers": [
+            "build_and_fit_default",
+            "normalize_target_binary",
+            "prepare_split"
+          ]
+        },
+        {
+          "source": ".feature_intelligence",
+          "specifiers": [
+            "detect_proxy_features"
+          ]
+        }
+      ],
+      "exports": [
+        "_get_shap_values",
+        "explain_flagged_decisions",
+        "_build_default",
+        "generate_narrative_summary"
+      ],
+      "totalLines": 329,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/feature_intelligence.py": {
+      "filePath": "backend/core/feature_intelligence.py",
+      "contentHash": "da48e4364ea49ee3919d83d2435409a2058fbc6d77584640f79212d4e0f20364",
+      "functions": [
+        {
+          "name": "_cramers_v",
+          "params": [
+            "series_a",
+            "series_b"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_chi2_pvalue",
+          "params": [
+            "series_a",
+            "series_b"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_mutual_information_score",
+          "params": [
+            "feature",
+            "sensitive_encoded"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_safe_numeric_series",
+          "params": [
+            "series"
+          ],
+          "returnType": "pd.Series",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "detect_proxy_via_clustering",
+          "params": [
+            "df",
+            "sensitive_cols"
+          ],
+          "returnType": "dict[str, dict[str, Any]]",
+          "exported": true,
+          "lineCount": 71
+        },
+        {
+          "name": "detect_proxy_features",
+          "params": [
+            "df",
+            "sensitive_cols"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 161
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "scipy.stats",
+          "specifiers": [
+            "chi2_contingency"
+          ]
+        },
+        {
+          "source": "sklearn.cluster",
+          "specifiers": [
+            "KMeans"
+          ]
+        },
+        {
+          "source": "sklearn.feature_selection",
+          "specifiers": [
+            "mutual_info_classif"
+          ]
+        }
+      ],
+      "exports": [
+        "_cramers_v",
+        "_chi2_pvalue",
+        "_mutual_information_score",
+        "_safe_numeric_series",
+        "detect_proxy_via_clustering",
+        "detect_proxy_features"
+      ],
+      "totalLines": 315,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/model_bias.py": {
+      "filePath": "backend/core/model_bias.py",
+      "contentHash": "5d7370b7a097b9d4b6aad551521447b82d2b36a00372dbbdf5848cc4f5d87246",
+      "functions": [
+        {
+          "name": "run_model_bias_analysis",
+          "params": [
+            "df",
+            "sensitive_cols",
+            "target_col",
+            "model",
+            "model_path",
+            "metric_weights",
+            "domain",
+            "model_types"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 180
+        },
+        {
+          "name": "_compute_intersectional_bias",
+          "params": [
+            "df",
+            "prepared",
+            "sensitive_cols",
+            "best_model_name",
+            "trained_models"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 120
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "uuid"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "joblib",
+          "specifiers": [
+            "joblib"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "sklearn.metrics",
+          "specifiers": [
+            "sklearn.metrics"
+          ]
+        },
+        {
+          "source": "fairlearn.metrics",
+          "specifiers": [
+            "MetricFrame",
+            "false_positive_rate",
+            "true_positive_rate"
+          ]
+        },
+        {
+          "source": "sklearn.metrics",
+          "specifiers": [
+            "accuracy_score"
+          ]
+        },
+        {
+          "source": ".common",
+          "specifiers": [
+            "bootstrap_fairness_gaps",
+            "build_classifier",
+            "fairness_gaps",
+            "fairness_score_from_gaps",
+            "group_metrics",
+            "normalize_target_binary",
+            "permutation_fairness_pvalue",
+            "prepare_split",
+            "risk_from_score",
+            "train_multiple_models"
+          ]
+        },
+        {
+          "source": ".metrics",
+          "specifiers": [
+            "ZERO_GAPS"
+          ]
+        }
+      ],
+      "exports": [
+        "run_model_bias_analysis",
+        "_compute_intersectional_bias"
+      ],
+      "totalLines": 337,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/monitoring.py": {
+      "filePath": "backend/core/monitoring.py",
+      "contentHash": "b7d1734a30c452e62fbe865c41570fdf0eda802e37b0e7ac8ba7f44d3e9ff923",
+      "functions": [
+        {
+          "name": "_psi",
+          "params": [
+            "expected",
+            "actual",
+            "buckets"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 36
+        },
+        {
+          "name": "_jensen_shannon",
+          "params": [
+            "p",
+            "q"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "detect_data_drift",
+          "params": [
+            "baseline_df",
+            "current_df",
+            "sensitive_cols",
+            "target_col"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 119
+        },
+        {
+          "name": "log_monitoring_event",
+          "params": [
+            "project_id",
+            "uid",
+            "fairness_score",
+            "note",
+            "group_breakdown"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "get_monitoring_history",
+          "params": [
+            "project_id"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "check_alert_condition",
+          "params": [
+            "fairness_score",
+            "baseline_score"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "warnings",
+          "specifiers": [
+            "warnings"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "scipy",
+          "specifiers": [
+            "stats"
+          ]
+        },
+        {
+          "source": "core.common",
+          "specifiers": [
+            "utcnow_iso"
+          ]
+        },
+        {
+          "source": "repositories",
+          "specifiers": [
+            "monitoring_event_repo"
+          ]
+        }
+      ],
+      "exports": [
+        "_psi",
+        "_jensen_shannon",
+        "detect_data_drift",
+        "log_monitoring_event",
+        "get_monitoring_history",
+        "check_alert_condition"
+      ],
+      "totalLines": 241,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/sandbox.py": {
+      "filePath": "backend/core/sandbox.py",
+      "contentHash": "71647a67d8ca3e491d5a4651185ce34bcee20fdb7be6c144a2d85b627148aef6",
+      "functions": [
+        {
+          "name": "_apply_fix",
+          "params": [
+            "df",
+            "fix",
+            "sensitive_cols",
+            "target_col"
+          ],
+          "returnType": "tuple[pd.DataFrame, Any]",
+          "exported": true,
+          "lineCount": 69
+        },
+        {
+          "name": "_apply_threshold_tuning",
+          "params": [
+            "df",
+            "sensitive_cols",
+            "target_col",
+            "prepared",
+            "pipeline"
+          ],
+          "returnType": "tuple[pd.Series, dict[str, float]]",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "run_sandbox_simulation",
+          "params": [
+            "df",
+            "sensitive_cols",
+            "target_col",
+            "fixes_to_apply",
+            "metric_weights"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 90
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "sklearn.metrics",
+          "specifiers": [
+            "accuracy_score"
+          ]
+        },
+        {
+          "source": ".common",
+          "specifiers": [
+            "build_and_fit_default",
+            "build_classifier",
+            "fairness_gaps",
+            "fairness_score_from_gaps",
+            "normalize_target_binary",
+            "prepare_split",
+            "risk_from_score"
+          ]
+        },
+        {
+          "source": ".metrics",
+          "specifiers": [
+            "ZERO_GAPS"
+          ]
+        }
+      ],
+      "exports": [
+        "_apply_fix",
+        "_apply_threshold_tuning",
+        "run_sandbox_simulation"
+      ],
+      "totalLines": 214,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/storage.py": {
+      "filePath": "backend/core/storage.py",
+      "contentHash": "fa3bf7d81fb04a3ebc48f87828d500d0f2cbe1736f0bb72dbdce411f5d0c364b",
+      "functions": [
+        {
+          "name": "upload_file",
+          "params": [
+            "file",
+            "prefix"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "download_file_bytes",
+          "params": [
+            "url"
+          ],
+          "returnType": "bytes",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "uuid"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "UploadFile"
+          ]
+        }
+      ],
+      "exports": [
+        "upload_file",
+        "download_file_bytes"
+      ],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "backend/core/stress_test.py": {
+      "filePath": "backend/core/stress_test.py",
+      "contentHash": "4b60884f84dcbc8030d867cab9d5a0acc2964c40c4631d3119de9e28ac9e4d42",
+      "functions": [
+        {
+          "name": "_minority_group",
+          "params": [
+            "series"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_pick_first_numeric_col",
+          "params": [
+            "df",
+            "hints"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "run_stress_tests",
+          "params": [
+            "df",
+            "model",
+            "sensitive_cols",
+            "target_col",
+            "custom_scenarios"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 214
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "sklearn.metrics",
+          "specifiers": [
+            "accuracy_score"
+          ]
+        },
+        {
+          "source": ".common",
+          "specifiers": [
+            "bootstrap_fairness_gaps",
+            "build_and_fit_default",
+            "fairness_gaps",
+            "fairness_score_from_gaps",
+            "normalize_target_binary",
+            "prepare_split"
+          ]
+        },
+        {
+          "source": ".metrics",
+          "specifiers": [
+            "ZERO_GAPS"
+          ]
+        },
+        {
+          "source": ".models",
+          "specifiers": [
+            "build_classifier"
+          ]
+        }
+      ],
+      "exports": [
+        "_minority_group",
+        "_pick_first_numeric_col",
+        "run_stress_tests"
+      ],
+      "totalLines": 254,
+      "hasStructuralAnalysis": true
+    },
+    "backend/firebase/__init__.py": {
+      "filePath": "backend/firebase/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/firebase/client.py": {
+      "filePath": "backend/firebase/client.py",
+      "contentHash": "48474c14996c6e479cf3bedbc71dee7f12b98dfd0442b4d5ebcf70c14d324169",
+      "functions": [
+        {
+          "name": "_build_cred_from_env",
+          "params": [],
+          "returnType": "credentials.Certificate | None",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "init_firebase",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "get_firestore",
+          "params": [],
+          "returnType": "firestore.Client",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "get_storage_bucket",
+          "params": [],
+          "returnType": "storage.Bucket",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "firebase_admin",
+          "specifiers": [
+            "firebase_admin"
+          ]
+        },
+        {
+          "source": "firebase_admin",
+          "specifiers": [
+            "credentials",
+            "firestore",
+            "storage"
+          ]
+        }
+      ],
+      "exports": [
+        "_build_cred_from_env",
+        "init_firebase",
+        "get_firestore",
+        "get_storage_bucket"
+      ],
+      "totalLines": 86,
+      "hasStructuralAnalysis": true
+    },
+    "backend/firebase/repositories/__init__.py": {
+      "filePath": "backend/firebase/repositories/__init__.py",
+      "contentHash": "c3bd7ab79cd27f0105a7c79a1c9e94c0d7034b1282e9b6e03f458b277b5e1c83",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "firebase.repositories.alert_repo",
+          "specifiers": [
+            "alert_repo"
+          ]
+        },
+        {
+          "source": "firebase.repositories.audit_run_repo",
+          "specifiers": [
+            "audit_run_repo"
+          ]
+        },
+        {
+          "source": "firebase.repositories.flag_repo",
+          "specifiers": [
+            "flag_repo"
+          ]
+        },
+        {
+          "source": "firebase.repositories.monitoring_repo",
+          "specifiers": [
+            "monitoring_event_repo",
+            "monitoring_log_repo"
+          ]
+        },
+        {
+          "source": "firebase.repositories.project_repo",
+          "specifiers": [
+            "project_repo"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "backend/firebase/repositories/alert_repo.py": {
+      "filePath": "backend/firebase/repositories/alert_repo.py",
+      "contentHash": "033618adee321ab757790a933739df4f69bfcc0afff14214a6005f8f1bfa62aa",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "firebase.repository",
+          "specifiers": [
+            "FirestoreRepository"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "backend/firebase/repositories/audit_run_repo.py": {
+      "filePath": "backend/firebase/repositories/audit_run_repo.py",
+      "contentHash": "b41387cd75fc51bb41d3f5ca27e703ab289591879bc8851cf4dd5bebebec284f",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "firebase.repository",
+          "specifiers": [
+            "FirestoreRepository"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "backend/firebase/repositories/flag_repo.py": {
+      "filePath": "backend/firebase/repositories/flag_repo.py",
+      "contentHash": "6d531c4bcd981e34b7614eda0f7edc80ddf5ba4afcfa46d34af7e83b1ff5ee76",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "firebase.repository",
+          "specifiers": [
+            "FirestoreRepository"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "backend/firebase/repositories/monitoring_repo.py": {
+      "filePath": "backend/firebase/repositories/monitoring_repo.py",
+      "contentHash": "36cd5c37a4f6e951ae307dbc9b6e7f86c264719ba1c43db494688eed84297de2",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "firebase.repository",
+          "specifiers": [
+            "FirestoreRepository"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "backend/firebase/repositories/project_repo.py": {
+      "filePath": "backend/firebase/repositories/project_repo.py",
+      "contentHash": "a6cf84e53045c27899299a370bf52addb4e04c3053f0190b48047760e4efe87d",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "firebase.repository",
+          "specifiers": [
+            "FirestoreRepository"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "backend/firebase/repository.py": {
+      "filePath": "backend/firebase/repository.py",
+      "contentHash": "bc20bcc54cf34d0623935ba53f4a83897be1322f43b207974410cd4c6b39cde7",
+      "functions": [],
+      "classes": [
+        {
+          "name": "Serializer",
+          "methods": [
+            "to_dict",
+            "from_dict"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "FirestoreRepository",
+          "methods": [
+            "_col",
+            "create",
+            "get",
+            "get_or_raise",
+            "list",
+            "update",
+            "delete",
+            "delete_all",
+            "transaction",
+            "_with_id"
+          ],
+          "properties": [
+            "collection_name",
+            "serializer"
+          ],
+          "exported": true,
+          "lineCount": 105
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Generic",
+            "Protocol",
+            "TypeVar"
+          ]
+        },
+        {
+          "source": "google.cloud.firestore",
+          "specifiers": [
+            "SERVER_TIMESTAMP"
+          ]
+        },
+        {
+          "source": "google.cloud.firestore",
+          "specifiers": [
+            "FirestoreClient"
+          ]
+        },
+        {
+          "source": "google.cloud.firestore",
+          "specifiers": [
+            "DocumentSnapshot",
+            "Transaction"
+          ]
+        },
+        {
+          "source": "firebase.client",
+          "specifiers": [
+            "get_firestore"
+          ]
+        }
+      ],
+      "exports": [
+        "Serializer",
+        "FirestoreRepository"
+      ],
+      "totalLines": 133,
+      "hasStructuralAnalysis": true
+    },
+    "backend/main.py": {
+      "filePath": "backend/main.py",
+      "contentHash": "86e41ae474fa58006a0397e9d82bd75aedc79dc664c6fd4148177080f2a30a65",
+      "functions": [
+        {
+          "name": "global_exception_handler",
+          "params": [
+            "request",
+            "exc"
+          ],
+          "returnType": "JSONResponse",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "value_error_handler",
+          "params": [
+            "request",
+            "exc"
+          ],
+          "returnType": "JSONResponse",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "startup_seed",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "health",
+          "params": [],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "serve_frontend",
+          "params": [
+            "full_path"
+          ],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "warnings",
+          "specifiers": [
+            "warnings"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "dotenv",
+          "specifiers": [
+            "load_dotenv"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "FastAPI",
+            "Request"
+          ]
+        },
+        {
+          "source": "fastapi.middleware.cors",
+          "specifiers": [
+            "CORSMiddleware"
+          ]
+        },
+        {
+          "source": "fastapi.responses",
+          "specifiers": [
+            "FileResponse",
+            "JSONResponse"
+          ]
+        },
+        {
+          "source": "fastapi.staticfiles",
+          "specifiers": [
+            "StaticFiles"
+          ]
+        },
+        {
+          "source": "core.config",
+          "specifiers": [
+            "configure_logging"
+          ]
+        },
+        {
+          "source": "routers",
+          "specifiers": [
+            "audit",
+            "auth",
+            "bias",
+            "compliance",
+            "fixes",
+            "monitoring",
+            "pipeline",
+            "project",
+            "sandbox"
+          ]
+        }
+      ],
+      "exports": [
+        "global_exception_handler",
+        "value_error_handler",
+        "startup_seed",
+        "health",
+        "serve_frontend"
+      ],
+      "totalLines": 136,
+      "hasStructuralAnalysis": true
+    },
+    "backend/models/__init__.py": {
+      "filePath": "backend/models/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/models/schemas.py": {
+      "filePath": "backend/models/schemas.py",
+      "contentHash": "cf3243116500905a42ff9d55a315a1f8a596166fce8c93a95009ed31fe789cb7",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ProjectCreate",
+          "methods": [],
+          "properties": [
+            "name",
+            "domain",
+            "sensitive_columns",
+            "target_column"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "AuditDataRequest",
+          "methods": [],
+          "properties": [
+            "project_id",
+            "sensitive_cols",
+            "target_col",
+            "metric_priority"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "ProxyDetectRequest",
+          "methods": [],
+          "properties": [
+            "sensitive_cols"
+          ],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectCreate",
+        "AuditDataRequest",
+        "ProxyDetectRequest"
+      ],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "backend/repositories/__init__.py": {
+      "filePath": "backend/repositories/__init__.py",
+      "contentHash": "55bd4b174eae2ebf8fa3cc9233bf9c364cd593e00e6ce853339e11d7da46e8a8",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "firebase.repositories",
+          "specifiers": [
+            "alert_repo",
+            "audit_run_repo",
+            "flag_repo",
+            "monitoring_event_repo",
+            "monitoring_log_repo",
+            "project_repo"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "backend/requirements.txt": {
+      "filePath": "backend/requirements.txt",
+      "contentHash": "97b158d54035d450624a5b5ab79792720d896d0f957019fb6f286d39d2ba8db0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": false
+    },
+    "backend/routers/__init__.py": {
+      "filePath": "backend/routers/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/routers/audit.py": {
+      "filePath": "backend/routers/audit.py",
+      "contentHash": "7a51bf0851984a7db74238d14acb01ded63c0d03e82983be69ef9f91f4a2d2b6",
+      "functions": [
+        {
+          "name": "audit_data",
+          "params": [
+            "project_id",
+            "sensitive_cols",
+            "target_col",
+            "file",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "audit_proxy",
+          "params": [
+            "sensitive_cols",
+            "file",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "get_primary_bias_type",
+          "params": [
+            "audit_result",
+            "proxy_result",
+            "bias_result"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "audit_summary",
+          "params": [
+            "audit_result",
+            "proxy_result",
+            "bias_result",
+            "uid"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "File",
+            "Form",
+            "UploadFile"
+          ]
+        },
+        {
+          "source": "core.auth",
+          "specifiers": [
+            "require_user"
+          ]
+        },
+        {
+          "source": "core.common",
+          "specifiers": [
+            "utcnow_iso"
+          ]
+        },
+        {
+          "source": "core.data_audit",
+          "specifiers": [
+            "run_data_audit"
+          ]
+        },
+        {
+          "source": "core.feature_intelligence",
+          "specifiers": [
+            "detect_proxy_features"
+          ]
+        },
+        {
+          "source": "repositories",
+          "specifiers": [
+            "audit_run_repo"
+          ]
+        },
+        {
+          "source": "utils.data_io",
+          "specifiers": [
+            "upload_file_to_dataframe"
+          ]
+        }
+      ],
+      "exports": [
+        "audit_data",
+        "audit_proxy",
+        "get_primary_bias_type",
+        "audit_summary"
+      ],
+      "totalLines": 106,
+      "hasStructuralAnalysis": true
+    },
+    "backend/routers/auth.py": {
+      "filePath": "backend/routers/auth.py",
+      "contentHash": "e5b091211c4df68af2d552906665c685c26f61c85affa7de1f7ab1f1ff00795f",
+      "functions": [
+        {
+          "name": "signup",
+          "params": [
+            "req"
+          ],
+          "returnType": "AuthResponse",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "get_me",
+          "params": [
+            "uid"
+          ],
+          "returnType": "AuthResponse",
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "classes": [
+        {
+          "name": "SignupRequest",
+          "methods": [],
+          "properties": [
+            "email",
+            "password",
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "LoginRequest",
+          "methods": [],
+          "properties": [
+            "email",
+            "password"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "AuthResponse",
+          "methods": [],
+          "properties": [
+            "uid",
+            "email",
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "imports": [
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "HTTPException"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel"
+          ]
+        },
+        {
+          "source": "core.auth",
+          "specifiers": [
+            "require_user",
+            "DEV_USER_UID",
+            "DEV_USER_EMAIL",
+            "DEV_USER_NAME"
+          ]
+        }
+      ],
+      "exports": [
+        "SignupRequest",
+        "LoginRequest",
+        "AuthResponse",
+        "signup",
+        "get_me"
+      ],
+      "totalLines": 69,
+      "hasStructuralAnalysis": true
+    },
+    "backend/routers/bias.py": {
+      "filePath": "backend/routers/bias.py",
+      "contentHash": "d9d6c2640628f90247b6e295aed379fc90cde5a5f694708727adc8e6c63c46c1",
+      "functions": [
+        {
+          "name": "bias_model",
+          "params": [
+            "sensitive_cols",
+            "target_col",
+            "file",
+            "model_path",
+            "metric_priority"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "bias_model_from_api",
+          "params": [
+            "api_url",
+            "api_request_format",
+            "sensitive_cols",
+            "target_col",
+            "file",
+            "metric_priority"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 80
+        },
+        {
+          "name": "_substitute_template",
+          "params": [
+            "template",
+            "row"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "bias_explain",
+          "params": [
+            "sensitive_cols",
+            "target_col",
+            "file",
+            "model_path",
+            "n_samples"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "explain_summary",
+          "params": [
+            "request"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "bias_counterfactual",
+          "params": [
+            "sensitive_col",
+            "target_col",
+            "file",
+            "model_path",
+            "metric_priority"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "bias_stress",
+          "params": [
+            "sensitive_cols",
+            "target_col",
+            "file",
+            "model_path",
+            "metric_priority",
+            "custom_scenarios"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 23
+        }
+      ],
+      "classes": [
+        {
+          "name": "ExplainSummaryRequest",
+          "methods": [],
+          "properties": [
+            "flagged_list",
+            "sensitive_cols",
+            "domain"
+          ],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "httpx"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "File",
+            "Form",
+            "UploadFile"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel"
+          ]
+        },
+        {
+          "source": "sklearn.metrics",
+          "specifiers": [
+            "accuracy_score"
+          ]
+        },
+        {
+          "source": "core.common",
+          "specifiers": [
+            "fairness_gaps",
+            "fairness_score_from_gaps",
+            "get_metric_weights",
+            "group_metrics",
+            "prepare_split",
+            "risk_from_score"
+          ]
+        },
+        {
+          "source": "core.counterfactual",
+          "specifiers": [
+            "run_counterfactual_test"
+          ]
+        },
+        {
+          "source": "core.explainability",
+          "specifiers": [
+            "explain_flagged_decisions",
+            "generate_narrative_summary"
+          ]
+        },
+        {
+          "source": "core.metrics",
+          "specifiers": [
+            "ZERO_GAPS"
+          ]
+        },
+        {
+          "source": "core.model_bias",
+          "specifiers": [
+            "run_model_bias_analysis"
+          ]
+        },
+        {
+          "source": "core.stress_test",
+          "specifiers": [
+            "run_stress_tests"
+          ]
+        },
+        {
+          "source": "utils.data_io",
+          "specifiers": [
+            "upload_file_to_dataframe"
+          ]
+        }
+      ],
+      "exports": [
+        "bias_model",
+        "bias_model_from_api",
+        "_substitute_template",
+        "bias_explain",
+        "ExplainSummaryRequest",
+        "explain_summary",
+        "bias_counterfactual",
+        "bias_stress"
+      ],
+      "totalLines": 226,
+      "hasStructuralAnalysis": true
+    },
+    "backend/routers/fixes.py": {
+      "filePath": "backend/routers/fixes.py",
+      "contentHash": "c1aac2ff509797934605acdc48c99e6ff0871ff630eb0beafca3742d6f75ca6c",
+      "functions": [
+        {
+          "name": "recommend_fixes",
+          "params": [
+            "payload"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Body"
+          ]
+        },
+        {
+          "source": "core.auto_fix",
+          "specifiers": [
+            "generate_fix_recommendations"
+          ]
+        }
+      ],
+      "exports": [
+        "recommend_fixes"
+      ],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "backend/routers/monitoring.py": {
+      "filePath": "backend/routers/monitoring.py",
+      "contentHash": "663d0c2e7420ff2668a97c0bf3573d0a836d97be6a6af54dde2ee60b02ea8eb5",
+      "functions": [
+        {
+          "name": "monitoring_history",
+          "params": [
+            "project_id",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "simulate_monitoring",
+          "params": [
+            "project_id",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "ingest_monitoring",
+          "params": [
+            "payload",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "simulate_monitoring_data",
+          "params": [
+            "project_id",
+            "file",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "create_flag",
+          "params": [
+            "payload",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "get_unresolved_flags",
+          "params": [
+            "project_id",
+            "uid"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "resolve_flag",
+          "params": [
+            "flag_id",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "get_project_monitoring",
+          "params": [
+            "project_id",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "get_monitoring_logs",
+          "params": [
+            "project_id",
+            "limit",
+            "uid"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "detect_drift",
+          "params": [
+            "baseline_file",
+            "current_file",
+            "sensitive_cols",
+            "target_col",
+            "uid"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "get_project_trend",
+          "params": [
+            "project_id",
+            "limit",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 50
+        },
+        {
+          "name": "get_project_alerts",
+          "params": [
+            "project_id",
+            "uid"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_check_project_owner",
+          "params": [
+            "project_id",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [
+        {
+          "name": "IngestPrediction",
+          "methods": [],
+          "properties": [
+            "record_id",
+            "prediction",
+            "sensitive_attrs",
+            "timestamp"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "IngestPayload",
+          "methods": [],
+          "properties": [
+            "project_id",
+            "predictions"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "FlagPayload",
+          "methods": [],
+          "properties": [
+            "project_id",
+            "record_id",
+            "reason"
+          ],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "imports": [
+        {
+          "source": "io",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "File",
+            "Form",
+            "HTTPException",
+            "UploadFile"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field"
+          ]
+        },
+        {
+          "source": "core.auth",
+          "specifiers": [
+            "require_user",
+            "verify_token"
+          ]
+        },
+        {
+          "source": "core.common",
+          "specifiers": [
+            "fairness_score_from_gaps",
+            "risk_from_score"
+          ]
+        },
+        {
+          "source": "core.monitoring",
+          "specifiers": [
+            "check_alert_condition",
+            "detect_data_drift",
+            "get_monitoring_history",
+            "log_monitoring_event"
+          ]
+        },
+        {
+          "source": "repositories",
+          "specifiers": [
+            "alert_repo",
+            "flag_repo",
+            "monitoring_event_repo",
+            "monitoring_log_repo",
+            "project_repo"
+          ]
+        },
+        {
+          "source": "utils.data_io",
+          "specifiers": [
+            "upload_file_to_dataframe"
+          ]
+        }
+      ],
+      "exports": [
+        "IngestPrediction",
+        "IngestPayload",
+        "FlagPayload",
+        "monitoring_history",
+        "simulate_monitoring",
+        "ingest_monitoring",
+        "simulate_monitoring_data",
+        "create_flag",
+        "get_unresolved_flags",
+        "resolve_flag",
+        "get_project_monitoring",
+        "get_monitoring_logs",
+        "detect_drift",
+        "get_project_trend",
+        "get_project_alerts",
+        "_check_project_owner"
+      ],
+      "totalLines": 396,
+      "hasStructuralAnalysis": true
+    },
+    "backend/routers/pipeline.py": {
+      "filePath": "backend/routers/pipeline.py",
+      "contentHash": "c7414c82d89c60b246fd95c7267f016296445de5447f3add7462d8a8029d5103",
+      "functions": [
+        {
+          "name": "_now",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_store_get",
+          "params": [
+            "task_id"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_store_set",
+          "params": [
+            "task_id",
+            "value"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_persist_pipeline_result",
+          "params": [
+            "project_id",
+            "task_id",
+            "uid",
+            "result",
+            "unified_fairness_score",
+            "model_bias",
+            "data_audit",
+            "decision"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 96
+        },
+        {
+          "name": "_run_pipeline",
+          "params": [
+            "task_id",
+            "df_bytes",
+            "filename",
+            "sensitive_list",
+            "target_col",
+            "project_id",
+            "metric_weights",
+            "model_bytes",
+            "domain",
+            "uid"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 154
+        },
+        {
+          "name": "run_all",
+          "params": [
+            "background_tasks",
+            "file",
+            "sensitive_cols",
+            "target_col",
+            "project_id",
+            "metric_priority",
+            "domain",
+            "custom_model_file",
+            "uid"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "get_task_status",
+          "params": [
+            "task_id"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "get_task_result",
+          "params": [
+            "task_id"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 21
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "io",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "threading",
+          "specifiers": [
+            "threading"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "uuid"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "BackgroundTasks",
+            "Depends",
+            "File",
+            "Form",
+            "HTTPException",
+            "UploadFile"
+          ]
+        },
+        {
+          "source": "core.auth",
+          "specifiers": [
+            "require_user"
+          ]
+        },
+        {
+          "source": "core.auto_fix",
+          "specifiers": [
+            "generate_fix_recommendations"
+          ]
+        },
+        {
+          "source": "core.common",
+          "specifiers": [
+            "build_and_fit_default",
+            "get_metric_weights",
+            "normalize_target_binary",
+            "prepare_split",
+            "utcnow_iso"
+          ]
+        },
+        {
+          "source": "core.counterfactual",
+          "specifiers": [
+            "run_counterfactual_test"
+          ]
+        },
+        {
+          "source": "core.data_audit",
+          "specifiers": [
+            "run_data_audit"
+          ]
+        },
+        {
+          "source": "core.explainability",
+          "specifiers": [
+            "explain_flagged_decisions",
+            "generate_narrative_summary"
+          ]
+        },
+        {
+          "source": "core.feature_intelligence",
+          "specifiers": [
+            "detect_proxy_features"
+          ]
+        },
+        {
+          "source": "core.model_bias",
+          "specifiers": [
+            "run_model_bias_analysis"
+          ]
+        },
+        {
+          "source": "core.stress_test",
+          "specifiers": [
+            "run_stress_tests"
+          ]
+        },
+        {
+          "source": "repositories",
+          "specifiers": [
+            "alert_repo",
+            "audit_run_repo",
+            "monitoring_log_repo"
+          ]
+        },
+        {
+          "source": "utils.model_loader",
+          "specifiers": [
+            "load_model_from_bytes"
+          ]
+        }
+      ],
+      "exports": [
+        "_now",
+        "_store_get",
+        "_store_set",
+        "_persist_pipeline_result",
+        "_run_pipeline",
+        "run_all",
+        "get_task_status",
+        "get_task_result"
+      ],
+      "totalLines": 405,
+      "hasStructuralAnalysis": true
+    },
+    "backend/routers/project.py": {
+      "filePath": "backend/routers/project.py",
+      "contentHash": "e99b7d3369090d58125f9acb17dea81466e4a1b082a83be9996b9b26a4afbb6f",
+      "functions": [
+        {
+          "name": "create_project",
+          "params": [
+            "name",
+            "domain",
+            "sensitive_cols",
+            "target_col",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "upload_assets",
+          "params": [
+            "project_id",
+            "dataset",
+            "model_file",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "run_project_pipeline",
+          "params": [
+            "project_id",
+            "background_tasks",
+            "metric_priority",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "compare_project_runs",
+          "params": [
+            "project_id",
+            "uid"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "list_projects",
+          "params": [
+            "uid"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "update_project_config",
+          "params": [
+            "project_id",
+            "sensitive_cols",
+            "target_col",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "update_project_step",
+          "params": [
+            "project_id",
+            "step",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "get_latest_results",
+          "params": [
+            "project_id",
+            "uid"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 22
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "uuid"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Optional"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "BackgroundTasks",
+            "Depends",
+            "File",
+            "Form",
+            "HTTPException",
+            "UploadFile"
+          ]
+        },
+        {
+          "source": "core.auth",
+          "specifiers": [
+            "require_user"
+          ]
+        },
+        {
+          "source": "core.common",
+          "specifiers": [
+            "get_metric_weights"
+          ]
+        },
+        {
+          "source": "core.storage",
+          "specifiers": [
+            "download_file_bytes",
+            "upload_file"
+          ]
+        },
+        {
+          "source": "repositories",
+          "specifiers": [
+            "audit_run_repo",
+            "project_repo"
+          ]
+        },
+        {
+          "source": ".pipeline",
+          "specifiers": [
+            "_run_pipeline",
+            "_store_set"
+          ]
+        }
+      ],
+      "exports": [
+        "create_project",
+        "upload_assets",
+        "run_project_pipeline",
+        "compare_project_runs",
+        "list_projects",
+        "update_project_config",
+        "update_project_step",
+        "get_latest_results"
+      ],
+      "totalLines": 233,
+      "hasStructuralAnalysis": true
+    },
+    "backend/routers/sandbox.py": {
+      "filePath": "backend/routers/sandbox.py",
+      "contentHash": "80669fee60e0a7bd8ff34320346bd825d7faf535f5ca29466e27df54daabbdf1",
+      "functions": [
+        {
+          "name": "run_sandbox",
+          "params": [
+            "file",
+            "sensitiveCols",
+            "targetCol",
+            "strategies",
+            "metric_priority",
+            "audit_result",
+            "proxy_result",
+            "bias_result"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "File",
+            "Form",
+            "UploadFile"
+          ]
+        },
+        {
+          "source": "core.auto_fix",
+          "specifiers": [
+            "generate_fix_recommendations"
+          ]
+        },
+        {
+          "source": "core.common",
+          "specifiers": [
+            "get_metric_weights"
+          ]
+        },
+        {
+          "source": "core.sandbox",
+          "specifiers": [
+            "run_sandbox_simulation"
+          ]
+        },
+        {
+          "source": "utils.data_io",
+          "specifiers": [
+            "upload_file_to_dataframe"
+          ]
+        }
+      ],
+      "exports": [
+        "run_sandbox"
+      ],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "backend/test_sample.csv": {
+      "filePath": "backend/test_sample.csv",
+      "contentHash": "4a34035deb2f1743e3a0ade00b2793a018611713d6672ff48ab0266166b02fa8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 102,
+      "hasStructuralAnalysis": false
+    },
+    "backend/tests/test_core.py": {
+      "filePath": "backend/tests/test_core.py",
+      "contentHash": "19eae536267a1b1261bb0af6c28a209e5d7990554b1fe41d4e52af845a133d80",
+      "functions": [
+        {
+          "name": "_small_loan_df",
+          "params": [],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_build_model",
+          "params": [
+            "df",
+            "target_col"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_risk_from_gap",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_risk_from_score",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_encode_sensitive_series",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_infer_numeric_and_categorical",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_fairness_gaps",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_fairness_score_from_gaps",
+          "params": [],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "test_group_metrics",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_run_data_audit_returns_expected_structure",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_run_data_audit_missing_target",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_run_data_audit_empty_sensitive",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_detect_proxy_features_returns_proxies",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_detect_proxy_features_no_sensitive",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_model_bias_returns_all_metrics",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_model_bias_with_prebuilt_model",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_counterfactual_returns_flip_rate",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_counterfactual_with_prebuilt_model",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_stress_test_returns_scenarios",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_stress_test_with_custom_scenario",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_explain_flagged_decisions_returns_explanations",
+          "params": [],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_explain_without_model_builds_one",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_generate_narrative_summary",
+          "params": [],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "test_generate_narrative_summary_no_flags",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_generate_fix_recommendations_high_bias",
+          "params": [],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "test_generate_fix_recommendations_clean",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_run_sandbox_simulation_returns_scenarios",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_run_sandbox_simulation_with_threshold_tune",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_detect_data_drift_same_data",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_detect_data_drift_different_data",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_check_alert_condition",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_audit_and_proxy_and_bias",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "core.auto_fix",
+          "specifiers": [
+            "generate_fix_recommendations"
+          ]
+        },
+        {
+          "source": "core.common",
+          "specifiers": [
+            "build_classifier",
+            "encode_sensitive_series",
+            "fairness_gaps",
+            "fairness_score_from_gaps",
+            "group_metrics",
+            "infer_numeric_and_categorical",
+            "prepare_split",
+            "risk_from_gap",
+            "risk_from_score"
+          ]
+        },
+        {
+          "source": "core.counterfactual",
+          "specifiers": [
+            "run_counterfactual_test"
+          ]
+        },
+        {
+          "source": "core.data_audit",
+          "specifiers": [
+            "run_data_audit"
+          ]
+        },
+        {
+          "source": "core.explainability",
+          "specifiers": [
+            "explain_flagged_decisions",
+            "generate_narrative_summary"
+          ]
+        },
+        {
+          "source": "core.feature_intelligence",
+          "specifiers": [
+            "detect_proxy_features"
+          ]
+        },
+        {
+          "source": "core.model_bias",
+          "specifiers": [
+            "run_model_bias_analysis"
+          ]
+        },
+        {
+          "source": "core.monitoring",
+          "specifiers": [
+            "check_alert_condition",
+            "detect_data_drift"
+          ]
+        },
+        {
+          "source": "core.sandbox",
+          "specifiers": [
+            "run_sandbox_simulation"
+          ]
+        },
+        {
+          "source": "core.stress_test",
+          "specifiers": [
+            "run_stress_tests"
+          ]
+        },
+        {
+          "source": "utils.synthetic_data",
+          "specifiers": [
+            "generate_loan_dataset"
+          ]
+        }
+      ],
+      "exports": [
+        "_small_loan_df",
+        "_build_model",
+        "test_risk_from_gap",
+        "test_risk_from_score",
+        "test_encode_sensitive_series",
+        "test_infer_numeric_and_categorical",
+        "test_fairness_gaps",
+        "test_fairness_score_from_gaps",
+        "test_group_metrics",
+        "test_run_data_audit_returns_expected_structure",
+        "test_run_data_audit_missing_target",
+        "test_run_data_audit_empty_sensitive",
+        "test_detect_proxy_features_returns_proxies",
+        "test_detect_proxy_features_no_sensitive",
+        "test_model_bias_returns_all_metrics",
+        "test_model_bias_with_prebuilt_model",
+        "test_counterfactual_returns_flip_rate",
+        "test_counterfactual_with_prebuilt_model",
+        "test_stress_test_returns_scenarios",
+        "test_stress_test_with_custom_scenario",
+        "test_explain_flagged_decisions_returns_explanations",
+        "test_explain_without_model_builds_one",
+        "test_generate_narrative_summary",
+        "test_generate_narrative_summary_no_flags",
+        "test_generate_fix_recommendations_high_bias",
+        "test_generate_fix_recommendations_clean",
+        "test_run_sandbox_simulation_returns_scenarios",
+        "test_run_sandbox_simulation_with_threshold_tune",
+        "test_detect_data_drift_same_data",
+        "test_detect_data_drift_different_data",
+        "test_check_alert_condition",
+        "test_audit_and_proxy_and_bias"
+      ],
+      "totalLines": 372,
+      "hasStructuralAnalysis": true
+    },
+    "backend/utils/__init__.py": {
+      "filePath": "backend/utils/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/utils/data_io.py": {
+      "filePath": "backend/utils/data_io.py",
+      "contentHash": "f0ef1d7d6357dc3a1db43cbdc8b1a8d4d8761db43921e54a3aeecbae857efab1",
+      "functions": [
+        {
+          "name": "upload_file_to_dataframe",
+          "params": [
+            "file"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "path_to_dataframe",
+          "params": [
+            "path"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "dataframe_to_csv_text",
+          "params": [
+            "df"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "io",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "UploadFile"
+          ]
+        }
+      ],
+      "exports": [
+        "upload_file_to_dataframe",
+        "path_to_dataframe",
+        "dataframe_to_csv_text"
+      ],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "backend/utils/model_loader.py": {
+      "filePath": "backend/utils/model_loader.py",
+      "contentHash": "a6d428da1ddb038d3b529686aeac499b751176e0d71a11eebd9f50959e588e58",
+      "functions": [
+        {
+          "name": "load_model_from_bytes",
+          "params": [
+            "raw"
+          ],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "io",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "joblib",
+          "specifiers": [
+            "joblib"
+          ]
+        }
+      ],
+      "exports": [
+        "load_model_from_bytes"
+      ],
+      "totalLines": 19,
+      "hasStructuralAnalysis": true
+    },
+    "backend/utils/synthetic_data.py": {
+      "filePath": "backend/utils/synthetic_data.py",
+      "contentHash": "d11abe6494dbafc4d819fdba2a1d09f0e75014fcb445b4fba1586863a753cb8f",
+      "functions": [
+        {
+          "name": "_random_choice",
+          "params": [
+            "rng",
+            "values",
+            "probabilities",
+            "size"
+          ],
+          "returnType": "np.ndarray",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "generate_loan_dataset",
+          "params": [
+            "rows",
+            "seed"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 85
+        },
+        {
+          "name": "generate_hiring_dataset",
+          "params": [
+            "rows",
+            "seed"
+          ],
+          "returnType": "pd.DataFrame",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pandas",
+          "specifiers": [
+            "pd"
+          ]
+        }
+      ],
+      "exports": [
+        "_random_choice",
+        "generate_loan_dataset",
+        "generate_hiring_dataset",
+        "main"
+      ],
+      "totalLines": 168,
+      "hasStructuralAnalysis": true
+    },
+    "context.md": {
+      "filePath": "context.md",
+      "contentHash": "846e4e5f8e79d431194e7ccbf2e1f354ffa159f60df55aebef34d18d19351492",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 188,
+      "hasStructuralAnalysis": true
+    },
+    "data/demo_hiring.csv": {
+      "filePath": "data/demo_hiring.csv",
+      "contentHash": "009e76f311b462fb2223052c59a0bc0e4cc89ac8ec8460538d61f47e882d5d63",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3002,
+      "hasStructuralAnalysis": false
+    },
+    "data/demo_loan.csv": {
+      "filePath": "data/demo_loan.csv",
+      "contentHash": "0314e067292381b47f5bd4fd44a838a7f16b1a9d6a24c1e8acf0d728b25a26d8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5002,
+      "hasStructuralAnalysis": false
+    },
+    "Dockerfile": {
+      "filePath": "Dockerfile",
+      "contentHash": "018fb37760f3d9ca086bb0e4cadef5a3a2d006330279aa29bf023304cd4b2396",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
+    "e2e_test.py": {
+      "filePath": "e2e_test.py",
+      "contentHash": "8fc5751978d2a327e7286336248154420425c461ea27af8ff2626283a94a061e",
+      "functions": [
+        {
+          "name": "_make_headers",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "post_multipart",
+          "params": [
+            "url",
+            "file_text",
+            "data"
+          ],
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "post_json",
+          "params": [
+            "url",
+            "data"
+          ],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "urllib.request",
+          "specifiers": [
+            "urllib.request"
+          ]
+        },
+        {
+          "source": "urllib.parse",
+          "specifiers": [
+            "urllib.parse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        }
+      ],
+      "exports": [
+        "_make_headers",
+        "post_multipart",
+        "post_json"
+      ],
+      "totalLines": 118,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/.env.example": {
+      "filePath": "frontend/.env.example",
+      "contentHash": "d357808ea2260c41bea7ed910aa139f6bdf333892b5943d35bc14e71c155670f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/eslint.config.js": {
+      "filePath": "frontend/eslint.config.js",
+      "contentHash": "d5571581ff123cfd1355ae6662f182e03a5d3acc0b02d0d7a20e2b132b8a8046",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@eslint/js",
+          "specifiers": [
+            "js"
+          ]
+        },
+        {
+          "source": "typescript-eslint",
+          "specifiers": [
+            "tseslint"
+          ]
+        },
+        {
+          "source": "eslint-plugin-react-hooks",
+          "specifiers": [
+            "reactHooks"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/immersive_design.md": {
+      "filePath": "frontend/immersive_design.md",
+      "contentHash": "9fcd1b713560c8a77ae9bc14b149edbed4d9d68db5e06615ef1b657c5002b4b8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 54,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/index.html": {
+      "filePath": "frontend/index.html",
+      "contentHash": "27c7936549cdfc6e184e996b44c500960ca57267be03cfe8824788a962739a0c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/package.json": {
+      "filePath": "frontend/package.json",
+      "contentHash": "fc2ea081f4b576f9fb4f132a63a720499d9f2d4144e38283fa8f92fad82e2d72",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/playwright-report/index.html": {
+      "filePath": "frontend/playwright-report/index.html",
+      "contentHash": "e5bb53dce7a17bfad00591d6e80a1e7d88db773485ab3e3d9eee9e7a946486ee",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 90,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/playwright.config.ts": {
+      "filePath": "frontend/playwright.config.ts",
+      "contentHash": "6302844bef5c56c751b97b32d372006ba127b73862343f232455450563b77e44",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@playwright/test",
+          "specifiers": [
+            "defineConfig",
+            "devices"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/search_results.md": {
+      "filePath": "frontend/search_results.md",
+      "contentHash": "316179a762bae269f396f3031b0476df3d564f241f0b67c7a0c5ae2c9625a6da",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 54,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/api/client.ts": {
+      "filePath": "frontend/src/api/client.ts",
+      "contentHash": "ad707b88f20b210ce99c81758d08269bff09497c1b05e4dfd1147bf937f1784d",
+      "functions": [
+        {
+          "name": "setUnauthorizedHandler",
+          "params": [
+            "handler"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "describeError",
+          "params": [
+            "err"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "createApiClient",
+          "params": [
+            "contentType"
+          ],
+          "exported": false,
+          "lineCount": 30
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "axios",
+          "specifiers": [
+            "axios",
+            "AxiosError"
+          ]
+        },
+        {
+          "source": "../firebase/auth",
+          "specifiers": [
+            "getIdTokenCurrent"
+          ]
+        }
+      ],
+      "exports": [
+        "setUnauthorizedHandler",
+        "api",
+        "formApi"
+      ],
+      "totalLines": 62,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/App.tsx": {
+      "filePath": "frontend/src/App.tsx",
+      "contentHash": "d02d2e5280ad9a92b1b0722e6139fab30890e8fb01954706d91f5bf7ecac12d1",
+      "functions": [
+        {
+          "name": "AuthOnlyRoute",
+          "params": [
+            "{ children }"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "App",
+          "params": [],
+          "exported": true,
+          "lineCount": 243
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "lazy",
+            "Suspense"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Navigate",
+            "Route",
+            "Routes",
+            "useLocation",
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "./components/WorkflowShell",
+          "specifiers": [
+            "WorkflowShell"
+          ]
+        },
+        {
+          "source": "./components/animations/PageTransition",
+          "specifiers": [
+            "PageTransition"
+          ]
+        },
+        {
+          "source": "./components/animations/BackgroundGrid",
+          "specifiers": [
+            "BackgroundGrid"
+          ]
+        },
+        {
+          "source": "./context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useRef"
+          ]
+        },
+        {
+          "source": "./components/ProtectedRoute",
+          "specifiers": [
+            "ProtectedRoute"
+          ]
+        },
+        {
+          "source": "./components/ErrorBoundary",
+          "specifiers": [
+            "ErrorBoundary"
+          ]
+        },
+        {
+          "source": "./context/AuthContext",
+          "specifiers": [
+            "useAuth"
+          ]
+        }
+      ],
+      "exports": [
+        "App"
+      ],
+      "totalLines": 303,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/animations/AnimatedBarChart.tsx": {
+      "filePath": "frontend/src/components/animations/AnimatedBarChart.tsx",
+      "contentHash": "30b440362a716e260c758c673ffd3855c8db7a82ba5f1f3cd305d836fac462e1",
+      "functions": [
+        {
+          "name": "AnimatedBarChart",
+          "params": [
+            "{\n  data,\n  height = 250,\n  maxDomain = 100,\n  valueSuffix = \"%\",\n}"
+          ],
+          "exported": true,
+          "lineCount": 159
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        }
+      ],
+      "exports": [
+        "AnimatedBarChart"
+      ],
+      "totalLines": 170,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/animations/AnimatedCard.tsx": {
+      "filePath": "frontend/src/components/animations/AnimatedCard.tsx",
+      "contentHash": "06465d42a9ffa3e4290e75f1341658693fa2c5548ed16b1e7d06be65a6791b6e",
+      "functions": [
+        {
+          "name": "getSeverityColor",
+          "params": [
+            "sev"
+          ],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "AnimatedCard",
+          "params": [
+            "{\n  children,\n  severity = \"gray\",\n  delay = 0,\n  className = \"card\",\n  style,\n}"
+          ],
+          "exported": true,
+          "lineCount": 35
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "Variants"
+          ]
+        }
+      ],
+      "exports": [
+        "cardVariants",
+        "AnimatedCard"
+      ],
+      "totalLines": 72,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/animations/AnimatedNumber.tsx": {
+      "filePath": "frontend/src/components/animations/AnimatedNumber.tsx",
+      "contentHash": "31c3cf69eecdbb4767103ff4c96afe78eb0bb4505fc9cace97990f90811bcdf8",
+      "functions": [
+        {
+          "name": "AnimatedNumber",
+          "params": [
+            "{\n  value,\n  isPercentage = false,\n  duration = 1.5,\n}"
+          ],
+          "exported": true,
+          "lineCount": 36
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useState"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "useSpring"
+          ]
+        }
+      ],
+      "exports": [
+        "AnimatedNumber"
+      ],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/animations/BackgroundGrid.tsx": {
+      "filePath": "frontend/src/components/animations/BackgroundGrid.tsx",
+      "contentHash": "7e3e3831978786041b1b4dfbb65cf3bb6250021fbf07122a082d05ceca40c6fc",
+      "functions": [
+        {
+          "name": "BackgroundGrid",
+          "params": [],
+          "exported": true,
+          "lineCount": 53
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        }
+      ],
+      "exports": [
+        "BackgroundGrid"
+      ],
+      "totalLines": 57,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/animations/DataFlowEffect.tsx": {
+      "filePath": "frontend/src/components/animations/DataFlowEffect.tsx",
+      "contentHash": "0a0c3abec62c430c2688fb6066a6a4de31d5b6498f0d1757a76920a034f91f64",
+      "functions": [
+        {
+          "name": "ScanningSkeleton",
+          "params": [
+            "{\n  width = \"100%\",\n  height = \"20px\",\n  borderRadius = \"4px\",\n}"
+          ],
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "DataFlowEffect",
+          "params": [],
+          "exported": true,
+          "lineCount": 23
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        }
+      ],
+      "exports": [
+        "ScanningSkeleton",
+        "DataFlowEffect"
+      ],
+      "totalLines": 72,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/animations/PageTransition.tsx": {
+      "filePath": "frontend/src/components/animations/PageTransition.tsx",
+      "contentHash": "0d151302a9777c50c425331d0234c45b2156e8610e0f79499834f95f776150d2",
+      "functions": [
+        {
+          "name": "PageTransition",
+          "params": [
+            "{\n  children,\n  locationKey,\n}"
+          ],
+          "exported": true,
+          "lineCount": 24
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence",
+            "Variants"
+          ]
+        }
+      ],
+      "exports": [
+        "PageTransition"
+      ],
+      "totalLines": 42,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/animations/ScanningSkeleton.tsx": {
+      "filePath": "frontend/src/components/animations/ScanningSkeleton.tsx",
+      "contentHash": "46c27491ff6348cb2d51606097cdf325f332d87b3084d33be8a6dc0ab37106d2",
+      "functions": [
+        {
+          "name": "ScanningSkeleton",
+          "params": [
+            "{\n  height = \"200px\",\n  width = \"100%\",\n  borderRadius = \"14px\",\n}"
+          ],
+          "exported": true,
+          "lineCount": 30
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        }
+      ],
+      "exports": [
+        "ScanningSkeleton"
+      ],
+      "totalLines": 39,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/CounterfactualFlip.tsx": {
+      "filePath": "frontend/src/components/CounterfactualFlip.tsx",
+      "contentHash": "d8faee185ba2863caa9be98d5f2737ff3f4b207e1602321c9c42940883215717",
+      "functions": [
+        {
+          "name": "CounterfactualFlip",
+          "params": [
+            "{\n  original,\n  flipped,\n}"
+          ],
+          "exported": true,
+          "lineCount": 66
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect",
+            "useRef"
+          ]
+        }
+      ],
+      "exports": [
+        "CounterfactualFlip"
+      ],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/EmptyState.tsx": {
+      "filePath": "frontend/src/components/EmptyState.tsx",
+      "contentHash": "62eb0cf592e61113c73365917307e27da31e3305bb6c2ade8f2b5f9850b9315f",
+      "functions": [
+        {
+          "name": "EmptyState",
+          "params": [
+            "{\n  icon,\n  kicker,\n  title,\n  description,\n  primaryAction,\n  secondaryAction,\n  children,\n  compact = false,\n}"
+          ],
+          "exported": true,
+          "lineCount": 65
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "ArrowRight"
+          ]
+        }
+      ],
+      "exports": [
+        "EmptyState"
+      ],
+      "totalLines": 82,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/ErrorBoundary.tsx": {
+      "filePath": "frontend/src/components/ErrorBoundary.tsx",
+      "contentHash": "240f7476d2e43aec2b06164b84b5ffc9c32f68d8c9140c9b1fc957631c2d080b",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ErrorBoundary",
+          "methods": [
+            "getDerivedStateFromError",
+            "componentDidCatch",
+            "render"
+          ],
+          "properties": [
+            "state",
+            "handleReset"
+          ],
+          "exported": false,
+          "lineCount": 110
+        }
+      ],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "Component",
+            "ErrorInfo",
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "AlertTriangle",
+            "RotateCcw",
+            "Home"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link"
+          ]
+        }
+      ],
+      "exports": [
+        "default"
+      ],
+      "totalLines": 125,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/FairnessMetricsPanel.tsx": {
+      "filePath": "frontend/src/components/FairnessMetricsPanel.tsx",
+      "contentHash": "8a79d3006e5d7ceb4c299345d281fdf8a52ef4c9208fa3285b532e460094051f",
+      "functions": [
+        {
+          "name": "MetricCard",
+          "params": [
+            "{\n  title,\n  value,\n  description,\n  thresholds,\n  isPercentage,\n  index,\n}"
+          ],
+          "exported": false,
+          "lineCount": 85
+        },
+        {
+          "name": "FairnessMetricsPanel",
+          "params": [
+            "{\n  biasResult,\n  counterfactualResult,\n}"
+          ],
+          "exported": true,
+          "lineCount": 80
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "HelpCircle"
+          ]
+        },
+        {
+          "source": "./animations/AnimatedCard",
+          "specifiers": [
+            "AnimatedCard"
+          ]
+        },
+        {
+          "source": "./animations/AnimatedNumber",
+          "specifiers": [
+            "AnimatedNumber"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "ModelBiasResult",
+            "CounterfactualResult"
+          ]
+        }
+      ],
+      "exports": [
+        "FairnessMetricsPanel"
+      ],
+      "totalLines": 190,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/FairnessTable.tsx": {
+      "filePath": "frontend/src/components/FairnessTable.tsx",
+      "contentHash": "97886144aa22a7224769186d92f92f4b2ef477df12f16a4f4a909920e9a39130",
+      "functions": [
+        {
+          "name": "FairnessTable",
+          "params": [
+            "{ data }"
+          ],
+          "exported": true,
+          "lineCount": 57
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        }
+      ],
+      "exports": [
+        "FairnessTable"
+      ],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/FlagDecisionModal.tsx": {
+      "filePath": "frontend/src/components/FlagDecisionModal.tsx",
+      "contentHash": "a3ae2c57cf7354f48210407ff1d766009eb77d315fe51f0ffa1037016dee9d06",
+      "functions": [
+        {
+          "name": "FlagDecisionModal",
+          "params": [
+            "{\n  open,\n  onClose,\n  onSubmit,\n  recordId,\n  recordLabel,\n  context,\n}"
+          ],
+          "exported": true,
+          "lineCount": 171
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useState"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Flag",
+            "Send"
+          ]
+        },
+        {
+          "source": "./Modal",
+          "specifiers": [
+            "Modal"
+          ]
+        }
+      ],
+      "exports": [
+        "FlagDecisionModal"
+      ],
+      "totalLines": 193,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/hero/BiasNetworkHero.tsx": {
+      "filePath": "frontend/src/components/hero/BiasNetworkHero.tsx",
+      "contentHash": "321bd648001b582c27211a21f8a84f584f4305e059e3ed8b8dde3150ac82234d",
+      "functions": [
+        {
+          "name": "BiasNetworkHero",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./ScrollExperience",
+          "specifiers": [
+            "ScrollExperience"
+          ]
+        },
+        {
+          "source": "./hero.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "BiasNetworkHero"
+      ],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/hero/ExperienceScene.tsx": {
+      "filePath": "frontend/src/components/hero/ExperienceScene.tsx",
+      "contentHash": "531f307f802fd8b02c88e94e1694f25352895f4a7a79f7ea2d6edf8628c9ffda",
+      "functions": [
+        {
+          "name": "ExperienceScene",
+          "params": [],
+          "exported": true,
+          "lineCount": 253
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useMemo",
+            "useRef",
+            "useState"
+          ]
+        },
+        {
+          "source": "@react-three/fiber",
+          "specifiers": [
+            "useFrame",
+            "useThree"
+          ]
+        },
+        {
+          "source": "@react-three/drei",
+          "specifiers": [
+            "useScroll"
+          ]
+        },
+        {
+          "source": "three",
+          "specifiers": [
+            "* as THREE"
+          ]
+        }
+      ],
+      "exports": [
+        "ExperienceScene"
+      ],
+      "totalLines": 261,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/hero/hero.css": {
+      "filePath": "frontend/src/components/hero/hero.css",
+      "contentHash": "eecced7a53c86b60f58b3a6b0a9e05767cd13dfb0fdee7fff009e9518e3e35fc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 228,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/src/components/hero/index.ts": {
+      "filePath": "frontend/src/components/hero/index.ts",
+      "contentHash": "e1d6aba5d73f34eab21dd9fff621fd7dc30f2aef09330a3a932fe26c62880f83",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "BiasNetworkHero"
+      ],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/hero/ScrollExperience.tsx": {
+      "filePath": "frontend/src/components/hero/ScrollExperience.tsx",
+      "contentHash": "5509ca94c09e4d404335995af935141a0e666c5ff16b1ac221cb4435835cde34",
+      "functions": [
+        {
+          "name": "ScrollExperience",
+          "params": [],
+          "exported": true,
+          "lineCount": 22
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@react-three/fiber",
+          "specifiers": [
+            "Canvas"
+          ]
+        },
+        {
+          "source": "@react-three/drei",
+          "specifiers": [
+            "ScrollControls",
+            "Scroll"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "Suspense"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "./ExperienceScene",
+          "specifiers": [
+            "ExperienceScene"
+          ]
+        },
+        {
+          "source": "./UIOverlay",
+          "specifiers": [
+            "UIOverlay"
+          ]
+        }
+      ],
+      "exports": [
+        "ScrollExperience"
+      ],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/hero/UIOverlay.tsx": {
+      "filePath": "frontend/src/components/hero/UIOverlay.tsx",
+      "contentHash": "2e214125ae0d6b8b822a47bca073ea89aa02dc4031ff1a6d5d20be9b4b3cb4d4",
+      "functions": [
+        {
+          "name": "Section",
+          "params": [
+            "{\n  children,\n  className = \"\",\n}"
+          ],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "LiveBiasFeed",
+          "params": [],
+          "exported": false,
+          "lineCount": 38
+        },
+        {
+          "name": "ForensicBento",
+          "params": [],
+          "exported": false,
+          "lineCount": 42
+        },
+        {
+          "name": "UIOverlay",
+          "params": [
+            "{ navigate }"
+          ],
+          "exported": true,
+          "lineCount": 113
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Shield",
+            "Gauge",
+            "Layers",
+            "Activity"
+          ]
+        }
+      ],
+      "exports": [
+        "UIOverlay"
+      ],
+      "totalLines": 214,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/HiddenBiasExplorer.tsx": {
+      "filePath": "frontend/src/components/HiddenBiasExplorer.tsx",
+      "contentHash": "0c45ad524311d1502fd88baa9154cb479e48be01e1b113de3b4efff358c34fd0",
+      "functions": [
+        {
+          "name": "HiddenBiasExplorer",
+          "params": [
+            "{\n  subgroups = [],\n}"
+          ],
+          "exported": true,
+          "lineCount": 333
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React",
+            "useState",
+            "useMemo"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "AlertTriangle",
+            "Filter",
+            "Users",
+            "TrendingDown"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        }
+      ],
+      "exports": [
+        "HiddenBiasExplorer"
+      ],
+      "totalLines": 352,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/landing/Features.tsx": {
+      "filePath": "frontend/src/components/landing/Features.tsx",
+      "contentHash": "4362dec9e687b967487ed067678ed15f24e6c2d1a47bfea2bc324f2622b7f385",
+      "functions": [
+        {
+          "name": "Features",
+          "params": [],
+          "exported": true,
+          "lineCount": 42
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        }
+      ],
+      "exports": [
+        "Features"
+      ],
+      "totalLines": 78,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/landing/Footer.tsx": {
+      "filePath": "frontend/src/components/landing/Footer.tsx",
+      "contentHash": "774483f40dae0ee3a0ccd1124dd4028e67c984ea609c89913eae46548f085400",
+      "functions": [
+        {
+          "name": "Footer",
+          "params": [],
+          "exported": true,
+          "lineCount": 58
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        }
+      ],
+      "exports": [
+        "Footer"
+      ],
+      "totalLines": 61,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/landing/Header.tsx": {
+      "filePath": "frontend/src/components/landing/Header.tsx",
+      "contentHash": "6e5852325d89057b4f83f244d9a1ddca2b6b3671cfeeef36fef31b9a860ce723",
+      "functions": [
+        {
+          "name": "Header",
+          "params": [],
+          "exported": true,
+          "lineCount": 65
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        }
+      ],
+      "exports": [
+        "Header"
+      ],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/landing/HowItWorks.tsx": {
+      "filePath": "frontend/src/components/landing/HowItWorks.tsx",
+      "contentHash": "c171d15aa00c05bfce93e251fc44f730419d1613868442fe1ceda4250ee8af3f",
+      "functions": [
+        {
+          "name": "HowItWorks",
+          "params": [],
+          "exported": true,
+          "lineCount": 38
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        }
+      ],
+      "exports": [
+        "HowItWorks"
+      ],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/landing/index.ts": {
+      "filePath": "frontend/src/components/landing/index.ts",
+      "contentHash": "98055eda85647fd43b1a93a9fef0725f4d41524dea0d913308f690bc0da26755",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "LandingPage",
+        "Header",
+        "Features",
+        "Stats",
+        "HowItWorks",
+        "Trust",
+        "Footer"
+      ],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/landing/LandingPage.tsx": {
+      "filePath": "frontend/src/components/landing/LandingPage.tsx",
+      "contentHash": "04b9d2a28e404e500b3ff183d6de2db7f4a2814a0474b28de904ba45dd820b69",
+      "functions": [
+        {
+          "name": "SectionConnector",
+          "params": [],
+          "exported": false,
+          "lineCount": 41
+        },
+        {
+          "name": "LandingPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 21
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        },
+        {
+          "source": "./Header",
+          "specifiers": [
+            "Header"
+          ]
+        },
+        {
+          "source": "./Features",
+          "specifiers": [
+            "Features"
+          ]
+        },
+        {
+          "source": "./Stats",
+          "specifiers": [
+            "Stats"
+          ]
+        },
+        {
+          "source": "./HowItWorks",
+          "specifiers": [
+            "HowItWorks"
+          ]
+        },
+        {
+          "source": "./Trust",
+          "specifiers": [
+            "Trust"
+          ]
+        },
+        {
+          "source": "./Footer",
+          "specifiers": [
+            "Footer"
+          ]
+        },
+        {
+          "source": "../hero",
+          "specifiers": [
+            "BiasNetworkHero"
+          ]
+        }
+      ],
+      "exports": [
+        "LandingPage"
+      ],
+      "totalLines": 74,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/landing/Stats.tsx": {
+      "filePath": "frontend/src/components/landing/Stats.tsx",
+      "contentHash": "b8ea608e0b390d031c0ef6f38507496876888750e58f97f8653c542d232e34f3",
+      "functions": [
+        {
+          "name": "Stats",
+          "params": [],
+          "exported": true,
+          "lineCount": 23
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        }
+      ],
+      "exports": [
+        "Stats"
+      ],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/landing/Trust.tsx": {
+      "filePath": "frontend/src/components/landing/Trust.tsx",
+      "contentHash": "6b8cdc6e0a6c2a15ddba15da623d277c75dc09c346e4852dd47f3373f79e1e7c",
+      "functions": [
+        {
+          "name": "Trust",
+          "params": [],
+          "exported": true,
+          "lineCount": 73
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        }
+      ],
+      "exports": [
+        "Trust"
+      ],
+      "totalLines": 76,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/Modal.tsx": {
+      "filePath": "frontend/src/components/Modal.tsx",
+      "contentHash": "6a6ffebc7c31314d85d95358efeb5fa504e788df22f281a573cb51d8e81a15e6",
+      "functions": [
+        {
+          "name": "Modal",
+          "params": [
+            "{\n  open,\n  onClose,\n  title,\n  children,\n  footer,\n  size = \"md\",\n  closeOnBackdrop = true,\n}"
+          ],
+          "exported": true,
+          "lineCount": 124
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useRef",
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "X"
+          ]
+        }
+      ],
+      "exports": [
+        "Modal"
+      ],
+      "totalLines": 145,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/MonitoringChart.tsx": {
+      "filePath": "frontend/src/components/MonitoringChart.tsx",
+      "contentHash": "a04c9aa2f9dd344a5300529b6dcc3ccd58bbe1c2f604d0552f996bd9f7b56d74",
+      "functions": [
+        {
+          "name": "CustomDot",
+          "params": [
+            "props"
+          ],
+          "exported": false,
+          "lineCount": 23
+        },
+        {
+          "name": "MonitoringChart",
+          "params": [
+            "{\n  events,\n  viewMode,\n  incidents = [],\n  onDotClick,\n}"
+          ],
+          "exported": true,
+          "lineCount": 212
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "recharts",
+          "specifiers": [
+            "Line",
+            "ComposedChart",
+            "ReferenceLine",
+            "ReferenceArea",
+            "ResponsiveContainer",
+            "Tooltip",
+            "XAxis",
+            "YAxis",
+            "CartesianGrid",
+            "Area",
+            "Legend"
+          ]
+        }
+      ],
+      "exports": [
+        "MonitoringChart"
+      ],
+      "totalLines": 279,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/Navbar.tsx": {
+      "filePath": "frontend/src/components/Navbar.tsx",
+      "contentHash": "47eab29e691bc2bc03617fa577ff3366cb8724cd8c3768005b0a24ac5317baae",
+      "functions": [
+        {
+          "name": "Navbar",
+          "params": [
+            "{\n  items,\n  activePath,\n}"
+          ],
+          "exported": true,
+          "lineCount": 41
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "LucideIcon"
+          ]
+        }
+      ],
+      "exports": [
+        "Navbar"
+      ],
+      "totalLines": 51,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/ProjectSelector.tsx": {
+      "filePath": "frontend/src/components/ProjectSelector.tsx",
+      "contentHash": "2ab392227a347ab8a3006431289c47ec7f78aff6ef3c81725014d966b625d6fe",
+      "functions": [
+        {
+          "name": "ProjectSelector",
+          "params": [],
+          "exported": true,
+          "lineCount": 192
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React",
+            "useState"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "ChevronDown",
+            "Plus",
+            "LayoutGrid",
+            "Check"
+          ]
+        },
+        {
+          "source": "../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "../context/ToastContext",
+          "specifiers": [
+            "useToast"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "formApi"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectSelector"
+      ],
+      "totalLines": 199,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/ProtectedRoute.tsx": {
+      "filePath": "frontend/src/components/ProtectedRoute.tsx",
+      "contentHash": "215c01d9f57a69cb07cb4a2b62ca8073cb99ad066ea0facf8c7a455f24e7b4b8",
+      "functions": [
+        {
+          "name": "ProtectedRoute",
+          "params": [
+            "{\n  children,\n}"
+          ],
+          "exported": true,
+          "lineCount": 32
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Navigate"
+          ]
+        },
+        {
+          "source": "../context/AuthContext",
+          "specifiers": [
+            "useAuth"
+          ]
+        }
+      ],
+      "exports": [
+        "ProtectedRoute"
+      ],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/SandboxComparison.tsx": {
+      "filePath": "frontend/src/components/SandboxComparison.tsx",
+      "contentHash": "c37fa75be831ada556081ee16459a090be76bd8ce285acfc951428f1b7705486",
+      "functions": [
+        {
+          "name": "SandboxComparison",
+          "params": [
+            "{\n  scenarios,\n}"
+          ],
+          "exported": true,
+          "lineCount": 63
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        },
+        {
+          "source": "./animations/AnimatedNumber",
+          "specifiers": [
+            "AnimatedNumber"
+          ]
+        }
+      ],
+      "exports": [
+        "SandboxComparison"
+      ],
+      "totalLines": 75,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/ScoreGauge.tsx": {
+      "filePath": "frontend/src/components/ScoreGauge.tsx",
+      "contentHash": "2c36946b0aa80d72cf1bd20bcf1814ecc0714c6a0643577f2b71225282d918d2",
+      "functions": [
+        {
+          "name": "ScoreGauge",
+          "params": [
+            "{\n  score,\n  label = \"Fairness Score\",\n}"
+          ],
+          "exported": true,
+          "lineCount": 86
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "ScoreGauge"
+      ],
+      "totalLines": 95,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/UserMenu.tsx": {
+      "filePath": "frontend/src/components/UserMenu.tsx",
+      "contentHash": "8f1b2fdbcb6c663517bbd7e0e624c2c573102a933113b042a59c489e71c6108e",
+      "functions": [
+        {
+          "name": "getInitials",
+          "params": [
+            "name",
+            "email"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "getAvatarColor",
+          "params": [
+            "seed"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "UserMenu",
+          "params": [],
+          "exported": true,
+          "lineCount": 126
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useRef",
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link",
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "LogOut",
+            "UserIcon",
+            "ChevronDown",
+            "LayoutDashboard",
+            "Activity"
+          ]
+        },
+        {
+          "source": "../context/AuthContext",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "../firebase/auth",
+          "specifiers": [
+            "logout",
+            "mapAuthError"
+          ]
+        },
+        {
+          "source": "../context/ToastContext",
+          "specifiers": [
+            "useToast"
+          ]
+        }
+      ],
+      "exports": [
+        "UserMenu"
+      ],
+      "totalLines": 160,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/components/WorkflowShell.tsx": {
+      "filePath": "frontend/src/components/WorkflowShell.tsx",
+      "contentHash": "fbec7b9f1d79dfd926fb2d2d9a55d9fefaf16bf8911c7964c3092bee55d02b82",
+      "functions": [
+        {
+          "name": "WorkflowShell",
+          "params": [
+            "{\n  children,\n}"
+          ],
+          "exported": true,
+          "lineCount": 202
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link",
+            "useLocation"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "BarChart3",
+            "BrainCircuit",
+            "FlaskConical",
+            "Gauge",
+            "LayoutDashboard",
+            "Search",
+            "Settings2",
+            "ShieldCheck",
+            "Upload",
+            "Activity",
+            "Shield",
+            "GitCompare",
+            "Sparkles"
+          ]
+        },
+        {
+          "source": "./ProjectSelector",
+          "specifiers": [
+            "ProjectSelector"
+          ]
+        },
+        {
+          "source": "./UserMenu",
+          "specifiers": [
+            "UserMenu"
+          ]
+        },
+        {
+          "source": "../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        }
+      ],
+      "exports": [
+        "WorkflowShell"
+      ],
+      "totalLines": 245,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/context/AppContext.tsx": {
+      "filePath": "frontend/src/context/AppContext.tsx",
+      "contentHash": "2f872c54bd5fed202d29ef1d1e77eb1ee8999017968b4d533f904ead09377958",
+      "functions": [
+        {
+          "name": "AppProvider",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 434
+        },
+        {
+          "name": "useAppContext",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React",
+            "createContext",
+            "useContext",
+            "useState",
+            "useEffect",
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "formApi",
+            "api",
+            "setUnauthorizedHandler"
+          ]
+        },
+        {
+          "source": "./ToastContext",
+          "specifiers": [
+            "useToast"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "DataAuditResult",
+            "ProxyResult",
+            "ModelBiasResult",
+            "ExplanationRecord",
+            "CounterfactualResult",
+            "StressTestResult",
+            "FixRecommendation",
+            "SandboxResult",
+            "MonitoringHistoryResponse",
+            "PipelineFullResult",
+            "PipelineStatusResponse",
+            "PipelineResultResponse",
+            "ProjectLatestResponse",
+            "ProjectRecord",
+            "CustomScenario",
+            "Scores"
+          ]
+        }
+      ],
+      "exports": [
+        "AppProvider",
+        "useAppContext"
+      ],
+      "totalLines": 535,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/context/AuthContext.tsx": {
+      "filePath": "frontend/src/context/AuthContext.tsx",
+      "contentHash": "c61f865c44a898a8e1b2411fa38a01c1290a04cc703736e942ccdcb7632a4886",
+      "functions": [
+        {
+          "name": "AuthProvider",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "useAuth",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "createContext",
+            "useContext",
+            "useEffect",
+            "useState",
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "firebase/auth",
+          "specifiers": [
+            "User"
+          ]
+        },
+        {
+          "source": "../firebase/auth",
+          "specifiers": [
+            "onAuthChange",
+            "getIdTokenCurrent"
+          ]
+        }
+      ],
+      "exports": [
+        "AuthProvider",
+        "useAuth"
+      ],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/context/ToastContext.tsx": {
+      "filePath": "frontend/src/context/ToastContext.tsx",
+      "contentHash": "37fe40e30d06051ddffb9ee397467f1e8ee06a8d64b7009adc1975f0fa0f9924",
+      "functions": [
+        {
+          "name": "ToastProvider",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 102
+        },
+        {
+          "name": "useToast",
+          "params": [],
+          "returnType": "ToastContextValue",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "createContext",
+            "useCallback",
+            "useContext",
+            "useEffect",
+            "useMemo",
+            "useRef",
+            "useState",
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "AnimatePresence",
+            "motion"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "CheckCircle2",
+            "AlertTriangle",
+            "Info",
+            "X"
+          ]
+        }
+      ],
+      "exports": [
+        "ToastProvider",
+        "useToast"
+      ],
+      "totalLines": 164,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/firebase/auth.ts": {
+      "filePath": "frontend/src/firebase/auth.ts",
+      "contentHash": "9b2ad2c3027e635311bfd4064be58c83f3ead79f39cbcf9ce68f89434ba259e6",
+      "functions": [
+        {
+          "name": "mapAuthError",
+          "params": [
+            "err"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "auth",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "onAuthChange",
+          "params": [
+            "cb"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "signup",
+          "params": [
+            "email",
+            "password",
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "login",
+          "params": [
+            "email",
+            "password"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "loginWithGoogle",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "logout",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getIdTokenCurrent",
+          "params": [],
+          "returnType": "Promise<string | null>",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "firebase/auth",
+          "specifiers": [
+            "getAuth",
+            "signInWithEmailAndPassword",
+            "createUserWithEmailAndPassword",
+            "signInWithPopup",
+            "GoogleAuthProvider",
+            "signOut",
+            "onAuthStateChanged",
+            "updateProfile",
+            "getIdToken",
+            "User"
+          ]
+        },
+        {
+          "source": "./config",
+          "specifiers": [
+            "ensureFirebase",
+            "FirebaseConfigError",
+            "getConfigError"
+          ]
+        }
+      ],
+      "exports": [
+        "FirebaseConfigError",
+        "getConfigError",
+        "updateProfile",
+        "mapAuthError",
+        "onAuthChange",
+        "signup",
+        "login",
+        "loginWithGoogle",
+        "logout",
+        "getIdTokenCurrent"
+      ],
+      "totalLines": 109,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/firebase/config.ts": {
+      "filePath": "frontend/src/firebase/config.ts",
+      "contentHash": "83cfeee1f44025773e745362057149d1f39359bbd3e5f1611151070a16e962dd",
+      "functions": [
+        {
+          "name": "isPlaceholder",
+          "params": [
+            "value"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "readEnv",
+          "params": [
+            "key"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "validate",
+          "params": [],
+          "returnType": "{ config: FirebaseOptions }",
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "ensureFirebase",
+          "params": [],
+          "returnType": "FirebaseApp",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "getConfigError",
+          "params": [],
+          "returnType": "FirebaseConfigError | null",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "isFirebaseConfigured",
+          "params": [],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getApp",
+          "params": [],
+          "returnType": "FirebaseApp",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "FirebaseConfigError",
+          "methods": [
+            "constructor"
+          ],
+          "properties": [
+            "missing",
+            "placeholders"
+          ],
+          "exported": true,
+          "lineCount": 29
+        }
+      ],
+      "imports": [
+        {
+          "source": "firebase/app",
+          "specifiers": [
+            "initializeApp",
+            "FirebaseApp",
+            "FirebaseOptions"
+          ]
+        }
+      ],
+      "exports": [
+        "REQUIRED_FIELDS",
+        "FirebaseConfigError",
+        "ensureFirebase",
+        "getConfigError",
+        "isFirebaseConfigured",
+        "getApp"
+      ],
+      "totalLines": 122,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/main.tsx": {
+      "filePath": "frontend/src/main.tsx",
+      "contentHash": "8e2297d99b6a14507d6837c0c269032278c8257177f5fcf42fad859c5e62b8a0",
+      "functions": [
+        {
+          "name": "ConfigErrorScreen",
+          "params": [
+            "{ error }"
+          ],
+          "exported": false,
+          "lineCount": 59
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React"
+          ]
+        },
+        {
+          "source": "react-dom/client",
+          "specifiers": [
+            "ReactDOM"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "BrowserRouter"
+          ]
+        },
+        {
+          "source": "./App",
+          "specifiers": [
+            "App"
+          ]
+        },
+        {
+          "source": "./styles/globals.css",
+          "specifiers": []
+        },
+        {
+          "source": "./context/AppContext",
+          "specifiers": [
+            "AppProvider"
+          ]
+        },
+        {
+          "source": "./context/AuthContext",
+          "specifiers": [
+            "AuthProvider"
+          ]
+        },
+        {
+          "source": "./context/ToastContext",
+          "specifiers": [
+            "ToastProvider"
+          ]
+        },
+        {
+          "source": "./firebase/config",
+          "specifiers": [
+            "getConfigError",
+            "FirebaseConfigError"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 90,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/CreateProject.tsx": {
+      "filePath": "frontend/src/pages/CreateProject.tsx",
+      "contentHash": "f149e0bcb3bdaa4ac4f0df5067ca0359e38eabadcf9f75b041e84c34f8f6a876",
+      "functions": [
+        {
+          "name": "CreateProject",
+          "params": [],
+          "exported": true,
+          "lineCount": 607
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React",
+            "useState"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "formApi",
+            "api"
+          ]
+        },
+        {
+          "source": "../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "FolderPlus",
+            "Upload",
+            "Play",
+            "ChevronRight",
+            "Loader2",
+            "CheckCircle2",
+            "AlertCircle",
+            "FileText",
+            "Brain",
+            "Info"
+          ]
+        }
+      ],
+      "exports": [
+        "CreateProject"
+      ],
+      "totalLines": 626,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/Dashboard.tsx": {
+      "filePath": "frontend/src/pages/Dashboard.tsx",
+      "contentHash": "3e10dab9a08a66dab3d8185b9b02fdff7524589bc4a2fc26a1f9a79d34e8e995",
+      "functions": [
+        {
+          "name": "Dashboard",
+          "params": [],
+          "exported": true,
+          "lineCount": 694
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React",
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "recharts",
+          "specifiers": [
+            "BarChart",
+            "Bar",
+            "Tooltip",
+            "ResponsiveContainer",
+            "Cell",
+            "LineChart",
+            "Line",
+            "AreaChart",
+            "Area"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "AlertTriangle",
+            "CheckCircle2",
+            "ShieldAlert",
+            "Search",
+            "Target",
+            "Fingerprint",
+            "Zap",
+            "Activity",
+            "History",
+            "FolderPlus",
+            "ArrowUp",
+            "ArrowRight",
+            "Shield",
+            "GitCompare",
+            "Play",
+            "Sparkles",
+            "TrendingUp",
+            "Brain"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "api"
+          ]
+        },
+        {
+          "source": "../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        },
+        {
+          "source": "../components/GuidedTour",
+          "specifiers": [
+            "GuidedTour",
+            "useGuidedTour",
+            "DEFAULT_STEPS"
+          ]
+        },
+        {
+          "source": "../utils/reportExport",
+          "specifiers": [
+            "downloadAuditReport"
+          ]
+        }
+      ],
+      "exports": [
+        "Dashboard"
+      ],
+      "totalLines": 758,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/HeroPage.tsx": {
+      "filePath": "frontend/src/pages/HeroPage.tsx",
+      "contentHash": "bb0d08afc7a6458e14d1ca6cbc55bca4d429e46c7712fb9b0b6906913c0ba0a5",
+      "functions": [
+        {
+          "name": "HeroPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../components/landing",
+          "specifiers": [
+            "LandingPage"
+          ]
+        }
+      ],
+      "exports": [
+        "HeroPage"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/Login.tsx": {
+      "filePath": "frontend/src/pages/Login.tsx",
+      "contentHash": "cadd8b66af26b46dd6b61ebdffe1e19cabaf8eb918b9d81bdc8329eb259de82f",
+      "functions": [
+        {
+          "name": "setAuthHeader",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "Login",
+          "params": [],
+          "exported": true,
+          "lineCount": 118
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "FormEvent",
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link",
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../firebase/auth",
+          "specifiers": [
+            "login",
+            "loginWithGoogle",
+            "getIdTokenCurrent",
+            "mapAuthError"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "api"
+          ]
+        }
+      ],
+      "exports": [
+        "Login"
+      ],
+      "totalLines": 135,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/MonitoringDashboard.tsx": {
+      "filePath": "frontend/src/pages/MonitoringDashboard.tsx",
+      "contentHash": "7bfad38b41da99edd8918e56765e77dffe59490f297df9cef43bf9ddebb842d1",
+      "functions": [
+        {
+          "name": "MonitoringDashboard",
+          "params": [],
+          "exported": true,
+          "lineCount": 523
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "recharts",
+          "specifiers": [
+            "XAxis",
+            "YAxis",
+            "CartesianGrid",
+            "Tooltip",
+            "ResponsiveContainer",
+            "AreaChart",
+            "Area"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Activity",
+            "TrendingUp",
+            "TrendingDown",
+            "ShieldCheck",
+            "ShieldAlert",
+            "BarChart3",
+            "Search"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "api"
+          ]
+        },
+        {
+          "source": "../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        }
+      ],
+      "exports": [
+        "MonitoringDashboard"
+      ],
+      "totalLines": 547,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/NotFound.tsx": {
+      "filePath": "frontend/src/pages/NotFound.tsx",
+      "contentHash": "b5ac586cb4101591cb4962017267811ab615cc1783254c62bf7edf12ee97f15f",
+      "functions": [
+        {
+          "name": "NotFound",
+          "params": [],
+          "exported": true,
+          "lineCount": 83
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Compass",
+            "Home",
+            "ArrowLeft"
+          ]
+        }
+      ],
+      "exports": [
+        "NotFound"
+      ],
+      "totalLines": 87,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/Profile.tsx": {
+      "filePath": "frontend/src/pages/Profile.tsx",
+      "contentHash": "10d49394d82b13b1a33c3780cb5d2800ba524d324cbbf265dc80b7ef636ad8fc",
+      "functions": [
+        {
+          "name": "getInitials",
+          "params": [
+            "name",
+            "email"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "formatJoinDate",
+          "params": [
+            "ts"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "Profile",
+          "params": [],
+          "exported": true,
+          "lineCount": 276
+        },
+        {
+          "name": "Field",
+          "params": [
+            "{\n  icon,\n  label,\n  value,\n}"
+          ],
+          "exported": false,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link",
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Mail",
+            "Calendar",
+            "Edit3",
+            "Save",
+            "X",
+            "LogOut",
+            "FolderOpen",
+            "ArrowRight",
+            "ShieldCheck"
+          ]
+        },
+        {
+          "source": "../context/AuthContext",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "../firebase/auth",
+          "specifiers": [
+            "logout",
+            "fbUpdateProfile",
+            "mapAuthError"
+          ]
+        },
+        {
+          "source": "../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "../context/ToastContext",
+          "specifiers": [
+            "useToast"
+          ]
+        },
+        {
+          "source": "../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        }
+      ],
+      "exports": [
+        "Profile"
+      ],
+      "totalLines": 345,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/Signup.tsx": {
+      "filePath": "frontend/src/pages/Signup.tsx",
+      "contentHash": "99d1c5414894e011b7694e45f8dc5c7aae430a21d76025e90a3b6af8cc5198a6",
+      "functions": [
+        {
+          "name": "Signup",
+          "params": [],
+          "exported": true,
+          "lineCount": 93
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "FormEvent",
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link",
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../firebase/auth",
+          "specifiers": [
+            "signup",
+            "getIdTokenCurrent",
+            "mapAuthError"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "api"
+          ]
+        }
+      ],
+      "exports": [
+        "Signup"
+      ],
+      "totalLines": 99,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/workflow/Step1Upload.tsx": {
+      "filePath": "frontend/src/pages/workflow/Step1Upload.tsx",
+      "contentHash": "761a8c113944514bc63f77af2a8f0ec7ad647fe2788047341ebb562704d2cde5",
+      "functions": [
+        {
+          "name": "Step1Upload",
+          "params": [],
+          "exported": true,
+          "lineCount": 153
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "ArrowRight",
+            "LayoutGrid",
+            "UploadIcon"
+          ]
+        },
+        {
+          "source": "../../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        }
+      ],
+      "exports": [
+        "Step1Upload"
+      ],
+      "totalLines": 160,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/workflow/Step2Config.tsx": {
+      "filePath": "frontend/src/pages/workflow/Step2Config.tsx",
+      "contentHash": "e379f65c7d619e04f19f78bed379b7816e3d5ff0aaa3e576577d9ba58345bed0",
+      "functions": [
+        {
+          "name": "AnalysisLoadingScreen",
+          "params": [
+            "{\n  error,\n  onRetry,\n}"
+          ],
+          "exported": false,
+          "lineCount": 109
+        },
+        {
+          "name": "Step2Config",
+          "params": [],
+          "exported": true,
+          "lineCount": 496
+        },
+        {
+          "name": "guessSensitiveColumns",
+          "params": [
+            "headers"
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "../../context/ToastContext",
+          "specifiers": [
+            "useToast"
+          ]
+        },
+        {
+          "source": "../../api/client",
+          "specifiers": [
+            "formApi"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "AlertTriangle",
+            "ArrowRight",
+            "ArrowLeft",
+            "Loader",
+            "Wand2"
+          ]
+        }
+      ],
+      "exports": [
+        "Step2Config"
+      ],
+      "totalLines": 657,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/workflow/Step3DataAudit.tsx": {
+      "filePath": "frontend/src/pages/workflow/Step3DataAudit.tsx",
+      "contentHash": "9e5922d68eeb5f1553c9c51b9d1f1f91f767ffdb44420b168e3cf49b613095e5",
+      "functions": [
+        {
+          "name": "Step3DataAudit",
+          "params": [],
+          "exported": true,
+          "lineCount": 388
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useMemo",
+            "useState"
+          ]
+        },
+        {
+          "source": "../../components/animations/AnimatedBarChart",
+          "specifiers": [
+            "AnimatedBarChart"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "ArrowRight",
+            "ArrowLeft"
+          ]
+        },
+        {
+          "source": "../../types",
+          "specifiers": [
+            "DataAuditResult"
+          ]
+        },
+        {
+          "source": "../../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        }
+      ],
+      "exports": [
+        "Step3DataAudit"
+      ],
+      "totalLines": 397,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/workflow/Step4ModelBias.tsx": {
+      "filePath": "frontend/src/pages/workflow/Step4ModelBias.tsx",
+      "contentHash": "58d795b3bc4cd42f75721c70aec98228b61206fdb103e00ecc675c17bef01aa5",
+      "functions": [
+        {
+          "name": "Step4ModelBias",
+          "params": [],
+          "exported": true,
+          "lineCount": 210
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../../components/FairnessTable",
+          "specifiers": [
+            "FairnessTable"
+          ]
+        },
+        {
+          "source": "../../components/FairnessMetricsPanel",
+          "specifiers": [
+            "FairnessMetricsPanel"
+          ]
+        },
+        {
+          "source": "../../components/HiddenBiasExplorer",
+          "specifiers": [
+            "HiddenBiasExplorer"
+          ]
+        },
+        {
+          "source": "../../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "ArrowRight",
+            "ArrowLeft"
+          ]
+        },
+        {
+          "source": "../../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        },
+        {
+          "source": "../../types",
+          "specifiers": [
+            "ModelSummary"
+          ]
+        }
+      ],
+      "exports": [
+        "Step4ModelBias"
+      ],
+      "totalLines": 221,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/workflow/Step5Explanations.tsx": {
+      "filePath": "frontend/src/pages/workflow/Step5Explanations.tsx",
+      "contentHash": "0c13aecda5005b704dff080eb2eab819303dc2f28bc31b67be19a2613da9dcef",
+      "functions": [
+        {
+          "name": "Step5Explanations",
+          "params": [],
+          "exported": true,
+          "lineCount": 389
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "ArrowRight",
+            "ArrowLeft",
+            "AlertTriangle"
+          ]
+        },
+        {
+          "source": "../../api/client",
+          "specifiers": [
+            "api"
+          ]
+        },
+        {
+          "source": "../../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        },
+        {
+          "source": "../../components/FlagDecisionModal",
+          "specifiers": [
+            "FlagDecisionModal"
+          ]
+        },
+        {
+          "source": "../../context/ToastContext",
+          "specifiers": [
+            "useToast"
+          ]
+        }
+      ],
+      "exports": [
+        "Step5Explanations"
+      ],
+      "totalLines": 399,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/workflow/Step6Counterfactual.tsx": {
+      "filePath": "frontend/src/pages/workflow/Step6Counterfactual.tsx",
+      "contentHash": "f5a7fc3beee8afc9effb8fcab62ede4e11bb0fdf800db7ebdff5d2377eb2e481",
+      "functions": [
+        {
+          "name": "Step6Counterfactual",
+          "params": [],
+          "exported": true,
+          "lineCount": 338
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../../components/CounterfactualFlip",
+          "specifiers": [
+            "CounterfactualFlip"
+          ]
+        },
+        {
+          "source": "../../components/ScoreGauge",
+          "specifiers": [
+            "ScoreGauge"
+          ]
+        },
+        {
+          "source": "../../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "../../api/client",
+          "specifiers": [
+            "api"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "ArrowRight",
+            "ArrowLeft"
+          ]
+        },
+        {
+          "source": "../../types",
+          "specifiers": [
+            "CounterfactualResult"
+          ]
+        },
+        {
+          "source": "../../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        },
+        {
+          "source": "../../components/FlagDecisionModal",
+          "specifiers": [
+            "FlagDecisionModal"
+          ]
+        },
+        {
+          "source": "../../context/ToastContext",
+          "specifiers": [
+            "useToast"
+          ]
+        }
+      ],
+      "exports": [
+        "Step6Counterfactual"
+      ],
+      "totalLines": 351,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/workflow/Step7StressTest.tsx": {
+      "filePath": "frontend/src/pages/workflow/Step7StressTest.tsx",
+      "contentHash": "5cb5071b14c3a1cec7fd79c8d747f511d3033b102b31a354afc1b79f22de5579",
+      "functions": [
+        {
+          "name": "Step7StressTest",
+          "params": [],
+          "exported": true,
+          "lineCount": 546
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useMemo"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        },
+        {
+          "source": "../../components/animations/AnimatedNumber",
+          "specifiers": [
+            "AnimatedNumber"
+          ]
+        },
+        {
+          "source": "../../components/animations/ScanningSkeleton",
+          "specifiers": [
+            "ScanningSkeleton"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "ArrowRight",
+            "ArrowLeft"
+          ]
+        },
+        {
+          "source": "../../types",
+          "specifiers": [
+            "CustomScenario"
+          ]
+        },
+        {
+          "source": "../../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        }
+      ],
+      "exports": [
+        "Step7StressTest"
+      ],
+      "totalLines": 557,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/workflow/Step8Sandbox.tsx": {
+      "filePath": "frontend/src/pages/workflow/Step8Sandbox.tsx",
+      "contentHash": "f68a72926dee3702d89ba36ac5bb0a62bf202eb7bb49fb5981b1e3493190c522",
+      "functions": [
+        {
+          "name": "Step8Sandbox",
+          "params": [],
+          "exported": true,
+          "lineCount": 297
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../../components/SandboxComparison",
+          "specifiers": [
+            "SandboxComparison"
+          ]
+        },
+        {
+          "source": "../../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "../../types",
+          "specifiers": [
+            "FixRecommendation",
+            "SandboxResult"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "ArrowRight"
+          ]
+        },
+        {
+          "source": "../../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        }
+      ],
+      "exports": [
+        "Step8Sandbox"
+      ],
+      "totalLines": 306,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/workflow/Step9Monitoring.tsx": {
+      "filePath": "frontend/src/pages/workflow/Step9Monitoring.tsx",
+      "contentHash": "1fd8ffc1775bd913e91ccf5cc8b907ab5c188bebe5262c674399725be4fdb511",
+      "functions": [
+        {
+          "name": "Step9Monitoring",
+          "params": [],
+          "exported": true,
+          "lineCount": 708
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "../../components/MonitoringChart",
+          "specifiers": [
+            "MonitoringChart"
+          ]
+        },
+        {
+          "source": "../../components/MonitoringStatsRow",
+          "specifiers": [
+            "MonitoringStatsRow"
+          ]
+        },
+        {
+          "source": "../../components/MonitoringTimeline",
+          "specifiers": [
+            "MonitoringTimeline"
+          ]
+        },
+        {
+          "source": "../../context/AppContext",
+          "specifiers": [
+            "useAppContext"
+          ]
+        },
+        {
+          "source": "../../context/ToastContext",
+          "specifiers": [
+            "useToast"
+          ]
+        },
+        {
+          "source": "../../api/client",
+          "specifiers": [
+            "formApi",
+            "api"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "AlertTriangle",
+            "CheckCircle",
+            "Activity",
+            "Zap"
+          ]
+        },
+        {
+          "source": "../../types",
+          "specifiers": [
+            "FairnessFlag"
+          ]
+        },
+        {
+          "source": "../../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        }
+      ],
+      "exports": [
+        "Step9Monitoring"
+      ],
+      "totalLines": 763,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/styles/globals.css": {
+      "filePath": "frontend/src/styles/globals.css",
+      "contentHash": "fe7a560a70ba7b22fa42c598d8311e9cd21ad32beeaec4d5307aefe3ae0f6ebf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2636,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/src/types.ts": {
+      "filePath": "frontend/src/types.ts",
+      "contentHash": "500c2e66f381a5cb0cd1ca35bc1e39280c14c51ff74e1f7c8819a3662776b4e0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 384,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/vite-env.d.ts": {
+      "filePath": "frontend/src/vite-env.d.ts",
+      "contentHash": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/test-results/.last-run.json": {
+      "filePath": "frontend/test-results/.last-run.json",
+      "contentHash": "64a60509d9a1474da4afc58f88ec941ad04cd95f204cc0614a5f7153c6d06e63",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/test-results/e2e-E2E-Audit-Sequence-Workflow-chromium/error-context.md": {
+      "filePath": "frontend/test-results/e2e-E2E-Audit-Sequence-Workflow-chromium/error-context.md",
+      "contentHash": "ada717e9c1f71927e6dd3fb563ac66cfe6f6760fc7dc3e13462edfbe455d41e3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 244,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/tests/e2e.spec.ts": {
+      "filePath": "frontend/tests/e2e.spec.ts",
+      "contentHash": "504511ddb3c9dd48d6b570c7577afcbafff10cd88ba5331ed00902731cad90ad",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@playwright/test",
+          "specifiers": [
+            "test",
+            "expect"
+          ]
+        },
+        {
+          "source": "path",
+          "specifiers": [
+            "path"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 129,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/tsconfig.json": {
+      "filePath": "frontend/tsconfig.json",
+      "contentHash": "73cacec706b02e4b91e1bdd13700be2d549aa124e0774df8ec105835d634968c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/vite.config.ts": {
+      "filePath": "frontend/vite.config.ts",
+      "contentHash": "b2d2609a1859d630074e2a070d598f47ad55c9f5d9f76475651bc907a20ded72",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "vite",
+          "specifiers": [
+            "defineConfig"
+          ]
+        },
+        {
+          "source": "@vitejs/plugin-react",
+          "specifiers": [
+            "react"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "PROMPT.md": {
+      "filePath": "PROMPT.md",
+      "contentHash": "31de6081b6b29af83ca005500c8fe0678c1d1e6c2a5c8af356731c9f2775a810",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 872,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "1575127cadee121e92da739f4b74049ed9297ec435dd2e2ea9bede89c529f6e1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 191,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

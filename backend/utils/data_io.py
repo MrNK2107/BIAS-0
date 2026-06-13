@@ -16,5 +16,4 @@ def path_to_dataframe(path: str | Path) -> pd.DataFrame:
     return pd.read_csv(Path(path))
 
 
-def dataframe_to_csv_text(df: pd.DataFrame) -> str:
-    return df.to_csv(index=False)
+

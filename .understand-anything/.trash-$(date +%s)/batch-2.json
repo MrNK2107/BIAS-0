@@ -1,0 +1,44 @@
+{
+  "nodes": [
+    {
+      "id": "document:PROMPT.md",
+      "type": "document",
+      "name": "PROMPT.md",
+      "filePath": "PROMPT.md",
+      "summary": "Project file",
+      "tags": [
+        "markdown",
+        "docs"
+      ],
+      "complexity": "complex",
+      "sizeLines": 879
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project overview and setup documentation",
+      "tags": [
+        "markdown",
+        "docs"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 190
+    },
+    {
+      "id": "document:context.md",
+      "type": "document",
+      "name": "context.md",
+      "filePath": "context.md",
+      "summary": "Project file",
+      "tags": [
+        "markdown",
+        "docs"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 157
+    }
+  ],
+  "edges": []
+}

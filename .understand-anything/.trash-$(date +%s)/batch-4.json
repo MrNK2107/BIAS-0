@@ -1,0 +1,83 @@
+{
+  "nodes": [
+    {
+      "id": "config:frontend/.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": "frontend/.env.example",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "config",
+        "config"
+      ],
+      "complexity": "simple",
+      "sizeLines": 32
+    },
+    {
+      "id": "document:frontend/immersive_design.md",
+      "type": "document",
+      "name": "immersive_design.md",
+      "filePath": "frontend/immersive_design.md",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "markdown",
+        "docs"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 53
+    },
+    {
+      "id": "file:frontend/index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "frontend/index.html",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "html",
+        "markup"
+      ],
+      "complexity": "simple",
+      "sizeLines": 17
+    },
+    {
+      "id": "config:frontend/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "frontend/package.json",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple",
+      "sizeLines": 45
+    },
+    {
+      "id": "document:frontend/search_results.md",
+      "type": "document",
+      "name": "search_results.md",
+      "filePath": "frontend/search_results.md",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "markdown",
+        "docs"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 53
+    },
+    {
+      "id": "config:frontend/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "frontend/tsconfig.json",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple",
+      "sizeLines": 25
+    }
+  ],
+  "edges": []
+}

@@ -1,35 +1,35 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 const features = [
   {
-    icon: '◉',
-    title: 'Data Audit',
-    desc: 'Comprehensive statistical analysis of your dataset revealing class imbalances and representation gaps.',
+    icon: "◉",
+    title: "Data Audit",
+    desc: "Comprehensive statistical analysis of your dataset revealing class imbalances and representation gaps.",
   },
   {
-    icon: '◇',
-    title: 'Proxy Detection',
-    desc: 'Identify features acting as proxies for protected attributes using correlation and clustering analysis.',
+    icon: "◇",
+    title: "Proxy Detection",
+    desc: "Identify features acting as proxies for protected attributes using correlation and clustering analysis.",
   },
   {
-    icon: '△',
-    title: 'Model Bias Analysis',
-    desc: 'Measure Demographic Parity and Equal Opportunity gaps across all demographic groups.',
+    icon: "△",
+    title: "Model Bias Analysis",
+    desc: "Measure Demographic Parity and Equal Opportunity gaps across all demographic groups.",
   },
   {
-    icon: '□',
-    title: 'SHAP Explanations',
-    desc: 'Explain individual predictions with feature importance scores and counterfactual narratives.',
+    icon: "□",
+    title: "SHAP Explanations",
+    desc: "Explain individual predictions with feature importance scores and counterfactual narratives.",
   },
   {
-    icon: '○',
-    title: 'Counterfactual Testing',
-    desc: 'Flip sensitive attributes to measure decision variance and identify discriminatory patterns.',
+    icon: "○",
+    title: "Counterfactual Testing",
+    desc: "Flip sensitive attributes to measure decision variance and identify discriminatory patterns.",
   },
   {
-    icon: '⬡',
-    title: 'Stress Testing',
-    desc: 'Subject your model to extreme conditions: minority undersampling, label noise, and distribution shift.',
+    icon: "⬡",
+    title: "Stress Testing",
+    desc: "Subject your model to extreme conditions: minority undersampling, label noise, and distribution shift.",
   },
 ];
 
@@ -49,8 +49,9 @@ export default function Features() {
             Full-Stack Fairness Engine
           </h2>
           <p className="landing-section-desc">
-            From data ingestion to automated remediation, every stage of the bias 
-            detection pipeline is handled in a single unified compute sweep.
+            From data ingestion to automated remediation, every stage of the
+            bias detection pipeline is handled in a single unified compute
+            sweep.
           </p>
         </motion.div>
 

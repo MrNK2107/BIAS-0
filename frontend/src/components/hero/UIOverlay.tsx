@@ -1,18 +1,24 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Shield, Gauge, Layers, Activity } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import { Shield, Gauge, Layers, Activity } from "lucide-react";
 
-const Section = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+const Section = ({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
   <section className={`hero-section h-screen ${className}`}>{children}</section>
 );
 
 const LiveBiasFeed = () => {
   const mockData = [
-    { id: 1, feature: 'zip_code', risk: 'PROXY', status: 'neutralized' },
-    { id: 2, feature: 'education_level', risk: 'LOW', status: 'passed' },
-    { id: 3, feature: 'credit_history', risk: 'MEDIUM', status: 'flagged' },
-    { id: 4, feature: 'address_area', risk: 'HIGH', status: 'neutralized' },
-    { id: 5, feature: 'income_bracket', risk: 'PROXY', status: 'monitoring' },
+    { id: 1, feature: "zip_code", risk: "PROXY", status: "neutralized" },
+    { id: 2, feature: "education_level", risk: "LOW", status: "passed" },
+    { id: 3, feature: "credit_history", risk: "MEDIUM", status: "flagged" },
+    { id: 4, feature: "address_area", risk: "HIGH", status: "neutralized" },
+    { id: 5, feature: "income_bracket", risk: "PROXY", status: "monitoring" },
   ];
 
   return (
@@ -32,8 +38,12 @@ const LiveBiasFeed = () => {
             className={`live-bias-item ${item.status}`}
           >
             <span className="live-bias-feature">{item.feature}</span>
-            <span className={`live-bias-risk ${item.risk.toLowerCase()}`}>{item.risk}</span>
-            <span className={`live-bias-status ${item.status}`}>{item.status}</span>
+            <span className={`live-bias-risk ${item.risk.toLowerCase()}`}>
+              {item.risk}
+            </span>
+            <span className={`live-bias-status ${item.status}`}>
+              {item.status}
+            </span>
           </motion.div>
         ))}
       </div>
@@ -45,21 +55,21 @@ const ForensicBento = () => {
   const cards = [
     {
       icon: Layers,
-      title: 'Deep Neural Layer Mapping',
-      desc: 'Trace decision paths through 12+ hidden layers to pinpoint exactly where bias propagates.',
-      color: '#C89D7C',
+      title: "Deep Neural Layer Mapping",
+      desc: "Trace decision paths through 12+ hidden layers to pinpoint exactly where bias propagates.",
+      color: "#C89D7C",
     },
     {
       icon: Gauge,
-      title: 'Real-time Rebalancing Logic',
-      desc: 'Adaptive threshold tuning with <50ms latency preserves accuracy while eliminating disparity.',
-      color: '#8E9196',
+      title: "Real-time Rebalancing Logic",
+      desc: "Adaptive threshold tuning with <50ms latency preserves accuracy while eliminating disparity.",
+      color: "#8E9196",
     },
     {
       icon: Shield,
-      title: 'Regulatory Compliance',
-      desc: 'EU AI Act & GDPR ready. Automated audit trails and documentation for every decision.',
-      color: '#A24A46',
+      title: "Regulatory Compliance",
+      desc: "EU AI Act & GDPR ready. Automated audit trails and documentation for every decision.",
+      color: "#A24A46",
     },
   ];
 
@@ -101,13 +111,14 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
         >
           <h1 className="hero-title">INTEGRITY AT SCALE.</h1>
           <p className="hero-brief">
-            AI is a mirror of your data. We ensure that mirror isn&apos;t distorted. Audit,
-            explain, and correct algorithmic bias in real-time.
+            AI is a mirror of your data. We ensure that mirror isn&apos;t
+            distorted. Audit, explain, and correct algorithmic bias in
+            real-time.
           </p>
           <div className="cta-wrapper pointer-events-auto z-50">
             <button
               type="button"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate("/dashboard")}
               className="cta-enter"
             >
               ENTER PLATFORM
@@ -126,8 +137,9 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
         >
           <h2 className="hero-title">THE SILENT DRIFT.</h2>
           <p className="hero-brief">
-            Bias doesn&apos;t announce itself. It hides in proxy variables, ZIP codes,
-            browsing habits, and historical echoes that models silently learn as prejudice.
+            Bias doesn&apos;t announce itself. It hides in proxy variables, ZIP
+            codes, browsing habits, and historical echoes that models silently
+            learn as prejudice.
           </p>
           <LiveBiasFeed />
         </motion.div>
@@ -144,8 +156,8 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
           <div className="hero-panel">
             <h2 className="hero-title">FORENSIC TRANSPARENCY.</h2>
             <p className="hero-brief">
-              Break open the black box. We surface representation gaps and map the exact
-              architecture of unfairness across deep neural layers.
+              Break open the black box. We surface representation gaps and map
+              the exact architecture of unfairness across deep neural layers.
             </p>
           </div>
           <ForensicBento />
@@ -162,8 +174,9 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
         >
           <h2 className="hero-title hero-title-solution">AUTOMATED EQUITY.</h2>
           <p className="hero-brief">
-            Real-time mitigation engines that rebalance logic and tune thresholds without
-            compromising your model&apos;s predictive performance.
+            Real-time mitigation engines that rebalance logic and tune
+            thresholds without compromising your model&apos;s predictive
+            performance.
           </p>
         </motion.div>
       </Section>
@@ -172,7 +185,7 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 30 }}
           whileInView={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.85, ease: 'easeOut' }}
+          transition={{ duration: 0.85, ease: "easeOut" }}
           viewport={{ once: false, amount: 0.5 }}
           className="hero-copy max-center hero-panel"
         >
@@ -180,7 +193,7 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
           <div className="cta-wrapper pointer-events-auto z-50 hero-cta-group">
             <button
               type="button"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate("/dashboard")}
               className="cta-primary cta-analysis"
             >
               START YOUR ANALYSIS
@@ -188,6 +201,7 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
             <button
               type="button"
               className="cta-secondary"
+              onClick={() => window.open("https://codebuff.com", "_blank")}
             >
               BOOK A DEMO
             </button>

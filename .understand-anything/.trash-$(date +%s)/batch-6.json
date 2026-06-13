@@ -1,0 +1,2491 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/main.py",
+      "type": "file",
+      "name": "main.py",
+      "filePath": "backend/main.py",
+      "summary": "Backend module: main",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 91
+    },
+    {
+      "id": "function:backend/main.py:startup_seed",
+      "type": "function",
+      "name": "startup_seed",
+      "filePath": "backend/main.py",
+      "summary": "Function startup_seed",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/main.py:health",
+      "type": "function",
+      "name": "health",
+      "filePath": "backend/main.py",
+      "summary": "Function health",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/main.py:serve_frontend",
+      "type": "function",
+      "name": "serve_frontend",
+      "filePath": "backend/main.py",
+      "summary": "Function serve_frontend",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/migrate_db.py",
+      "type": "file",
+      "name": "migrate_db.py",
+      "filePath": "backend/migrate_db.py",
+      "summary": "Backend module: migrate_db",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 42
+    },
+    {
+      "id": "file:backend/models/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/models/__init__.py",
+      "summary": "Database model or schema definition",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/models/db.py",
+      "type": "file",
+      "name": "db.py",
+      "filePath": "backend/models/db.py",
+      "summary": "Database model or schema definition",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 131
+    },
+    {
+      "id": "class:backend/models/db.py:Base",
+      "type": "class",
+      "name": "Base",
+      "filePath": "backend/models/db.py",
+      "summary": "Class Base",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/models/db.py:User",
+      "type": "class",
+      "name": "User",
+      "filePath": "backend/models/db.py",
+      "summary": "Class User",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/models/db.py:Project",
+      "type": "class",
+      "name": "Project",
+      "filePath": "backend/models/db.py",
+      "summary": "Class Project",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/models/db.py:AuditRun",
+      "type": "class",
+      "name": "AuditRun",
+      "filePath": "backend/models/db.py",
+      "summary": "Class AuditRun",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/models/db.py:MonitoringEvent",
+      "type": "class",
+      "name": "MonitoringEvent",
+      "filePath": "backend/models/db.py",
+      "summary": "Class MonitoringEvent",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/models/db.py:MonitoringLog",
+      "type": "class",
+      "name": "MonitoringLog",
+      "filePath": "backend/models/db.py",
+      "summary": "Class MonitoringLog",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/models/db.py:Alert",
+      "type": "class",
+      "name": "Alert",
+      "filePath": "backend/models/db.py",
+      "summary": "Class Alert",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/models/db.py:FairnessFlag",
+      "type": "class",
+      "name": "FairnessFlag",
+      "filePath": "backend/models/db.py",
+      "summary": "Class FairnessFlag",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/models/db.py:get_db",
+      "type": "function",
+      "name": "get_db",
+      "filePath": "backend/models/db.py",
+      "summary": "Function get_db",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/models/schemas.py",
+      "type": "file",
+      "name": "schemas.py",
+      "filePath": "backend/models/schemas.py",
+      "summary": "Database model or schema definition",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 26
+    },
+    {
+      "id": "class:backend/models/schemas.py:ProjectCreate",
+      "type": "class",
+      "name": "ProjectCreate",
+      "filePath": "backend/models/schemas.py",
+      "summary": "Class ProjectCreate",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/models/schemas.py:AuditDataRequest",
+      "type": "class",
+      "name": "AuditDataRequest",
+      "filePath": "backend/models/schemas.py",
+      "summary": "Class AuditDataRequest",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/models/schemas.py:ProxyDetectRequest",
+      "type": "class",
+      "name": "ProxyDetectRequest",
+      "filePath": "backend/models/schemas.py",
+      "summary": "Class ProxyDetectRequest",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/repositories/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/repositories/__init__.py",
+      "summary": "Backend module: __init__",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 29
+    },
+    {
+      "id": "file:backend/repositories/local.py",
+      "type": "file",
+      "name": "local.py",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Backend module: local",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 269
+    },
+    {
+      "id": "function:backend/repositories/local.py:_camel_to_snake",
+      "type": "function",
+      "name": "_camel_to_snake",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Function _camel_to_snake",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/repositories/local.py:_snake_to_camel",
+      "type": "function",
+      "name": "_snake_to_camel",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Function _snake_to_camel",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/repositories/local.py:_convert_keys",
+      "type": "function",
+      "name": "_convert_keys",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Function _convert_keys",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/repositories/local.py:_col_val",
+      "type": "function",
+      "name": "_col_val",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Function _col_val",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/repositories/local.py:_BaseLocalRepo",
+      "type": "class",
+      "name": "_BaseLocalRepo",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Class _BaseLocalRepo",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/repositories/local.py:LocalProjectRepo",
+      "type": "class",
+      "name": "LocalProjectRepo",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Class LocalProjectRepo",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/repositories/local.py:LocalAuditRunRepo",
+      "type": "class",
+      "name": "LocalAuditRunRepo",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Class LocalAuditRunRepo",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/repositories/local.py:LocalMonitoringEventRepo",
+      "type": "class",
+      "name": "LocalMonitoringEventRepo",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Class LocalMonitoringEventRepo",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/repositories/local.py:LocalMonitoringLogRepo",
+      "type": "class",
+      "name": "LocalMonitoringLogRepo",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Class LocalMonitoringLogRepo",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/repositories/local.py:LocalAlertRepo",
+      "type": "class",
+      "name": "LocalAlertRepo",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Class LocalAlertRepo",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/repositories/local.py:LocalFlagRepo",
+      "type": "class",
+      "name": "LocalFlagRepo",
+      "filePath": "backend/repositories/local.py",
+      "summary": "Class LocalFlagRepo",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/routers/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/routers/__init__.py",
+      "summary": "API router for __init__ endpoints",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/routers/audit.py",
+      "type": "file",
+      "name": "audit.py",
+      "filePath": "backend/routers/audit.py",
+      "summary": "API router for audit endpoints",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 91
+    },
+    {
+      "id": "function:backend/routers/audit.py:audit_data",
+      "type": "function",
+      "name": "audit_data",
+      "filePath": "backend/routers/audit.py",
+      "summary": "Function audit_data",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/audit.py:audit_proxy",
+      "type": "function",
+      "name": "audit_proxy",
+      "filePath": "backend/routers/audit.py",
+      "summary": "Function audit_proxy",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/audit.py:get_primary_bias_type",
+      "type": "function",
+      "name": "get_primary_bias_type",
+      "filePath": "backend/routers/audit.py",
+      "summary": "Function get_primary_bias_type",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/audit.py:audit_summary",
+      "type": "function",
+      "name": "audit_summary",
+      "filePath": "backend/routers/audit.py",
+      "summary": "Function audit_summary",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/routers/auth.py",
+      "type": "file",
+      "name": "auth.py",
+      "filePath": "backend/routers/auth.py",
+      "summary": "API router for auth endpoints",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 53
+    },
+    {
+      "id": "class:backend/routers/auth.py:SignupRequest",
+      "type": "class",
+      "name": "SignupRequest",
+      "filePath": "backend/routers/auth.py",
+      "summary": "Class SignupRequest",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/routers/auth.py:LoginRequest",
+      "type": "class",
+      "name": "LoginRequest",
+      "filePath": "backend/routers/auth.py",
+      "summary": "Class LoginRequest",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/routers/auth.py:AuthResponse",
+      "type": "class",
+      "name": "AuthResponse",
+      "filePath": "backend/routers/auth.py",
+      "summary": "Class AuthResponse",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/auth.py:signup",
+      "type": "function",
+      "name": "signup",
+      "filePath": "backend/routers/auth.py",
+      "summary": "Function signup",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/auth.py:get_me",
+      "type": "function",
+      "name": "get_me",
+      "filePath": "backend/routers/auth.py",
+      "summary": "Function get_me",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/routers/bias.py",
+      "type": "file",
+      "name": "bias.py",
+      "filePath": "backend/routers/bias.py",
+      "summary": "API router for bias endpoints",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 197
+    },
+    {
+      "id": "function:backend/routers/bias.py:bias_model",
+      "type": "function",
+      "name": "bias_model",
+      "filePath": "backend/routers/bias.py",
+      "summary": "Function bias_model",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/bias.py:bias_model_from_api",
+      "type": "function",
+      "name": "bias_model_from_api",
+      "filePath": "backend/routers/bias.py",
+      "summary": "Function bias_model_from_api",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/bias.py:_substitute_template",
+      "type": "function",
+      "name": "_substitute_template",
+      "filePath": "backend/routers/bias.py",
+      "summary": "Function _substitute_template",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/bias.py:bias_explain",
+      "type": "function",
+      "name": "bias_explain",
+      "filePath": "backend/routers/bias.py",
+      "summary": "Function bias_explain",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/routers/bias.py:ExplainSummaryRequest",
+      "type": "class",
+      "name": "ExplainSummaryRequest",
+      "filePath": "backend/routers/bias.py",
+      "summary": "Class ExplainSummaryRequest",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/bias.py:explain_summary",
+      "type": "function",
+      "name": "explain_summary",
+      "filePath": "backend/routers/bias.py",
+      "summary": "Function explain_summary",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/bias.py:bias_counterfactual",
+      "type": "function",
+      "name": "bias_counterfactual",
+      "filePath": "backend/routers/bias.py",
+      "summary": "Function bias_counterfactual",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/bias.py:bias_stress",
+      "type": "function",
+      "name": "bias_stress",
+      "filePath": "backend/routers/bias.py",
+      "summary": "Function bias_stress",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/routers/fixes.py",
+      "type": "file",
+      "name": "fixes.py",
+      "filePath": "backend/routers/fixes.py",
+      "summary": "API router for fixes endpoints",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 25
+    },
+    {
+      "id": "function:backend/routers/fixes.py:recommend_fixes",
+      "type": "function",
+      "name": "recommend_fixes",
+      "filePath": "backend/routers/fixes.py",
+      "summary": "Function recommend_fixes",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/routers/monitoring.py",
+      "type": "file",
+      "name": "monitoring.py",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "API router for monitoring endpoints",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 366
+    },
+    {
+      "id": "class:backend/routers/monitoring.py:IngestPrediction",
+      "type": "class",
+      "name": "IngestPrediction",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Class IngestPrediction",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/routers/monitoring.py:IngestPayload",
+      "type": "class",
+      "name": "IngestPayload",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Class IngestPayload",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:backend/routers/monitoring.py:FlagPayload",
+      "type": "class",
+      "name": "FlagPayload",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Class FlagPayload",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:monitoring_history",
+      "type": "function",
+      "name": "monitoring_history",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function monitoring_history",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:simulate_monitoring",
+      "type": "function",
+      "name": "simulate_monitoring",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function simulate_monitoring",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:ingest_monitoring",
+      "type": "function",
+      "name": "ingest_monitoring",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function ingest_monitoring",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:simulate_monitoring_data",
+      "type": "function",
+      "name": "simulate_monitoring_data",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function simulate_monitoring_data",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:create_flag",
+      "type": "function",
+      "name": "create_flag",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function create_flag",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:get_unresolved_flags",
+      "type": "function",
+      "name": "get_unresolved_flags",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function get_unresolved_flags",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:resolve_flag",
+      "type": "function",
+      "name": "resolve_flag",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function resolve_flag",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:get_project_monitoring",
+      "type": "function",
+      "name": "get_project_monitoring",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function get_project_monitoring",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:get_monitoring_logs",
+      "type": "function",
+      "name": "get_monitoring_logs",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function get_monitoring_logs",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:detect_drift",
+      "type": "function",
+      "name": "detect_drift",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function detect_drift",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:get_project_trend",
+      "type": "function",
+      "name": "get_project_trend",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function get_project_trend",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:get_project_alerts",
+      "type": "function",
+      "name": "get_project_alerts",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function get_project_alerts",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/monitoring.py:_check_project_owner",
+      "type": "function",
+      "name": "_check_project_owner",
+      "filePath": "backend/routers/monitoring.py",
+      "summary": "Function _check_project_owner",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/routers/pipeline.py",
+      "type": "file",
+      "name": "pipeline.py",
+      "filePath": "backend/routers/pipeline.py",
+      "summary": "API router for pipeline endpoints",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 375
+    },
+    {
+      "id": "function:backend/routers/pipeline.py:_now",
+      "type": "function",
+      "name": "_now",
+      "filePath": "backend/routers/pipeline.py",
+      "summary": "Function _now",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/pipeline.py:_store_get",
+      "type": "function",
+      "name": "_store_get",
+      "filePath": "backend/routers/pipeline.py",
+      "summary": "Function _store_get",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/pipeline.py:_store_set",
+      "type": "function",
+      "name": "_store_set",
+      "filePath": "backend/routers/pipeline.py",
+      "summary": "Function _store_set",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/pipeline.py:_persist_pipeline_result",
+      "type": "function",
+      "name": "_persist_pipeline_result",
+      "filePath": "backend/routers/pipeline.py",
+      "summary": "Function _persist_pipeline_result",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/pipeline.py:_run_pipeline",
+      "type": "function",
+      "name": "_run_pipeline",
+      "filePath": "backend/routers/pipeline.py",
+      "summary": "Function _run_pipeline",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/pipeline.py:run_all",
+      "type": "function",
+      "name": "run_all",
+      "filePath": "backend/routers/pipeline.py",
+      "summary": "Function run_all",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/pipeline.py:get_task_status",
+      "type": "function",
+      "name": "get_task_status",
+      "filePath": "backend/routers/pipeline.py",
+      "summary": "Function get_task_status",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/pipeline.py:get_task_result",
+      "type": "function",
+      "name": "get_task_result",
+      "filePath": "backend/routers/pipeline.py",
+      "summary": "Function get_task_result",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/routers/project.py",
+      "type": "file",
+      "name": "project.py",
+      "filePath": "backend/routers/project.py",
+      "summary": "API router for project endpoints",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 207
+    },
+    {
+      "id": "function:backend/routers/project.py:create_project",
+      "type": "function",
+      "name": "create_project",
+      "filePath": "backend/routers/project.py",
+      "summary": "Function create_project",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/project.py:upload_assets",
+      "type": "function",
+      "name": "upload_assets",
+      "filePath": "backend/routers/project.py",
+      "summary": "Function upload_assets",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/project.py:run_project_pipeline",
+      "type": "function",
+      "name": "run_project_pipeline",
+      "filePath": "backend/routers/project.py",
+      "summary": "Function run_project_pipeline",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/project.py:compare_project_runs",
+      "type": "function",
+      "name": "compare_project_runs",
+      "filePath": "backend/routers/project.py",
+      "summary": "Function compare_project_runs",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/project.py:list_projects",
+      "type": "function",
+      "name": "list_projects",
+      "filePath": "backend/routers/project.py",
+      "summary": "Function list_projects",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/project.py:update_project_config",
+      "type": "function",
+      "name": "update_project_config",
+      "filePath": "backend/routers/project.py",
+      "summary": "Function update_project_config",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/project.py:update_project_step",
+      "type": "function",
+      "name": "update_project_step",
+      "filePath": "backend/routers/project.py",
+      "summary": "Function update_project_step",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/routers/project.py:get_latest_results",
+      "type": "function",
+      "name": "get_latest_results",
+      "filePath": "backend/routers/project.py",
+      "summary": "Function get_latest_results",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/routers/sandbox.py",
+      "type": "file",
+      "name": "sandbox.py",
+      "filePath": "backend/routers/sandbox.py",
+      "summary": "API router for sandbox endpoints",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 46
+    },
+    {
+      "id": "function:backend/routers/sandbox.py:run_sandbox",
+      "type": "function",
+      "name": "run_sandbox",
+      "filePath": "backend/routers/sandbox.py",
+      "summary": "Function run_sandbox",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/tests/test_core.py",
+      "type": "file",
+      "name": "test_core.py",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Backend module: test_core",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 328
+    },
+    {
+      "id": "function:backend/tests/test_core.py:_small_loan_df",
+      "type": "function",
+      "name": "_small_loan_df",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function _small_loan_df",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:_build_model",
+      "type": "function",
+      "name": "_build_model",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function _build_model",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_risk_from_gap",
+      "type": "function",
+      "name": "test_risk_from_gap",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_risk_from_gap",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_risk_from_score",
+      "type": "function",
+      "name": "test_risk_from_score",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_risk_from_score",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_encode_sensitive_series",
+      "type": "function",
+      "name": "test_encode_sensitive_series",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_encode_sensitive_series",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_infer_numeric_and_categorical",
+      "type": "function",
+      "name": "test_infer_numeric_and_categorical",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_infer_numeric_and_categorical",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_fairness_gaps",
+      "type": "function",
+      "name": "test_fairness_gaps",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_fairness_gaps",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_fairness_score_from_gaps",
+      "type": "function",
+      "name": "test_fairness_score_from_gaps",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_fairness_score_from_gaps",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_group_metrics",
+      "type": "function",
+      "name": "test_group_metrics",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_group_metrics",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_run_data_audit_returns_expected_structure",
+      "type": "function",
+      "name": "test_run_data_audit_returns_expected_structure",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_run_data_audit_returns_expected_structure",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_run_data_audit_missing_target",
+      "type": "function",
+      "name": "test_run_data_audit_missing_target",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_run_data_audit_missing_target",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_run_data_audit_empty_sensitive",
+      "type": "function",
+      "name": "test_run_data_audit_empty_sensitive",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_run_data_audit_empty_sensitive",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_detect_proxy_features_returns_proxies",
+      "type": "function",
+      "name": "test_detect_proxy_features_returns_proxies",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_detect_proxy_features_returns_proxies",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_detect_proxy_features_no_sensitive",
+      "type": "function",
+      "name": "test_detect_proxy_features_no_sensitive",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_detect_proxy_features_no_sensitive",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_model_bias_returns_all_metrics",
+      "type": "function",
+      "name": "test_model_bias_returns_all_metrics",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_model_bias_returns_all_metrics",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_model_bias_with_prebuilt_model",
+      "type": "function",
+      "name": "test_model_bias_with_prebuilt_model",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_model_bias_with_prebuilt_model",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_counterfactual_returns_flip_rate",
+      "type": "function",
+      "name": "test_counterfactual_returns_flip_rate",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_counterfactual_returns_flip_rate",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_counterfactual_with_prebuilt_model",
+      "type": "function",
+      "name": "test_counterfactual_with_prebuilt_model",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_counterfactual_with_prebuilt_model",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_stress_test_returns_scenarios",
+      "type": "function",
+      "name": "test_stress_test_returns_scenarios",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_stress_test_returns_scenarios",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_stress_test_with_custom_scenario",
+      "type": "function",
+      "name": "test_stress_test_with_custom_scenario",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_stress_test_with_custom_scenario",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_explain_flagged_decisions_returns_explanations",
+      "type": "function",
+      "name": "test_explain_flagged_decisions_returns_explanations",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_explain_flagged_decisions_returns_explanations",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_explain_without_model_builds_one",
+      "type": "function",
+      "name": "test_explain_without_model_builds_one",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_explain_without_model_builds_one",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_generate_narrative_summary",
+      "type": "function",
+      "name": "test_generate_narrative_summary",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_generate_narrative_summary",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_generate_narrative_summary_no_flags",
+      "type": "function",
+      "name": "test_generate_narrative_summary_no_flags",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_generate_narrative_summary_no_flags",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_generate_fix_recommendations_high_bias",
+      "type": "function",
+      "name": "test_generate_fix_recommendations_high_bias",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_generate_fix_recommendations_high_bias",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_generate_fix_recommendations_clean",
+      "type": "function",
+      "name": "test_generate_fix_recommendations_clean",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_generate_fix_recommendations_clean",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_run_sandbox_simulation_returns_scenarios",
+      "type": "function",
+      "name": "test_run_sandbox_simulation_returns_scenarios",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_run_sandbox_simulation_returns_scenarios",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_run_sandbox_simulation_with_threshold_tune",
+      "type": "function",
+      "name": "test_run_sandbox_simulation_with_threshold_tune",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_run_sandbox_simulation_with_threshold_tune",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_detect_data_drift_same_data",
+      "type": "function",
+      "name": "test_detect_data_drift_same_data",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_detect_data_drift_same_data",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_detect_data_drift_different_data",
+      "type": "function",
+      "name": "test_detect_data_drift_different_data",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_detect_data_drift_different_data",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_check_alert_condition",
+      "type": "function",
+      "name": "test_check_alert_condition",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_check_alert_condition",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/tests/test_core.py:test_audit_and_proxy_and_bias",
+      "type": "function",
+      "name": "test_audit_and_proxy_and_bias",
+      "filePath": "backend/tests/test_core.py",
+      "summary": "Function test_audit_and_proxy_and_bias",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/unbiased_ai.db",
+      "type": "file",
+      "name": "unbiased_ai.db",
+      "filePath": "backend/unbiased_ai.db",
+      "summary": "Backend module: unbiased_ai.db",
+      "tags": [
+        "db",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 169
+    },
+    {
+      "id": "file:backend/utils/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/utils/__init__.py",
+      "summary": "Utility module for __init__",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/utils/data_io.py",
+      "type": "file",
+      "name": "data_io.py",
+      "filePath": "backend/utils/data_io.py",
+      "summary": "Utility module for data_io",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 20
+    },
+    {
+      "id": "function:backend/utils/data_io.py:upload_file_to_dataframe",
+      "type": "function",
+      "name": "upload_file_to_dataframe",
+      "filePath": "backend/utils/data_io.py",
+      "summary": "Function upload_file_to_dataframe",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/utils/data_io.py:path_to_dataframe",
+      "type": "function",
+      "name": "path_to_dataframe",
+      "filePath": "backend/utils/data_io.py",
+      "summary": "Function path_to_dataframe",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/utils/data_io.py:dataframe_to_csv_text",
+      "type": "function",
+      "name": "dataframe_to_csv_text",
+      "filePath": "backend/utils/data_io.py",
+      "summary": "Function dataframe_to_csv_text",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/utils/model_loader.py",
+      "type": "file",
+      "name": "model_loader.py",
+      "filePath": "backend/utils/model_loader.py",
+      "summary": "Utility module for model_loader",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 16
+    },
+    {
+      "id": "function:backend/utils/model_loader.py:load_model_from_bytes",
+      "type": "function",
+      "name": "load_model_from_bytes",
+      "filePath": "backend/utils/model_loader.py",
+      "summary": "Function load_model_from_bytes",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:backend/utils/synthetic_data.py",
+      "type": "file",
+      "name": "synthetic_data.py",
+      "filePath": "backend/utils/synthetic_data.py",
+      "summary": "Utility module for synthetic_data",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 127
+    },
+    {
+      "id": "function:backend/utils/synthetic_data.py:_random_choice",
+      "type": "function",
+      "name": "_random_choice",
+      "filePath": "backend/utils/synthetic_data.py",
+      "summary": "Function _random_choice",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/utils/synthetic_data.py:generate_loan_dataset",
+      "type": "function",
+      "name": "generate_loan_dataset",
+      "filePath": "backend/utils/synthetic_data.py",
+      "summary": "Function generate_loan_dataset",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/utils/synthetic_data.py:generate_hiring_dataset",
+      "type": "function",
+      "name": "generate_hiring_dataset",
+      "filePath": "backend/utils/synthetic_data.py",
+      "summary": "Function generate_hiring_dataset",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:backend/utils/synthetic_data.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "backend/utils/synthetic_data.py",
+      "summary": "Function main",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "table:data/demo_hiring.csv",
+      "type": "table",
+      "name": "demo_hiring.csv",
+      "filePath": "data/demo_hiring.csv",
+      "summary": "Sample dataset for demo purposes",
+      "tags": [
+        "csv",
+        "data"
+      ],
+      "complexity": "complex",
+      "sizeLines": 3001
+    },
+    {
+      "id": "table:data/demo_loan.csv",
+      "type": "table",
+      "name": "demo_loan.csv",
+      "filePath": "data/demo_loan.csv",
+      "summary": "Sample dataset for demo purposes",
+      "tags": [
+        "csv",
+        "data"
+      ],
+      "complexity": "complex",
+      "sizeLines": 5001
+    },
+    {
+      "id": "file:e2e_test.py",
+      "type": "file",
+      "name": "e2e_test.py",
+      "filePath": "e2e_test.py",
+      "summary": "End-to-end test script",
+      "tags": [
+        "python",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 115
+    },
+    {
+      "id": "function:e2e_test.py:_make_headers",
+      "type": "function",
+      "name": "_make_headers",
+      "filePath": "e2e_test.py",
+      "summary": "Function _make_headers",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:e2e_test.py:post_multipart",
+      "type": "function",
+      "name": "post_multipart",
+      "filePath": "e2e_test.py",
+      "summary": "Function post_multipart",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:e2e_test.py:post_json",
+      "type": "function",
+      "name": "post_json",
+      "filePath": "e2e_test.py",
+      "summary": "Function post_json",
+      "tags": [
+        "python"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/main.py",
+      "target": "function:backend/main.py:startup_seed",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "function:backend/main.py:health",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "function:backend/main.py:serve_frontend",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/db.py",
+      "target": "class:backend/models/db.py:Base",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/db.py",
+      "target": "class:backend/models/db.py:User",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/db.py",
+      "target": "class:backend/models/db.py:Project",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/db.py",
+      "target": "class:backend/models/db.py:AuditRun",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/db.py",
+      "target": "class:backend/models/db.py:MonitoringEvent",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/db.py",
+      "target": "class:backend/models/db.py:MonitoringLog",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/db.py",
+      "target": "class:backend/models/db.py:Alert",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/db.py",
+      "target": "class:backend/models/db.py:FairnessFlag",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/db.py",
+      "target": "function:backend/models/db.py:get_db",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "class:backend/models/schemas.py:ProjectCreate",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "class:backend/models/schemas.py:AuditDataRequest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/models/schemas.py",
+      "target": "class:backend/models/schemas.py:ProxyDetectRequest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "function:backend/repositories/local.py:_camel_to_snake",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "function:backend/repositories/local.py:_snake_to_camel",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "function:backend/repositories/local.py:_convert_keys",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "function:backend/repositories/local.py:_col_val",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "class:backend/repositories/local.py:_BaseLocalRepo",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "class:backend/repositories/local.py:LocalProjectRepo",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "class:backend/repositories/local.py:LocalAuditRunRepo",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "class:backend/repositories/local.py:LocalMonitoringEventRepo",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "class:backend/repositories/local.py:LocalMonitoringLogRepo",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "class:backend/repositories/local.py:LocalAlertRepo",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/repositories/local.py",
+      "target": "class:backend/repositories/local.py:LocalFlagRepo",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/audit.py",
+      "target": "function:backend/routers/audit.py:audit_data",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/audit.py",
+      "target": "function:backend/routers/audit.py:audit_proxy",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/audit.py",
+      "target": "function:backend/routers/audit.py:get_primary_bias_type",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/audit.py",
+      "target": "function:backend/routers/audit.py:audit_summary",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/auth.py",
+      "target": "class:backend/routers/auth.py:SignupRequest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/auth.py",
+      "target": "class:backend/routers/auth.py:LoginRequest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/auth.py",
+      "target": "class:backend/routers/auth.py:AuthResponse",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/auth.py",
+      "target": "function:backend/routers/auth.py:signup",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/auth.py",
+      "target": "function:backend/routers/auth.py:get_me",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/bias.py",
+      "target": "function:backend/routers/bias.py:bias_model",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/bias.py",
+      "target": "function:backend/routers/bias.py:bias_model_from_api",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/bias.py",
+      "target": "function:backend/routers/bias.py:_substitute_template",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/bias.py",
+      "target": "function:backend/routers/bias.py:bias_explain",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/bias.py",
+      "target": "class:backend/routers/bias.py:ExplainSummaryRequest",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/bias.py",
+      "target": "function:backend/routers/bias.py:explain_summary",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/bias.py",
+      "target": "function:backend/routers/bias.py:bias_counterfactual",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/bias.py",
+      "target": "function:backend/routers/bias.py:bias_stress",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/fixes.py",
+      "target": "function:backend/routers/fixes.py:recommend_fixes",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "class:backend/routers/monitoring.py:IngestPrediction",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "class:backend/routers/monitoring.py:IngestPayload",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "class:backend/routers/monitoring.py:FlagPayload",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:monitoring_history",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:simulate_monitoring",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:ingest_monitoring",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:simulate_monitoring_data",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:create_flag",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:get_unresolved_flags",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:resolve_flag",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:get_project_monitoring",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:get_monitoring_logs",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:detect_drift",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:get_project_trend",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:get_project_alerts",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/monitoring.py",
+      "target": "function:backend/routers/monitoring.py:_check_project_owner",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/pipeline.py",
+      "target": "function:backend/routers/pipeline.py:_now",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/pipeline.py",
+      "target": "function:backend/routers/pipeline.py:_store_get",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/pipeline.py",
+      "target": "function:backend/routers/pipeline.py:_store_set",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/pipeline.py",
+      "target": "function:backend/routers/pipeline.py:_persist_pipeline_result",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/pipeline.py",
+      "target": "function:backend/routers/pipeline.py:_run_pipeline",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/pipeline.py",
+      "target": "function:backend/routers/pipeline.py:run_all",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/pipeline.py",
+      "target": "function:backend/routers/pipeline.py:get_task_status",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/pipeline.py",
+      "target": "function:backend/routers/pipeline.py:get_task_result",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/project.py",
+      "target": "function:backend/routers/project.py:create_project",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/project.py",
+      "target": "function:backend/routers/project.py:upload_assets",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/project.py",
+      "target": "function:backend/routers/project.py:run_project_pipeline",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/project.py",
+      "target": "function:backend/routers/project.py:compare_project_runs",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/project.py",
+      "target": "function:backend/routers/project.py:list_projects",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/project.py",
+      "target": "function:backend/routers/project.py:update_project_config",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/project.py",
+      "target": "function:backend/routers/project.py:update_project_step",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/project.py",
+      "target": "function:backend/routers/project.py:get_latest_results",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/routers/sandbox.py",
+      "target": "function:backend/routers/sandbox.py:run_sandbox",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:_small_loan_df",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:_build_model",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_risk_from_gap",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_risk_from_score",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_encode_sensitive_series",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_infer_numeric_and_categorical",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_fairness_gaps",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_fairness_score_from_gaps",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_group_metrics",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_run_data_audit_returns_expected_structure",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_run_data_audit_missing_target",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_run_data_audit_empty_sensitive",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_detect_proxy_features_returns_proxies",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_detect_proxy_features_no_sensitive",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_model_bias_returns_all_metrics",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_model_bias_with_prebuilt_model",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_counterfactual_returns_flip_rate",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_counterfactual_with_prebuilt_model",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_stress_test_returns_scenarios",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_stress_test_with_custom_scenario",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_explain_flagged_decisions_returns_explanations",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_explain_without_model_builds_one",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_generate_narrative_summary",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_generate_narrative_summary_no_flags",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_generate_fix_recommendations_high_bias",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_generate_fix_recommendations_clean",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_run_sandbox_simulation_returns_scenarios",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_run_sandbox_simulation_with_threshold_tune",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_detect_data_drift_same_data",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_detect_data_drift_different_data",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_check_alert_condition",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_core.py",
+      "target": "function:backend/tests/test_core.py:test_audit_and_proxy_and_bias",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/utils/data_io.py",
+      "target": "function:backend/utils/data_io.py:upload_file_to_dataframe",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/utils/data_io.py",
+      "target": "function:backend/utils/data_io.py:path_to_dataframe",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/utils/data_io.py",
+      "target": "function:backend/utils/data_io.py:dataframe_to_csv_text",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/utils/model_loader.py",
+      "target": "function:backend/utils/model_loader.py:load_model_from_bytes",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/utils/synthetic_data.py",
+      "target": "function:backend/utils/synthetic_data.py:_random_choice",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/utils/synthetic_data.py",
+      "target": "function:backend/utils/synthetic_data.py:generate_loan_dataset",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/utils/synthetic_data.py",
+      "target": "function:backend/utils/synthetic_data.py:generate_hiring_dataset",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/utils/synthetic_data.py",
+      "target": "function:backend/utils/synthetic_data.py:main",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:e2e_test.py",
+      "target": "function:e2e_test.py:_make_headers",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:e2e_test.py",
+      "target": "function:e2e_test.py:post_multipart",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:e2e_test.py",
+      "target": "function:e2e_test.py:post_json",
+      "type": "contains",
+      "weight": 1
+    }
+  ]
+}

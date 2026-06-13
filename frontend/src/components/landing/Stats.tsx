@@ -1,10 +1,10 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 const stats = [
-  { value: '10K+', label: 'Audits Completed' },
-  { value: '98%', label: 'Detection Accuracy' },
-  { value: '45s', label: 'Avg. Analysis Time' },
-  { value: '12M+', label: 'Records Processed' },
+  { value: "10K+", label: "Audits Completed" },
+  { value: "98%", label: "Detection Accuracy" },
+  { value: "45s", label: "Avg. Analysis Time" },
+  { value: "12M+", label: "Records Processed" },
 ];
 
 export default function Stats() {

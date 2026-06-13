@@ -1,0 +1,781 @@
+{
+  "nodes": [
+    {
+      "id": "file:frontend/eslint.config.js",
+      "type": "file",
+      "name": "eslint.config.js",
+      "filePath": "frontend/eslint.config.js",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "javascript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 19
+    },
+    {
+      "id": "file:frontend/playwright-report/index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "frontend/playwright-report/index.html",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "html",
+        "markup"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 89
+    },
+    {
+      "id": "file:frontend/playwright.config.ts",
+      "type": "file",
+      "name": "playwright.config.ts",
+      "filePath": "frontend/playwright.config.ts",
+      "summary": "Frontend configuration file",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 28
+    },
+    {
+      "id": "file:frontend/src/api/client.ts",
+      "type": "file",
+      "name": "client.ts",
+      "filePath": "frontend/src/api/client.ts",
+      "summary": "Frontend source module",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 62
+    },
+    {
+      "id": "function:frontend/src/api/client.ts:setUnauthorizedHandler",
+      "type": "function",
+      "name": "setUnauthorizedHandler",
+      "filePath": "frontend/src/api/client.ts",
+      "summary": "Function setUnauthorizedHandler",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/api/client.ts:api",
+      "type": "function",
+      "name": "api",
+      "filePath": "frontend/src/api/client.ts",
+      "summary": "Function api",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/api/client.ts:formApi",
+      "type": "function",
+      "name": "formApi",
+      "filePath": "frontend/src/api/client.ts",
+      "summary": "Function formApi",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/App.tsx",
+      "type": "file",
+      "name": "App.tsx",
+      "filePath": "frontend/src/App.tsx",
+      "summary": "Frontend source module",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 249
+    },
+    {
+      "id": "class:frontend/src/App.tsx:App",
+      "type": "class",
+      "name": "App",
+      "filePath": "frontend/src/App.tsx",
+      "summary": "Class App",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/animations/AnimatedBarChart.tsx",
+      "type": "file",
+      "name": "AnimatedBarChart.tsx",
+      "filePath": "frontend/src/components/animations/AnimatedBarChart.tsx",
+      "summary": "Animation component: AnimatedBarChart",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 123
+    },
+    {
+      "id": "class:frontend/src/components/animations/AnimatedBarChart.tsx:AnimatedBarChart",
+      "type": "class",
+      "name": "AnimatedBarChart",
+      "filePath": "frontend/src/components/animations/AnimatedBarChart.tsx",
+      "summary": "Class AnimatedBarChart",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/animations/AnimatedCard.tsx",
+      "type": "file",
+      "name": "AnimatedCard.tsx",
+      "filePath": "frontend/src/components/animations/AnimatedCard.tsx",
+      "summary": "Animation component: AnimatedCard",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 57
+    },
+    {
+      "id": "function:frontend/src/components/animations/AnimatedCard.tsx:cardVariants",
+      "type": "function",
+      "name": "cardVariants",
+      "filePath": "frontend/src/components/animations/AnimatedCard.tsx",
+      "summary": "Function cardVariants",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:frontend/src/components/animations/AnimatedCard.tsx:AnimatedCard",
+      "type": "class",
+      "name": "AnimatedCard",
+      "filePath": "frontend/src/components/animations/AnimatedCard.tsx",
+      "summary": "Class AnimatedCard",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/animations/AnimatedNumber.tsx",
+      "type": "file",
+      "name": "AnimatedNumber.tsx",
+      "filePath": "frontend/src/components/animations/AnimatedNumber.tsx",
+      "summary": "Animation component: AnimatedNumber",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 32
+    },
+    {
+      "id": "class:frontend/src/components/animations/AnimatedNumber.tsx:AnimatedNumber",
+      "type": "class",
+      "name": "AnimatedNumber",
+      "filePath": "frontend/src/components/animations/AnimatedNumber.tsx",
+      "summary": "Class AnimatedNumber",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/animations/BackgroundGrid.tsx",
+      "type": "file",
+      "name": "BackgroundGrid.tsx",
+      "filePath": "frontend/src/components/animations/BackgroundGrid.tsx",
+      "summary": "Animation component: BackgroundGrid",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 55
+    },
+    {
+      "id": "class:frontend/src/components/animations/BackgroundGrid.tsx:BackgroundGrid",
+      "type": "class",
+      "name": "BackgroundGrid",
+      "filePath": "frontend/src/components/animations/BackgroundGrid.tsx",
+      "summary": "Class BackgroundGrid",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/animations/DataFlowEffect.tsx",
+      "type": "file",
+      "name": "DataFlowEffect.tsx",
+      "filePath": "frontend/src/components/animations/DataFlowEffect.tsx",
+      "summary": "Animation component: DataFlowEffect",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 65
+    },
+    {
+      "id": "class:frontend/src/components/animations/DataFlowEffect.tsx:ScanningSkeleton",
+      "type": "class",
+      "name": "ScanningSkeleton",
+      "filePath": "frontend/src/components/animations/DataFlowEffect.tsx",
+      "summary": "Class ScanningSkeleton",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:frontend/src/components/animations/DataFlowEffect.tsx:DataFlowEffect",
+      "type": "class",
+      "name": "DataFlowEffect",
+      "filePath": "frontend/src/components/animations/DataFlowEffect.tsx",
+      "summary": "Class DataFlowEffect",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/animations/PageTransition.tsx",
+      "type": "file",
+      "name": "PageTransition.tsx",
+      "filePath": "frontend/src/components/animations/PageTransition.tsx",
+      "summary": "Animation component: PageTransition",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 29
+    },
+    {
+      "id": "class:frontend/src/components/animations/PageTransition.tsx:PageTransition",
+      "type": "class",
+      "name": "PageTransition",
+      "filePath": "frontend/src/components/animations/PageTransition.tsx",
+      "summary": "Class PageTransition",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/animations/ScanningSkeleton.tsx",
+      "type": "file",
+      "name": "ScanningSkeleton.tsx",
+      "filePath": "frontend/src/components/animations/ScanningSkeleton.tsx",
+      "summary": "Animation component: ScanningSkeleton",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 38
+    },
+    {
+      "id": "class:frontend/src/components/animations/ScanningSkeleton.tsx:ScanningSkeleton",
+      "type": "class",
+      "name": "ScanningSkeleton",
+      "filePath": "frontend/src/components/animations/ScanningSkeleton.tsx",
+      "summary": "Class ScanningSkeleton",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/CounterfactualFlip.tsx",
+      "type": "file",
+      "name": "CounterfactualFlip.tsx",
+      "filePath": "frontend/src/components/CounterfactualFlip.tsx",
+      "summary": "UI component: CounterfactualFlip",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 45
+    },
+    {
+      "id": "class:frontend/src/components/CounterfactualFlip.tsx:CounterfactualFlip",
+      "type": "class",
+      "name": "CounterfactualFlip",
+      "filePath": "frontend/src/components/CounterfactualFlip.tsx",
+      "summary": "Class CounterfactualFlip",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/EmptyState.tsx",
+      "type": "file",
+      "name": "EmptyState.tsx",
+      "filePath": "frontend/src/components/EmptyState.tsx",
+      "summary": "UI component: EmptyState",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 78
+    },
+    {
+      "id": "class:frontend/src/components/EmptyState.tsx:EmptyState",
+      "type": "class",
+      "name": "EmptyState",
+      "filePath": "frontend/src/components/EmptyState.tsx",
+      "summary": "Class EmptyState",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/ErrorBoundary.tsx",
+      "type": "file",
+      "name": "ErrorBoundary.tsx",
+      "filePath": "frontend/src/components/ErrorBoundary.tsx",
+      "summary": "UI component: ErrorBoundary",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 119
+    },
+    {
+      "id": "function:frontend/src/components/ErrorBoundary.tsx:default",
+      "type": "function",
+      "name": "default",
+      "filePath": "frontend/src/components/ErrorBoundary.tsx",
+      "summary": "Function default",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/FairnessMetricsPanel.tsx",
+      "type": "file",
+      "name": "FairnessMetricsPanel.tsx",
+      "filePath": "frontend/src/components/FairnessMetricsPanel.tsx",
+      "summary": "UI component: FairnessMetricsPanel",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 141
+    },
+    {
+      "id": "class:frontend/src/components/FairnessMetricsPanel.tsx:FairnessMetricsPanel",
+      "type": "class",
+      "name": "FairnessMetricsPanel",
+      "filePath": "frontend/src/components/FairnessMetricsPanel.tsx",
+      "summary": "Class FairnessMetricsPanel",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/FairnessTable.tsx",
+      "type": "file",
+      "name": "FairnessTable.tsx",
+      "filePath": "frontend/src/components/FairnessTable.tsx",
+      "summary": "UI component: FairnessTable",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 39
+    },
+    {
+      "id": "class:frontend/src/components/FairnessTable.tsx:FairnessTable",
+      "type": "class",
+      "name": "FairnessTable",
+      "filePath": "frontend/src/components/FairnessTable.tsx",
+      "summary": "Class FairnessTable",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/FlagDecisionModal.tsx",
+      "type": "file",
+      "name": "FlagDecisionModal.tsx",
+      "filePath": "frontend/src/components/FlagDecisionModal.tsx",
+      "summary": "UI component: FlagDecisionModal",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 173
+    },
+    {
+      "id": "class:frontend/src/components/FlagDecisionModal.tsx:FlagDecisionModal",
+      "type": "class",
+      "name": "FlagDecisionModal",
+      "filePath": "frontend/src/components/FlagDecisionModal.tsx",
+      "summary": "Class FlagDecisionModal",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/hero/BiasNetworkHero.tsx",
+      "type": "file",
+      "name": "BiasNetworkHero.tsx",
+      "filePath": "frontend/src/components/hero/BiasNetworkHero.tsx",
+      "summary": "Hero/3D scene component: BiasNetworkHero",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 12
+    },
+    {
+      "id": "class:frontend/src/components/hero/BiasNetworkHero.tsx:BiasNetworkHero",
+      "type": "class",
+      "name": "BiasNetworkHero",
+      "filePath": "frontend/src/components/hero/BiasNetworkHero.tsx",
+      "summary": "Class BiasNetworkHero",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/hero/ExperienceScene.tsx",
+      "type": "file",
+      "name": "ExperienceScene.tsx",
+      "filePath": "frontend/src/components/hero/ExperienceScene.tsx",
+      "summary": "Hero/3D scene component: ExperienceScene",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 236
+    },
+    {
+      "id": "class:frontend/src/components/hero/ExperienceScene.tsx:ExperienceScene",
+      "type": "class",
+      "name": "ExperienceScene",
+      "filePath": "frontend/src/components/hero/ExperienceScene.tsx",
+      "summary": "Class ExperienceScene",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/hero/hero.css",
+      "type": "file",
+      "name": "hero.css",
+      "filePath": "frontend/src/components/hero/hero.css",
+      "summary": "Hero/3D scene component: hero.css",
+      "tags": [
+        "css",
+        "markup"
+      ],
+      "complexity": "complex",
+      "sizeLines": 212
+    },
+    {
+      "id": "file:frontend/src/components/hero/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "frontend/src/components/hero/index.ts",
+      "summary": "Hero/3D scene component: index.ts",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 1
+    },
+    {
+      "id": "class:frontend/src/components/hero/index.ts:BiasNetworkHero",
+      "type": "class",
+      "name": "BiasNetworkHero",
+      "filePath": "frontend/src/components/hero/index.ts",
+      "summary": "Class BiasNetworkHero",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/hero/ScrollExperience.tsx",
+      "type": "file",
+      "name": "ScrollExperience.tsx",
+      "filePath": "frontend/src/components/hero/ScrollExperience.tsx",
+      "summary": "Hero/3D scene component: ScrollExperience",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 33
+    },
+    {
+      "id": "class:frontend/src/components/hero/ScrollExperience.tsx:ScrollExperience",
+      "type": "class",
+      "name": "ScrollExperience",
+      "filePath": "frontend/src/components/hero/ScrollExperience.tsx",
+      "summary": "Class ScrollExperience",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/hero/UIOverlay.tsx",
+      "type": "file",
+      "name": "UIOverlay.tsx",
+      "filePath": "frontend/src/components/hero/UIOverlay.tsx",
+      "summary": "Hero/3D scene component: UIOverlay",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 199
+    },
+    {
+      "id": "class:frontend/src/components/hero/UIOverlay.tsx:UIOverlay",
+      "type": "class",
+      "name": "UIOverlay",
+      "filePath": "frontend/src/components/hero/UIOverlay.tsx",
+      "summary": "Class UIOverlay",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/HiddenBiasExplorer.tsx",
+      "type": "file",
+      "name": "HiddenBiasExplorer.tsx",
+      "filePath": "frontend/src/components/HiddenBiasExplorer.tsx",
+      "summary": "UI component: HiddenBiasExplorer",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 224
+    },
+    {
+      "id": "class:frontend/src/components/HiddenBiasExplorer.tsx:HiddenBiasExplorer",
+      "type": "class",
+      "name": "HiddenBiasExplorer",
+      "filePath": "frontend/src/components/HiddenBiasExplorer.tsx",
+      "summary": "Class HiddenBiasExplorer",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:frontend/src/api/client.ts",
+      "target": "function:frontend/src/api/client.ts:setUnauthorizedHandler",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/api/client.ts",
+      "target": "function:frontend/src/api/client.ts:api",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/api/client.ts",
+      "target": "function:frontend/src/api/client.ts:formApi",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/App.tsx",
+      "target": "class:frontend/src/App.tsx:App",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/animations/AnimatedBarChart.tsx",
+      "target": "class:frontend/src/components/animations/AnimatedBarChart.tsx:AnimatedBarChart",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/animations/AnimatedCard.tsx",
+      "target": "function:frontend/src/components/animations/AnimatedCard.tsx:cardVariants",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/animations/AnimatedCard.tsx",
+      "target": "class:frontend/src/components/animations/AnimatedCard.tsx:AnimatedCard",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/animations/AnimatedNumber.tsx",
+      "target": "class:frontend/src/components/animations/AnimatedNumber.tsx:AnimatedNumber",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/animations/BackgroundGrid.tsx",
+      "target": "class:frontend/src/components/animations/BackgroundGrid.tsx:BackgroundGrid",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/animations/DataFlowEffect.tsx",
+      "target": "class:frontend/src/components/animations/DataFlowEffect.tsx:ScanningSkeleton",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/animations/DataFlowEffect.tsx",
+      "target": "class:frontend/src/components/animations/DataFlowEffect.tsx:DataFlowEffect",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/animations/PageTransition.tsx",
+      "target": "class:frontend/src/components/animations/PageTransition.tsx:PageTransition",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/animations/ScanningSkeleton.tsx",
+      "target": "class:frontend/src/components/animations/ScanningSkeleton.tsx:ScanningSkeleton",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/CounterfactualFlip.tsx",
+      "target": "class:frontend/src/components/CounterfactualFlip.tsx:CounterfactualFlip",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/EmptyState.tsx",
+      "target": "class:frontend/src/components/EmptyState.tsx:EmptyState",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/ErrorBoundary.tsx",
+      "target": "function:frontend/src/components/ErrorBoundary.tsx:default",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/FairnessMetricsPanel.tsx",
+      "target": "class:frontend/src/components/FairnessMetricsPanel.tsx:FairnessMetricsPanel",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/FairnessTable.tsx",
+      "target": "class:frontend/src/components/FairnessTable.tsx:FairnessTable",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/FlagDecisionModal.tsx",
+      "target": "class:frontend/src/components/FlagDecisionModal.tsx:FlagDecisionModal",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/hero/BiasNetworkHero.tsx",
+      "target": "class:frontend/src/components/hero/BiasNetworkHero.tsx:BiasNetworkHero",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/hero/ExperienceScene.tsx",
+      "target": "class:frontend/src/components/hero/ExperienceScene.tsx:ExperienceScene",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/hero/index.ts",
+      "target": "class:frontend/src/components/hero/index.ts:BiasNetworkHero",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/hero/ScrollExperience.tsx",
+      "target": "class:frontend/src/components/hero/ScrollExperience.tsx:ScrollExperience",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/hero/UIOverlay.tsx",
+      "target": "class:frontend/src/components/hero/UIOverlay.tsx:UIOverlay",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/HiddenBiasExplorer.tsx",
+      "target": "class:frontend/src/components/HiddenBiasExplorer.tsx:HiddenBiasExplorer",
+      "type": "contains",
+      "weight": 1
+    }
+  ]
+}

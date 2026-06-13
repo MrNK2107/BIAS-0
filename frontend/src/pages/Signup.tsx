@@ -1,37 +1,40 @@
-import { FormEvent, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { signup, getIdTokenCurrent, mapAuthError } from '../firebase/auth';
-import { api } from '../api/client';
+import { FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { signup, getIdTokenCurrent, mapAuthError } from "../firebase/auth";
+import { api } from "../api/client";
 
 export default function Signup() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setError('');
+    setError("");
     setSubmitting(true);
     try {
       if (password.length < 6) {
-        throw new Error('Password must be at least 6 characters');
+        throw new Error("Password must be at least 6 characters");
       }
       await signup(email, password, name);
       const token = await getIdTokenCurrent();
       if (token) {
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       }
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
-      if (err instanceof Error && err.message === 'Password must be at least 6 characters') {
+      if (
+        err instanceof Error &&
+        err.message === "Password must be at least 6 characters"
+      ) {
         setError(err.message);
       } else {
         const msg = mapAuthError(err);
         if (msg) setError(msg);
-        else setError('Signup failed');
+        else setError("Signup failed");
       }
     } finally {
       setSubmitting(false);
@@ -82,7 +85,7 @@ export default function Signup() {
           />
 
           <button type="submit" className="auth-btn" disabled={submitting}>
-            {submitting ? 'Creating account...' : 'Create Account'}
+            {submitting ? "Creating account..." : "Create Account"}
           </button>
         </form>
 

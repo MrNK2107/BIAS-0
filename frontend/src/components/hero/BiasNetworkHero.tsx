@@ -1,5 +1,5 @@
-import ScrollExperience from './ScrollExperience';
-import './hero.css';
+import ScrollExperience from "./ScrollExperience";
+import "./hero.css";
 
 export function BiasNetworkHero() {
   return (

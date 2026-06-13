@@ -1,26 +1,40 @@
 from __future__ import annotations
 
+import logging
 import os
 import uuid
 from typing import Any, Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile
+logger = logging.getLogger(__name__)
+
+from pydantic import BaseModel
+
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    UploadFile,
+)
 
 from core.auth import require_user
+from core.column_profiler import analyze_columns
 from core.common import get_metric_weights
-from firebase.client import get_storage_bucket
-from firebase.repositories import audit_run_repo, project_repo
+from core.storage import download_file_bytes, upload_file
+from repositories import (
+    alert_repo,
+    audit_run_repo,
+    flag_repo,
+    monitoring_event_repo,
+    monitoring_log_repo,
+    project_repo,
+)
+
 from .pipeline import _run_pipeline, _store_set
 
 router = APIRouter(prefix="/project", tags=["project"])
-
-
-def _upload_to_storage(file: UploadFile, prefix: str) -> str:
-    """Upload a file to Firebase Storage and return the gs:// URL."""
-    bucket = get_storage_bucket()
-    blob = bucket.blob(f"{prefix}/{uuid.uuid4().hex}_{file.filename}")
-    blob.upload_from_file(file.file, content_type=file.content_type)
-    return f"gs://{bucket.name}/{blob.name}"
 
 
 @router.post("/create")
@@ -31,18 +45,35 @@ async def create_project(
     target_col: str = Form(default=""),
     uid: str = Depends(require_user),
 ) -> dict[str, Any]:
-    sensitive_list = [col.strip() for col in (sensitive_cols or "").split(",") if col.strip()]
-    doc_id = project_repo.create({
-        "userId": uid,
-        "name": name,
-        "domain": domain,
-        "sensitiveColumns": sensitive_list,
-        "targetColumn": target_col,
-        "datasetPath": "",
-        "modelPath": "",
-        "maxStep": 1,
-    })
+    sensitive_list = [
+        col.strip() for col in (sensitive_cols or "").split(",") if col.strip()
+    ]
+    doc_id = project_repo.create(
+        {
+            "userId": uid,
+            "name": name,
+            "domain": domain,
+            "sensitiveColumns": sensitive_list,
+            "targetColumn": target_col,
+            "datasetPath": "",
+            "modelPath": "",
+            "maxStep": 1,
+        }
+    )
     return {"project_id": doc_id, "status": "created"}
+
+
+class AnalyzeRequest(BaseModel):
+    columns: list[str]
+    rows: list[list[str]]
+
+
+@router.post("/analyze-columns")
+async def analyze_project_columns(
+    body: AnalyzeRequest,
+    uid: str = Depends(require_user),
+) -> list[dict[str, Any]]:
+    return analyze_columns(body.columns, body.rows)
 
 
 @router.post("/{project_id}/upload")
@@ -56,16 +87,19 @@ async def upload_assets(
     if not project or project.get("userId") != uid:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    dataset_url = _upload_to_storage(dataset, f"users/{uid}/datasets")
+    dataset_url = await upload_file(dataset, f"users/{uid}/datasets")
     model_url = ""
     if model_file and model_file.filename:
-        model_url = _upload_to_storage(model_file, f"users/{uid}/models")
+        model_url = await upload_file(model_file, f"users/{uid}/models")
 
-    project_repo.update(project_id, {
-        "datasetPath": dataset_url,
-        "modelPath": model_url,
-        "maxStep": 2,
-    })
+    project_repo.update(
+        project_id,
+        {
+            "datasetPath": dataset_url,
+            "modelPath": model_url,
+            "maxStep": 2,
+        },
+    )
     return {"status": "uploaded", "datasetPath": dataset_url}
 
 
@@ -84,26 +118,21 @@ async def run_project_pipeline(
 
     dataset_url = project.get("datasetPath", "")
     if not dataset_url:
-        raise HTTPException(status_code=400, detail="No dataset uploaded for this project")
+        raise HTTPException(
+            status_code=400, detail="No dataset uploaded for this project"
+        )
 
-    # Download from Firebase Storage
-    bucket = get_storage_bucket()
-    blob_name = dataset_url.replace(f"gs://{bucket.name}/", "", 1) if dataset_url.startswith("gs://") else dataset_url
-    blob = bucket.blob(blob_name)
-    df_bytes = blob.download_as_bytes()
+    df_bytes = download_file_bytes(dataset_url)
 
     model_bytes: bytes | None = None
     model_url = project.get("modelPath", "")
     if model_url:
-        model_blob_name = model_url.replace(f"gs://{bucket.name}/", "", 1) if model_url.startswith("gs://") else model_url
-        model_blob = bucket.blob(model_blob_name)
-        model_bytes = model_blob.download_as_bytes()
+        model_bytes = download_file_bytes(model_url)
 
     task_id = str(uuid.uuid4())
     _store_set(task_id, {"status": "queued"})
 
     metric_weights = get_metric_weights(metric_priority)
-
     background_tasks.add_task(
         _run_pipeline,
         task_id=task_id,
@@ -115,6 +144,7 @@ async def run_project_pipeline(
         metric_weights=metric_weights,
         model_bytes=model_bytes,
         domain=project.get("domain", "general"),
+        uid=uid,
     )
 
     return {"task_id": task_id, "status": "processing"}
@@ -139,10 +169,47 @@ async def compare_project_runs(
             "fairness_score": r.get("fairnessScore", 0),
             "accuracy": r.get("accuracy", 0),
             "decision": r.get("decision", "UNKNOWN"),
-            "timestamp": r.get("timestamp").isoformat() if hasattr(r.get("timestamp"), "isoformat") else str(r.get("timestamp", "")),
+            "timestamp": (
+                r.get("timestamp").isoformat()
+                if hasattr(r.get("timestamp"), "isoformat")
+                else str(r.get("timestamp", ""))
+            ),
         }
         for r in runs
     ]
+
+
+@router.delete("/{project_id}")
+async def delete_project(
+    project_id: str,
+    uid: str = Depends(require_user),
+) -> dict[str, Any]:
+    project = project_repo.get(project_id)
+    if not project or project.get("userId") != uid:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    cascade_repos = [
+        audit_run_repo,
+        monitoring_event_repo,
+        monitoring_log_repo,
+        alert_repo,
+        flag_repo,
+    ]
+    failures = []
+    for repo in cascade_repos:
+        try:
+            repo.delete_all([("projectId", "==", project_id)])
+        except Exception as exc:
+            logger.warning("Cascade delete for %s failed: %s", repo.collection_name, exc)
+            failures.append(repo.collection_name)
+
+    try:
+        project_repo.delete(project_id)
+    except Exception as exc:
+        logger.error("Failed to delete project document %s: %s", project_id, exc)
+        raise HTTPException(status_code=500, detail=f"Failed to delete project: {exc}")
+
+    return {"status": "deleted", "cascade_failures": failures}
 
 
 @router.get("/list")
@@ -173,11 +240,14 @@ async def update_project_config(
         raise HTTPException(status_code=404, detail="Project not found")
 
     sensitive_list = [col.strip() for col in sensitive_cols.split(",") if col.strip()]
-    project_repo.update(project_id, {
-        "sensitiveColumns": sensitive_list,
-        "targetColumn": target_col,
-        "maxStep": 2,
-    })
+    project_repo.update(
+        project_id,
+        {
+            "sensitiveColumns": sensitive_list,
+            "targetColumn": target_col,
+            "maxStep": 2,
+        },
+    )
     return {"status": "updated"}
 
 

@@ -1,0 +1,70 @@
+{
+  "nodes": [
+    {
+      "id": "config:backend/.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": "backend/.env.example",
+      "summary": "Backend module: .env.example",
+      "tags": [
+        "config",
+        "config"
+      ],
+      "complexity": "simple",
+      "sizeLines": 14
+    },
+    {
+      "id": "document:backend/requirements.txt",
+      "type": "document",
+      "name": "requirements.txt",
+      "filePath": "backend/requirements.txt",
+      "summary": "Backend module: requirements.txt",
+      "tags": [
+        "txt",
+        "docs"
+      ],
+      "complexity": "simple",
+      "sizeLines": 21
+    },
+    {
+      "id": "table:backend/test_sample.csv",
+      "type": "table",
+      "name": "test_sample.csv",
+      "filePath": "backend/test_sample.csv",
+      "summary": "Backend module: test_sample.csv",
+      "tags": [
+        "csv",
+        "data"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 101
+    },
+    {
+      "id": "document:backend/uvicorn_err.txt",
+      "type": "document",
+      "name": "uvicorn_err.txt",
+      "filePath": "backend/uvicorn_err.txt",
+      "summary": "Backend module: uvicorn_err.txt",
+      "tags": [
+        "txt",
+        "docs"
+      ],
+      "complexity": "simple",
+      "sizeLines": 4
+    },
+    {
+      "id": "document:backend/uvicorn_out.txt",
+      "type": "document",
+      "name": "uvicorn_out.txt",
+      "filePath": "backend/uvicorn_out.txt",
+      "summary": "Backend module: uvicorn_out.txt",
+      "tags": [
+        "txt",
+        "docs"
+      ],
+      "complexity": "simple",
+      "sizeLines": 4
+    }
+  ],
+  "edges": []
+}

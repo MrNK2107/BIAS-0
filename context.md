@@ -14,7 +14,7 @@ The Unbiased AI Decision Platform is a premium Enterprise SaaS application desig
 
 ## 2) Deep Architecture & Data Flow
 
-The platform relies on a React 18 frontend communicating with a Python FastAPI backend via REST. Data persistence is handled by an SQLite database with SQLAlchemy ORM.
+The platform relies on a React 18 frontend communicating with a Python FastAPI backend via REST. Data persistence is handled by a Firestore database and Firebase Storage.
 
 ### End-to-End Data Flow (The "Happy Path")
 1. **Ingestion (Frontend `Step1Upload.tsx`)**: The user drops a `.csv` file. The frontend locally parses the first few lines to extract header names.
@@ -25,36 +25,66 @@ The platform relies on a React 18 frontend communicating with a Python FastAPI b
    - The data is split into train/test sets. A default scikit-learn `RandomForestClassifier` is built and fitted.
    - **8 distinct ML engines** are run sequentially on the dataframe and model.
    - The results are aggregated into a massive JSON payload.
-   - An `AuditRun` record is persisted to the SQLite database.
+   - An `AuditRun` record is persisted to Firestore.
    - The JSON payload is returned to the frontend.
 5. **Frontend State Population (`AppContext.tsx`)**: The massive JSON payload is destructured into individual state buckets (e.g., `auditResult`, `biasResult`, `stressResult`).
 6. **Visualization (Steps 3-7)**: The user navigates through the workflow tabs instantly, as all data is already pre-fetched and stored in React Context.
 
-## 3) Database Schema (`backend/models/db.py`)
+## 3) Database Schema (Firestore Collections)
 
-The application uses SQLAlchemy to manage 4 primary tables in `unbiased_ai.db`.
+The application uses Firestore to manage 6 primary collections.
 
-1. **`Project`**: The top-level container for a specific dataset/domain.
-   - `id` (Integer, PK)
+1. **`projects`**: Top-level container for a specific dataset/domain.
+   - `id` (Document ID)
+   - `userId` (String)
    - `name` (String)
    - `domain` (String)
-   - `sensitive_columns` (JSON List)
-   - `target_column` (String)
-   - *Relationships*: 1-to-many with `AuditRun` and `MonitoringEvent`.
-2. **`AuditRun`**: Represents a single execution of the `/pipeline/run-all` endpoint.
-   - `id` (Integer, PK)
-   - `project_id` (ForeignKey)
-   - `timestamp` (DateTime)
-   - `fairness_score` (Float) - *The aggregate score across DP and EO metrics.*
-   - `risk_level` (String) - *Usually "Green", "Yellow", or "Red" based on representation gaps.*
-   - `results_json` (JSON) - *Stores the entire 8-stage analysis payload for historical recall.*
-3. **`MonitoringEvent`**: Represents simulated post-deployment checks for data drift.
-   - `id`, `project_id`, `timestamp`, `fairness_score`
-   - `alert_triggered` (Boolean)
+   - `sensitiveColumns` (List of Strings)
+   - `targetColumn` (String)
+   - `datasetPath` (String)
+   - `modelPath` (String)
+   - `maxStep` (Integer)
+2. **`auditRuns`**: Represents a single execution of the pipeline.
+   - `id` (Document ID)
+   - `projectId` (String)
+   - `userId` (String)
+   - `fairnessScore` (Float) - *The aggregate score across DP and EO metrics.*
+   - `accuracy` (Float)
+   - `riskLevel` (String) - *Usually "Green", "Yellow", or "Red" based on representation gaps.*
+   - `decision` (String)
+   - `fullResultJson` (Map/JSON) - *Stores the entire 8-stage analysis payload for historical recall.*
+   - `taskId` (String)
+3. **`monitoringEvents`**: Represents simulated post-deployment checks for data drift.
+   - `id` (Document ID)
+   - `projectId` (String)
+   - `userId` (String)
+   - `fairnessScore` (Float)
+   - `alertTriggered` (Boolean)
    - `note` (String)
-   - `group_breakdown` (JSON)
-4. **`FairnessFlag`**: Manually or automatically flagged individual records that require review.
-   - `id`, `project_id`, `record_id`, `reason`, `flagged_by`, `resolved` (Boolean)
+   - `groupBreakdown` (Map/JSON)
+4. **`monitoringLogs`**: Stores telemetry of key drift/performance metrics over time.
+   - `id` (Document ID)
+   - `projectId` (String)
+   - `userId` (String)
+   - `fairnessScore` (Float)
+   - `dataDriftScore` (Float)
+   - `predictionDriftScore` (Float)
+   - `keyMetrics` (Map/JSON)
+5. **`alerts`**: Real-time alerts generated due to bias or drift.
+   - `id` (Document ID)
+   - `projectId` (String)
+   - `userId` (String)
+   - `type` (String)
+   - `message` (String)
+   - `severity` (String)
+6. **`fairnessFlags`**: Manually or automatically flagged individual records that require review.
+   - `id` (Document ID)
+   - `projectId` (String)
+   - `userId` (String)
+   - `recordId` (String)
+   - `reason` (String)
+   - `flaggedBy` (String)
+   - `resolved` (Boolean)
 
 ## 4) Backend Components & Unified Pipeline (`backend/routers/pipeline.py`)
 
@@ -152,6 +182,24 @@ npm run dev
 ```
 
 ## 8) Known Limitations & Next Steps
-1. **Custom Model Upload Disconnect**: In `Step2Config.tsx`, users can choose "Built-in / File Upload" and browse for a `.pkl` model. However, `backend/routers/pipeline.py` currently calls `build_classifier()` to train a new Random Forest from scratch. To support custom models, `pipeline.py` must deserialize the uploaded `.pkl` and pass it to the analysis modules instead of `build_classifier()`.
-2. **Route Shadowing**: The `/fixes/sandbox` endpoint exists in both `fixes.py` and `sandbox.py`. This needs to be deduplicated.
-3. **Synchronous Compute Scaling**: The `/pipeline/run-all` endpoint executes heavily synchronous math. For massive datasets (e.g., >500k rows), this will cause HTTP timeouts. A future iteration should move this endpoint to a Celery/Redis worker queue and use WebSockets or polling for the UI.
+
+### Current Known Issues (post-audit, June 2026)
+
+1. **API Model Integration Not Wired**: The UI has an "API Endpoint" model source option with URL/request format fields, but `/pipeline/run-all` only supports built-in sklearn models and `.pkl` uploads. The API path is gated behind `{modelType === "api" && false}` in Step2Config.tsx.
+
+2. **Synchronous Compute Scaling**: The `/pipeline/run-all` endpoint executes heavily synchronous math. For massive datasets (e.g., >500k rows), this will cause HTTP timeouts. A future iteration should move this endpoint to a Celery/Redis worker queue and use WebSockets or polling for the UI.
+
+3. **Monitoring Simulate Requires `force=true`**: The `/monitoring/{id}/simulate` endpoint deletes all existing monitoring data before generating new data. A `?force=true` query parameter is now required to prevent accidental data loss.
+
+4. **Stress Test Methodology Fixed**: Stress tests now use the original model (not a retrained one) to measure prediction stability under data shifts. Previously, each scenario trained a new model on modified data, conflating retraining robustness with stress sensitivity.
+
+5. **Joblib Deserialization Secured**: User-uploaded `.pkl`/`.joblib` files are deserialized via `SafeUnpickler` which restricts imports to sklearn/numpy/scipy only, preventing RCE from malicious files.
+
+6. **Model Selection Prioritizes Fairness**: The `model_bias.py` best-model selection now sorts by `(fairness_score, accuracy)` instead of accuracy alone.
+
+7. **Double Analysis Trigger Fixed**: The WorkflowShell's "Next" button no longer triggers pipeline analysis on Step 2 → 3 transition. The "Start Full Analysis" button inside Step2Config is the single trigger.
+
+8. **Fairness Scores Standardized to 0–100**: All fairness_score values returned by the backend are in the [0, 100] range. Frontend components no longer multiply by 100.
+
+### Previously Resolved Issues
+- **Route Shadowing (CONTEXT.md v1)**: The `/fixes/sandbox` route existed in both `fixes.py` and `sandbox.py`. This was already deduplicated — `fixes.py` owns `/recommend`, `sandbox.py` owns `/sandbox`. No shadowing exists.

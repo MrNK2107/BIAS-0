@@ -3,31 +3,54 @@
 POST /pipeline/run-all  → immediately returns { task_id, status: "processing" }
 GET  /pipeline/status/{task_id} → returns { status, result? }
 """
+
 from __future__ import annotations
 
+import io
 import logging
 import threading
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile
-from google.cloud.firestore import SERVER_TIMESTAMP
+import pandas as pd
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    UploadFile,
+)
 
-from core.auto_fix import generate_fix_recommendations
 from core.auth import require_user
+from core.auto_fix import generate_fix_recommendations
+from core.common import (
+    get_metric_weights,
+    normalize_target_binary,
+    prepare_split,
+    utcnow_iso,
+    validate_target_column,
+)
+from core.deps import require_project
+from core.tuning import train_best_model
 from core.counterfactual import run_counterfactual_test
 from core.data_audit import run_data_audit
 from core.explainability import explain_flagged_decisions, generate_narrative_summary
 from core.feature_intelligence import detect_proxy_features
-from core.common import build_classifier, get_metric_weights, prepare_split
 from core.model_bias import run_model_bias_analysis
 from core.stress_test import run_stress_tests
-from firebase.repositories import audit_run_repo, monitoring_log_repo, alert_repo
+from repositories import alert_repo, audit_run_repo, monitoring_log_repo
 from utils.model_loader import load_model_from_bytes
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/pipeline", tags=["pipeline"])
+
+
+def _now() -> str:
+    return utcnow_iso()
+
 
 # ── In-memory task store for fast polling ──
 _task_store: dict[str, dict[str, Any]] = {}
@@ -56,42 +79,52 @@ def _persist_pipeline_result(
 ) -> None:
     risk_level = data_audit.get("risk_level", "Yellow")
 
-    audit_run_repo.create({
-        "projectId": project_id,
-        "userId": uid,
-        "fairnessScore": float(unified_fairness_score),
-        "accuracy": float(model_bias.get("overall_accuracy", 0.0)),
-        "riskLevel": risk_level,
-        "decision": decision,
-        "fullResultJson": result,
-        "taskId": task_id,
-        "timestamp": SERVER_TIMESTAMP,
-    })
-
-    monitoring_log_repo.create({
-        "projectId": project_id,
-        "userId": uid,
-        "fairnessScore": float(unified_fairness_score),
-        "dataDriftScore": 0.0,
-        "predictionDriftScore": 0.0,
-        "keyMetrics": {
-            "accuracy": float(model_bias.get("overall_accuracy", 0.0)),
-            "disparate_impact": model_bias.get("metrics", {}).get("disparate_impact"),
-            "demographic_parity": model_bias.get("metrics", {}).get("demographic_parity_difference"),
-            "max_gap": data_audit.get("max_gap", 0.0),
-        },
-        "timestamp": SERVER_TIMESTAMP,
-    })
-
-    if unified_fairness_score < 50:
-        alert_repo.create({
+    audit_run_repo.create(
+        {
             "projectId": project_id,
             "userId": uid,
-            "type": "BIAS",
-            "message": f"Critical bias detected. Fairness score: {unified_fairness_score:.1f}.",
-            "severity": "HIGH",
-            "timestamp": SERVER_TIMESTAMP,
-        })
+            "fairnessScore": float(unified_fairness_score),
+            "accuracy": float(model_bias.get("overall_accuracy", 0.0)),
+            "riskLevel": risk_level,
+            "decision": decision,
+            "fullResultJson": result,
+            "taskId": task_id,
+            "timestamp": _now(),
+        }
+    )
+
+    monitoring_log_repo.create(
+        {
+            "projectId": project_id,
+            "userId": uid,
+            "fairnessScore": float(unified_fairness_score),
+            "dataDriftScore": 0.0,
+            "predictionDriftScore": 0.0,
+            "keyMetrics": {
+                "accuracy": float(model_bias.get("overall_accuracy", 0.0)),
+                "disparate_impact": model_bias.get("metrics", {}).get(
+                    "disparate_impact"
+                ),
+                "demographic_parity": model_bias.get("metrics", {}).get(
+                    "demographic_parity_difference"
+                ),
+                "max_gap": data_audit.get("max_gap", 0.0),
+            },
+            "timestamp": _now(),
+        }
+    )
+
+    if unified_fairness_score < 50:
+        alert_repo.create(
+            {
+                "projectId": project_id,
+                "userId": uid,
+                "type": "BIAS",
+                "message": f"Critical bias detected. Fairness score: {unified_fairness_score:.1f}.",
+                "severity": "HIGH",
+                "timestamp": _now(),
+            }
+        )
 
     # Check for drift and degradation from previous logs
     prev_logs = monitoring_log_repo.list(
@@ -105,27 +138,31 @@ def _persist_pipeline_result(
         if last_score > 0:
             drop_pct = (last_score - unified_fairness_score) / last_score
             if drop_pct > 0.15:
-                alert_repo.create({
-                    "projectId": project_id,
-                    "userId": uid,
-                    "type": "DRIFT",
-                    "message": f"Critical score drift: {drop_pct * 100:.1f}% drop from previous.",
-                    "severity": "HIGH",
-                    "timestamp": SERVER_TIMESTAMP,
-                })
+                alert_repo.create(
+                    {
+                        "projectId": project_id,
+                        "userId": uid,
+                        "type": "DRIFT",
+                        "message": f"Critical score drift: {drop_pct * 100:.1f}% drop from previous.",
+                        "severity": "HIGH",
+                        "timestamp": _now(),
+                    }
+                )
 
     if len(prev_logs) == 2:
         s1 = prev_logs[1].get("fairnessScore", 0)
         s2 = prev_logs[0].get("fairnessScore", 0)
         if s1 > s2 > unified_fairness_score:
-            alert_repo.create({
-                "projectId": project_id,
-                "userId": uid,
-                "type": "DEGRADATION",
-                "message": "Sequential degradation detected over 3+ runs.",
-                "severity": "MEDIUM",
-                "timestamp": SERVER_TIMESTAMP,
-            })
+            alert_repo.create(
+                {
+                    "projectId": project_id,
+                    "userId": uid,
+                    "type": "DEGRADATION",
+                    "message": "Sequential degradation detected over 3+ runs.",
+                    "severity": "MEDIUM",
+                    "timestamp": _now(),
+                }
+            )
 
 
 def _run_pipeline(
@@ -141,50 +178,66 @@ def _run_pipeline(
     uid: str,
 ) -> None:
     """Background worker: runs all 8 stages and persists to Firestore."""
-    import io
-
-    import pandas as pd
-
     _store_set(task_id, {"status": "processing"})
 
     try:
         df = pd.read_csv(io.BytesIO(df_bytes))
 
-        # ── Build / load model ────────────────────────────────────────────────
+        if target_col not in df.columns:
+            raise ValueError(f"Target column '{target_col}' not found in dataset")
+
+        validation = validate_target_column(df[target_col], target_col)
+        if not validation["valid"]:
+            _store_set(task_id, {"status": "error", "error": validation["error"]})
+            return
+
+        # ── Normalize target to binary 0/1 ─────────────────────────────────
+        normalize_target_binary(df, target_col)
+
+        # ── Build / load / tune model ───────────────────────────────────────────
         prepared = prepare_split(df, target_col)
         if model_bytes:
             shared_model = load_model_from_bytes(model_bytes)
             model_used = "user_provided"
         else:
-            shared_model = build_classifier(prepared.X_train, model_type="rf")
-            shared_model.fit(prepared.X_train, prepared.y_train)
-            model_used = "built_in_rf"
+            shared_model, model_type = train_best_model(
+                prepared.X_train, prepared.y_train,
+            )
+            model_used = f"tuned_{model_type}"
 
         # ── Stage 1: Data Audit ───────────────────────────────────────────────
-        data_audit = run_data_audit(df, sensitive_list, target_col)
+        data_audit = run_data_audit(df, sensitive_list, target_col, domain=domain)
 
         # ── Stage 2: Proxy Detection ──────────────────────────────────────────
         proxy = detect_proxy_features(df, sensitive_list)
 
         # ── Stage 3: Model Bias ───────────────────────────────────────────────
         model_bias = run_model_bias_analysis(
-            df, sensitive_list, target_col,
+            df,
+            sensitive_list,
+            target_col,
             model=shared_model,
             metric_weights=metric_weights,
+            domain=domain,
         )
 
         # ── Stage 4: Explainability (SHAP / contrastive) ─────────────────────
         explanations = explain_flagged_decisions(
-            df, shared_model, sensitive_list, target_col, n_samples=5
+            df, shared_model, sensitive_list, target_col, n_samples=5, proxy_result=proxy
         )
 
         # ── Stage 5: Narrative Summary ────────────────────────────────────────
-        explain_summary = generate_narrative_summary(explanations, sensitive_list, domain=domain)
+        explain_summary = generate_narrative_summary(
+            explanations, sensitive_list, domain=domain
+        )
 
         # ── Stage 6: Counterfactual (first sensitive col) ─────────────────────
         primary_sensitive_col = sensitive_list[0] if sensitive_list else target_col
         counterfactual = run_counterfactual_test(
-            df, shared_model, primary_sensitive_col, target_col,
+            df,
+            shared_model,
+            primary_sensitive_col,
+            target_col,
             metric_weights=metric_weights,
         )
 
@@ -195,20 +248,25 @@ def _run_pipeline(
         data_bias_score = round(100 * (1 - data_audit.get("max_gap", 0.0)))
         model_bias_score = round(model_bias.get("fairness_score", 0.0))
         proxy_risk_score = round(100 * (1 - proxy.get("proxy_score", 0.0)))
-        counterfactual_score = round(counterfactual.get("counterfactual_fairness_score", 0.0))
+        counterfactual_score = round(
+            counterfactual.get("counterfactual_fairness_score", 0.0)
+        )
 
         stress_scenarios = stress.get("scenarios", [])
         if stress_scenarios:
-            stress_test_score = round(sum(s["fairness_score"] for s in stress_scenarios) / len(stress_scenarios))
+            stress_test_score = round(
+                sum(s["fairness_score"] for s in stress_scenarios)
+                / len(stress_scenarios)
+            )
         else:
             stress_test_score = 100
 
         unified_fairness_score = round(
-            0.25 * model_bias_score +
-            0.20 * counterfactual_score +
-            0.20 * stress_test_score +
-            0.20 * data_bias_score +
-            0.15 * proxy_risk_score
+            0.25 * model_bias_score
+            + 0.20 * counterfactual_score
+            + 0.20 * stress_test_score
+            + 0.20 * data_bias_score
+            + 0.15 * proxy_risk_score
         )
 
         if unified_fairness_score < 50:
@@ -252,15 +310,6 @@ def _run_pipeline(
             "model_used": model_used,
         }
 
-        import json
-        logger.info("=== RESULT SIZE DEBUG ===")
-        for k, v in result.items():
-            try:
-                size = len(json.dumps(v))
-                logger.info("Key: %s, Size in JSON bytes: %d", k, size)
-            except Exception as e:
-                logger.error("Key: %s failed to serialize: %s", k, str(e))
-
         # ── Persist to Firestore ──────────────────────────────────────────────
         _persist_pipeline_result(
             project_id=str(project_id),
@@ -280,18 +329,27 @@ def _run_pipeline(
         _store_set(task_id, {"status": "error", "error": str(exc)})
 
 
+MAX_UPLOAD_SIZE = 200 * 1024 * 1024  # 200 MB
+
+
 @router.post("/run-all")
 async def run_all(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     sensitive_cols: str = Form(...),
     target_col: str = Form(...),
-    project_id: str = Form(default=""),
+    project_id: str = Form(...),
     metric_priority: str = Form(default="balanced"),
     domain: str = Form(default="general"),
     custom_model_file: UploadFile | None = None,
     uid: str = Depends(require_user),
 ) -> dict[str, str]:
+    await require_project(project_id, uid)
+    if file.size and file.size > MAX_UPLOAD_SIZE:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File too large ({file.size / 1024 / 1024:.0f} MB). Maximum allowed is 200 MB.",
+        )
     df_bytes = await file.read()
 
     model_bytes: bytes | None = None
@@ -300,7 +358,8 @@ async def run_all(
             model_bytes = await custom_model_file.read()
             if not model_bytes:
                 model_bytes = None
-        except Exception:
+        except Exception as exc:
+            logger.warning("Failed to read custom model file: %s", exc)
             model_bytes = None
 
     sensitive_list = [col.strip() for col in sensitive_cols.split(",") if col.strip()]

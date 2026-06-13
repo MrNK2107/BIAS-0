@@ -2,28 +2,27 @@ from __future__ import annotations
 
 import pandas as pd
 
+from core.auto_fix import generate_fix_recommendations
 from core.common import (
     build_classifier,
+    encode_sensitive_series,
     fairness_gaps,
     fairness_score_from_gaps,
     group_metrics,
+    infer_numeric_and_categorical,
     prepare_split,
     risk_from_gap,
     risk_from_score,
-    encode_sensitive_series,
-    infer_numeric_and_categorical,
 )
 from core.counterfactual import run_counterfactual_test
 from core.data_audit import run_data_audit
 from core.explainability import explain_flagged_decisions, generate_narrative_summary
 from core.feature_intelligence import detect_proxy_features
 from core.model_bias import run_model_bias_analysis
-from core.stress_test import run_stress_tests
-from core.auto_fix import generate_fix_recommendations
+from core.monitoring import check_alert_condition, detect_data_drift
 from core.sandbox import run_sandbox_simulation
-from core.monitoring import detect_data_drift, check_alert_condition
+from core.stress_test import run_stress_tests
 from utils.synthetic_data import generate_loan_dataset
-
 
 # ── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -43,7 +42,9 @@ def _build_model(df: pd.DataFrame, target_col: str = "approved"):
 
 
 def test_risk_from_gap():
-    assert risk_from_gap(0.5) == "Red"
+    # Domain-aware: "other" domain — Red at gap > 0.5, Yellow at gap >= 0.25, Green below
+    assert risk_from_gap(0.55) == "Red"
+    assert risk_from_gap(0.5) == "Yellow"
     assert risk_from_gap(0.3) == "Yellow"
     assert risk_from_gap(0.1) == "Green"
     assert risk_from_gap(0.0) == "Green"
@@ -86,9 +87,19 @@ def test_fairness_gaps():
 
 
 def test_fairness_score_from_gaps():
-    gaps_high = {"demographic_parity_difference": 0.9, "equal_opportunity_difference": 0.9, "fpr_gap": 0.9, "fnr_gap": 0.9}
+    gaps_high = {
+        "demographic_parity_difference": 0.9,
+        "equal_opportunity_difference": 0.9,
+        "fpr_gap": 0.9,
+        "fnr_gap": 0.9,
+    }
     assert fairness_score_from_gaps(gaps_high) < 50
-    gaps_low = {"demographic_parity_difference": 0.0, "equal_opportunity_difference": 0.0, "fpr_gap": 0.0, "fnr_gap": 0.0}
+    gaps_low = {
+        "demographic_parity_difference": 0.0,
+        "equal_opportunity_difference": 0.0,
+        "fpr_gap": 0.0,
+        "fnr_gap": 0.0,
+    }
     assert fairness_score_from_gaps(gaps_low) == 100.0
 
 
@@ -150,9 +161,9 @@ def test_detect_proxy_features_no_sensitive():
 # ── Model Bias ──────────────────────────────────────────────────────────────
 
 
-def test_model_bias_returns_all_metrics():
-    df = generate_loan_dataset(rows=500)
-    result = run_model_bias_analysis(df, ["gender", "caste"], "approved")
+def test_model_bias_returns_all_metrics(loan_df_medium, trained_model_pipeline):
+    model, _ = trained_model_pipeline
+    result = run_model_bias_analysis(loan_df_medium, ["gender", "caste"], "approved", model=model)
     assert result["fairness_score"] < 50
     assert result["overall_accuracy"] > 0.3
     assert "demographic_parity_difference" in result["metrics"]
@@ -160,28 +171,28 @@ def test_model_bias_returns_all_metrics():
     assert "hidden_bias" in result
 
 
-def test_model_bias_with_prebuilt_model():
-    df = generate_loan_dataset(rows=500)
-    model, _ = _build_model(df)
-    result = run_model_bias_analysis(df, ["gender", "caste"], "approved", model=model)
+def test_model_bias_with_prebuilt_model(loan_df_medium, trained_model_pipeline):
+    model, _ = trained_model_pipeline
+    result = run_model_bias_analysis(loan_df_medium, ["gender", "caste"], "approved", model=model)
     assert result["fairness_score"] is not None
 
 
 # ── Counterfactual ──────────────────────────────────────────────────────────
 
 
-def test_counterfactual_returns_flip_rate():
-    df = _small_loan_df()
-    result = run_counterfactual_test(df, None, "gender", "approved")
+def test_counterfactual_returns_flip_rate(loan_df_small, trained_model_pipeline):
+    df = loan_df_small
+    model, _ = trained_model_pipeline
+    result = run_counterfactual_test(df, model, "gender", "approved")
     assert "flip_rate" in result
     assert "counterfactual_fairness_score" in result
     assert "flip_breakdown" in result
     assert 0 <= result["flip_rate"] <= 1
 
 
-def test_counterfactual_with_prebuilt_model():
-    df = _small_loan_df()
-    model, _ = _build_model(df)
+def test_counterfactual_with_prebuilt_model(loan_df_small, trained_model_pipeline):
+    df = loan_df_small
+    model, _ = trained_model_pipeline
     result = run_counterfactual_test(df, model, "gender", "approved")
     assert result["flip_rate"] is not None
 
@@ -189,28 +200,39 @@ def test_counterfactual_with_prebuilt_model():
 # ── Stress Test ─────────────────────────────────────────────────────────────
 
 
-def test_stress_test_returns_scenarios():
-    df = _small_loan_df()
-    result = run_stress_tests(df, None, ["gender"], "approved")
+def test_stress_test_returns_scenarios(loan_df_small, trained_model_pipeline):
+    df = loan_df_small
+    model, _ = trained_model_pipeline
+    result = run_stress_tests(df, model, ["gender"], "approved")
     assert "scenarios" in result
     assert "overall_fragility" in result
     assert len(result["scenarios"]) >= 3
 
 
-def test_stress_test_with_custom_scenario():
-    df = _small_loan_df()
-    custom = [{"type": "undersample_minority", "target_group": "female", "magnitude": 0.3, "name": "Custom Test"}]
-    result = run_stress_tests(df, None, ["gender"], "approved", custom_scenarios=custom)
+def test_stress_test_with_custom_scenario(loan_df_small, trained_model_pipeline):
+    df = loan_df_small
+    model, _ = trained_model_pipeline
+    custom = [
+        {
+            "type": "undersample_minority",
+            "target_group": "female",
+            "magnitude": 0.3,
+            "name": "Custom Test",
+        }
+    ]
+    result = run_stress_tests(df, model, ["gender"], "approved", custom_scenarios=custom)
     assert len(result["scenarios"]) >= 1
 
 
 # ── Explainability ──────────────────────────────────────────────────────────
 
 
-def test_explain_flagged_decisions_returns_explanations():
-    df = _small_loan_df()
-    model, _ = _build_model(df)
-    explanations = explain_flagged_decisions(df, model, ["gender", "caste"], "approved", n_samples=3)
+def test_explain_flagged_decisions_returns_explanations(loan_df_small, trained_model_pipeline):
+    df = loan_df_small
+    model, _ = trained_model_pipeline
+    explanations = explain_flagged_decisions(
+        df, model, ["gender", "caste"], "approved", n_samples=3
+    )
     assert len(explanations) <= 3
     if explanations:
         exp = explanations[0]
@@ -220,19 +242,32 @@ def test_explain_flagged_decisions_returns_explanations():
         assert "human_explanation" in exp
 
 
-def test_explain_without_model_builds_one():
-    df = _small_loan_df()
-    explanations = explain_flagged_decisions(df, None, ["gender"], "approved", n_samples=2)
+def test_explain_without_model_builds_one(loan_df_small, trained_model_pipeline):
+    df = loan_df_small
+    model, _ = trained_model_pipeline
+    explanations = explain_flagged_decisions(
+        df, model, ["gender"], "approved", n_samples=2
+    )
     assert len(explanations) <= 2
 
 
 def test_generate_narrative_summary():
     flagged = [
-        {"record_id": 1, "top_reasons": [{"feature": "zip_code", "is_proxy_risk": True}]},
-        {"record_id": 2, "top_reasons": [{"feature": "income", "is_proxy_risk": False}]},
+        {
+            "record_id": 1,
+            "top_reasons": [{"feature": "zip_code", "is_proxy_risk": True}],
+        },
+        {
+            "record_id": 2,
+            "top_reasons": [{"feature": "income", "is_proxy_risk": False}],
+        },
     ]
     summary = generate_narrative_summary(flagged, ["gender"], "loan")
-    assert "proxy" in summary.lower() or "bias" in summary.lower() or "flagged" in summary.lower()
+    assert (
+        "proxy" in summary.lower()
+        or "bias" in summary.lower()
+        or "flagged" in summary.lower()
+    )
 
 
 def test_generate_narrative_summary_no_flags():
@@ -247,7 +282,14 @@ def test_generate_fix_recommendations_high_bias():
     audit = {"under_represented_groups": ["female"]}
     proxy = {"proxy_features": [{"feature": "zip_code", "proxy_score": 0.8}]}
     bias = {"fairness_score": 35}
-    fixes = generate_fix_recommendations(audit, proxy, bias, counterfactual_score=40, stress_test_score=45, proxy_risk_score=30)
+    fixes = generate_fix_recommendations(
+        audit,
+        proxy,
+        bias,
+        counterfactual_score=40,
+        stress_test_score=45,
+        proxy_risk_score=30,
+    )
     assert len(fixes) > 0
     assert fixes[0]["fix_id"] is not None
     assert fixes[0]["type"] is not None
@@ -281,7 +323,13 @@ def test_run_sandbox_simulation_returns_scenarios():
 
 def test_run_sandbox_simulation_with_threshold_tune():
     df = _small_loan_df().dropna()
-    fixes = [{"fix_id": "threshold_tune", "fix_type": "policy_level", "description": "Threshold tuning"}]
+    fixes = [
+        {
+            "fix_id": "threshold_tune",
+            "fix_type": "policy_level",
+            "description": "Threshold tuning",
+        }
+    ]
     result = run_sandbox_simulation(df, ["gender"], "approved", fixes)
     assert any(s["name"] == "Threshold Tuning" for s in result["scenarios"])
 
@@ -315,12 +363,13 @@ def test_check_alert_condition():
 # ── Full Pipeline Integration ───────────────────────────────────────────────
 
 
-def test_audit_and_proxy_and_bias():
-    df = generate_loan_dataset(rows=1000)
+def test_audit_and_proxy_and_bias(loan_df_medium, trained_model_pipeline):
+    df = loan_df_medium
+    model, _ = trained_model_pipeline
     audit = run_data_audit(df, ["gender", "caste"], "approved")
     assert audit["risk_level"] == "Red"
     assert audit["group_stats"]["gender"]
     proxy = detect_proxy_features(df, ["gender", "caste"])
     assert proxy["proxy_features"]
-    bias = run_model_bias_analysis(df, ["gender", "caste"], "approved")
+    bias = run_model_bias_analysis(df, ["gender", "caste"], "approved", model=model)
     assert bias["fairness_score"] < 50

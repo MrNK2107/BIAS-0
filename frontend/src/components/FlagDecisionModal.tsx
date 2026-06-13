@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Flag, Send } from 'lucide-react';
-import Modal from './Modal';
+import { useEffect, useState } from "react";
+import { Flag, Send } from "lucide-react";
+import Modal from "./Modal";
 
 interface FlagDecisionModalProps {
   open: boolean;
@@ -12,11 +12,11 @@ interface FlagDecisionModalProps {
 }
 
 const QUICK_REASONS = [
-  'Disparate impact across protected group',
-  'Proxy feature likely driving outcome',
-  'Counterfactual flip detected',
-  'Insufficient evidence for rejection',
-  'Other — describe below',
+  "Disparate impact across protected group",
+  "Proxy feature likely driving outcome",
+  "Counterfactual flip detected",
+  "Insufficient evidence for rejection",
+  "Other — describe below",
 ];
 
 export default function FlagDecisionModal({
@@ -27,13 +27,13 @@ export default function FlagDecisionModal({
   recordLabel,
   context,
 }: FlagDecisionModalProps) {
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
-      setReason('');
+      setReason("");
       setError(null);
       setSubmitting(false);
     }
@@ -41,7 +41,7 @@ export default function FlagDecisionModal({
 
   const handleSubmit = async () => {
     if (!reason.trim()) {
-      setError('Please describe why this decision is being flagged.');
+      setError("Please describe why this decision is being flagged.");
       return;
     }
     setError(null);
@@ -50,16 +50,18 @@ export default function FlagDecisionModal({
       await onSubmit(reason.trim());
       onClose();
     } catch (e) {
-      const msg = (e as { message?: string })?.message ?? 'Could not flag this decision.';
+      const msg =
+        (e as { message?: string })?.message ?? "Could not flag this decision.";
       setError(msg);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const heading = recordId != null
-    ? `Flag Record #${recordId}${recordLabel ? ` — ${recordLabel}` : ''}`
-    : 'Flag this decision for review';
+  const heading =
+    recordId != null
+      ? `Flag Record #${recordId}${recordLabel ? ` — ${recordLabel}` : ""}`
+      : "Flag this decision for review";
 
   return (
     <Modal
@@ -78,23 +80,30 @@ export default function FlagDecisionModal({
             disabled={submitting || !reason.trim()}
           >
             <Send size={14} />
-            {submitting ? 'Submitting...' : 'Flag for review'}
+            {submitting ? "Submitting..." : "Flag for review"}
           </button>
         </>
       }
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 10,
+          marginBottom: 16,
+        }}
+      >
         <div
           style={{
             width: 32,
             height: 32,
             borderRadius: 8,
-            background: 'rgba(162, 74, 70, 0.14)',
-            border: '0.5px solid rgba(162, 74, 70, 0.4)',
-            color: 'var(--warning)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            background: "rgba(162, 74, 70, 0.14)",
+            border: "0.5px solid rgba(162, 74, 70, 0.4)",
+            color: "var(--warning)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             flexShrink: 0,
           }}
         >
@@ -102,23 +111,28 @@ export default function FlagDecisionModal({
         </div>
         <p
           className="helper"
-          style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.5, paddingTop: 4 }}
+          style={{
+            margin: 0,
+            fontSize: "0.9rem",
+            lineHeight: 1.5,
+            paddingTop: 4,
+          }}
         >
           {context ??
-            'Flagging sends this record to the Monitoring team for further review. Provide a short, specific reason so reviewers can act quickly.'}
+            "Flagging sends this record to the Monitoring team for further review. Provide a short, specific reason so reviewers can act quickly."}
         </p>
       </div>
 
       <label
         className="stat-label"
-        style={{ display: 'block', marginBottom: 8 }}
+        style={{ display: "block", marginBottom: 8 }}
       >
         Quick reasons
       </label>
       <div
         style={{
-          display: 'flex',
-          flexWrap: 'wrap',
+          display: "flex",
+          flexWrap: "wrap",
           gap: 6,
           marginBottom: 16,
         }}
@@ -127,15 +141,17 @@ export default function FlagDecisionModal({
           <button
             key={r}
             type="button"
-            onClick={() => setReason(r === 'Other — describe below' ? '' : r)}
+            onClick={() => setReason(r === "Other — describe below" ? "" : r)}
             className="pill"
             style={{
-              cursor: 'pointer',
+              cursor: "pointer",
               borderColor:
-                reason === r ? 'rgba(200, 157, 124, 0.6)' : 'var(--border)',
-              color: reason === r ? 'var(--accent)' : 'var(--text-secondary)',
+                reason === r ? "rgba(200, 157, 124, 0.6)" : "var(--border)",
+              color: reason === r ? "var(--accent)" : "var(--text-secondary)",
               background:
-                reason === r ? 'rgba(200, 157, 124, 0.12)' : 'rgba(255,255,255,0.02)',
+                reason === r
+                  ? "rgba(200, 157, 124, 0.12)"
+                  : "rgba(255,255,255,0.02)",
             }}
           >
             {r}
@@ -143,7 +159,10 @@ export default function FlagDecisionModal({
         ))}
       </div>
 
-      <label className="stat-label" style={{ display: 'block', marginBottom: 8 }}>
+      <label
+        className="stat-label"
+        style={{ display: "block", marginBottom: 8 }}
+      >
         Reason
       </label>
       <textarea
@@ -152,7 +171,7 @@ export default function FlagDecisionModal({
         value={reason}
         onChange={(e) => setReason(e.target.value)}
         placeholder="Describe what's wrong with this decision..."
-        style={{ resize: 'vertical', minHeight: 90, fontFamily: 'inherit' }}
+        style={{ resize: "vertical", minHeight: 90, fontFamily: "inherit" }}
         autoFocus
       />
 
@@ -161,8 +180,8 @@ export default function FlagDecisionModal({
           role="alert"
           style={{
             marginTop: 12,
-            color: 'var(--warning)',
-            fontSize: '0.85rem',
+            color: "var(--warning)",
+            fontSize: "0.85rem",
           }}
         >
           {error}

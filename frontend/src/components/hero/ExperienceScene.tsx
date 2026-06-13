@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { useScroll } from '@react-three/drei';
-import * as THREE from 'three';
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useScroll } from "@react-three/drei";
+import * as THREE from "three";
 
 const MAX_PARTICLES = 3000;
 
@@ -16,35 +16,35 @@ export default function ExperienceScene() {
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isMobile] = useState(() => {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === "undefined") return false;
     return window.innerWidth <= 768;
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return;
-    const reducedMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const reducedMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     const updateReduced = () => setPrefersReducedMotion(reducedMedia.matches);
 
     updateReduced();
 
-    reducedMedia.addEventListener('change', updateReduced);
+    reducedMedia.addEventListener("change", updateReduced);
 
     return () => {
-      reducedMedia.removeEventListener('change', updateReduced);
+      reducedMedia.removeEventListener("change", updateReduced);
     };
   }, []);
 
   const tmpColor = useMemo(() => new THREE.Color(), []);
-  const trustCopper = useMemo(() => new THREE.Color('#C89D7C'), []); // Antique Gold
-  const warningRed = useMemo(() => new THREE.Color('#A24A46'), []);  // Crimson Oxide
-  const sageGreen = useMemo(() => new THREE.Color('#8FA89B'), []);   // Sage Green
-  const neutralA = useMemo(() => new THREE.Color('#F3F2F1'), []);
-  const neutralB = useMemo(() => new THREE.Color('#AFAAA6'), []);
+  const trustCopper = useMemo(() => new THREE.Color("#C89D7C"), []); // Antique Gold
+  const warningRed = useMemo(() => new THREE.Color("#A24A46"), []); // Crimson Oxide
+  const sageGreen = useMemo(() => new THREE.Color("#8FA89B"), []); // Sage Green
+  const neutralA = useMemo(() => new THREE.Color("#F3F2F1"), []);
+  const neutralB = useMemo(() => new THREE.Color("#AFAAA6"), []);
 
   const particleCount = isMobile ? 1800 : MAX_PARTICLES;
 
-  const { chaoticPositions, clusterPositions, torusPositions, biasedMask, baseColors } = useMemo(() => {
+  const { chaoticPositions, biasedMask, baseColors } = useMemo(() => {
     const chaotic = new Float32Array(particleCount * 3);
     const cluster = new Float32Array(particleCount * 3);
     const torus = new Float32Array(particleCount * 3);
@@ -81,7 +81,7 @@ export default function ExperienceScene() {
       const majorRadius = isMobile ? 2.2 : 2.7;
       const minorRadius = isMobile ? 0.58 : 0.72;
       const a = (i / particleCount) * Math.PI * 2;
-      const b = ((i * 1.618) % particleCount) / particleCount * Math.PI * 2;
+      const b = (((i * 1.618) % particleCount) / particleCount) * Math.PI * 2;
       const r = majorRadius + minorRadius * Math.cos(b);
       torus[i * 3] = r * Math.cos(a);
       torus[i * 3 + 1] = r * Math.sin(a);
@@ -103,8 +103,14 @@ export default function ExperienceScene() {
     };
   }, [particleCount, isMobile, neutralA, neutralB]);
 
-  const renderPositions = useMemo(() => new Float32Array(chaoticPositions), [chaoticPositions]);
-  const renderColors = useMemo(() => new Float32Array(baseColors), [baseColors]);
+  const renderPositions = useMemo(
+    () => new Float32Array(chaoticPositions),
+    [chaoticPositions],
+  );
+  const renderColors = useMemo(
+    () => new Float32Array(baseColors),
+    [baseColors],
+  );
 
   useFrame((state) => {
     const offset = scroll.offset;
@@ -123,7 +129,11 @@ export default function ExperienceScene() {
     if (sceneRef.current) {
       const spin = prefersReducedMotion ? 0 : 0.0018;
       sceneRef.current.rotation.y += spin;
-      sceneRef.current.rotation.x = THREE.MathUtils.lerp(sceneRef.current.rotation.x, state.mouse.y * 0.1, 0.06);
+      sceneRef.current.rotation.x = THREE.MathUtils.lerp(
+        sceneRef.current.rotation.x,
+        state.mouse.y * 0.1,
+        0.06,
+      );
     }
 
     const points = pointsRef.current;
@@ -146,13 +156,15 @@ export default function ExperienceScene() {
         // 2. Fluid Liquid Ribbon
         const pct = i / activeCount;
         const rx = -3.8 + 7.6 * pct;
-        const ry = Math.sin(pct * Math.PI * 5 + time * 1.6) * 1.3 + Math.cos(pct * Math.PI * 2.2 + time) * 0.35;
+        const ry =
+          Math.sin(pct * Math.PI * 5 + time * 1.6) * 1.3 +
+          Math.cos(pct * Math.PI * 2.2 + time) * 0.35;
         const rz = Math.cos(pct * Math.PI * 4 + time * 0.9) * 0.65;
 
         // 3. Double Helix Ring
         const angle = pct * Math.PI * 2 + time * 0.08;
         const twist = pct * Math.PI * 22 + time * 1.5;
-        const strand = (i % 2 === 0) ? 1 : -1;
+        const strand = i % 2 === 0 ? 1 : -1;
         const R = isMobile ? 2.1 : 2.6;
         const r = isMobile ? 0.24 : 0.32;
         const hx = (R + strand * r * Math.cos(twist)) * Math.cos(angle);
@@ -178,7 +190,11 @@ export default function ExperienceScene() {
         positions[idx + 2] = z;
 
         // Determine particle base colors
-        tmpColor.setRGB(baseColors[idx], baseColors[idx + 1], baseColors[idx + 2]);
+        tmpColor.setRGB(
+          baseColors[idx],
+          baseColors[idx + 1],
+          baseColors[idx + 2],
+        );
 
         // Color interpolation based on state
         if (offset >= 0.3 && offset < 0.6) {
@@ -194,9 +210,9 @@ export default function ExperienceScene() {
           }
         } else if (offset >= 0.6) {
           // Double helix: alternate strands between Sage Green and Antique Gold
-          const targetColor = (i % 2 === 0) ? sageGreen : trustCopper;
+          const targetColor = i % 2 === 0 ? sageGreen : trustCopper;
           // Mix with some crimson oxide to show warning spots in helix that are fading
-          const baseStateColor = (biasedMask[i] === 1) ? warningRed : targetColor;
+          const baseStateColor = biasedMask[i] === 1 ? warningRed : targetColor;
           const finalColor = baseStateColor.clone().lerp(targetColor, phase3);
           tmpColor.copy(finalColor);
         }
@@ -218,8 +234,16 @@ export default function ExperienceScene() {
 
       <points ref={pointsRef}>
         <bufferGeometry>
-          <bufferAttribute ref={positionAttrRef} attach="attributes-position" args={[renderPositions, 3]} />
-          <bufferAttribute ref={colorAttrRef} attach="attributes-color" args={[renderColors, 3]} />
+          <bufferAttribute
+            ref={positionAttrRef}
+            attach="attributes-position"
+            args={[renderPositions, 3]}
+          />
+          <bufferAttribute
+            ref={colorAttrRef}
+            attach="attributes-color"
+            args={[renderColors, 3]}
+          />
         </bufferGeometry>
         <pointsMaterial
           transparent

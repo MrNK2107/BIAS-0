@@ -14,6 +14,12 @@ time.sleep(5)
 
 base = "http://127.0.0.1:8000"
 
+def _make_headers():
+    return {
+        'Authorization': 'Bearer dev',
+    }
+
+
 def post_multipart(url, file_text, data):
     import uuid
     boundary = uuid.uuid4().hex
@@ -26,15 +32,20 @@ def post_multipart(url, file_text, data):
     body.append(f"--{boundary}--\r\n")
     
     body_data = "".join(body).encode("utf-8")
-    req = urllib.request.Request(url, data=body_data, headers={'Content-Type': f'multipart/form-data; boundary={boundary}'})
+    headers = _make_headers()
+    headers['Content-Type'] = f'multipart/form-data; boundary={boundary}'
+    req = urllib.request.Request(url, data=body_data, headers=headers)
     try:
         resp = urllib.request.urlopen(req)
         return resp.getcode(), resp.read().decode("utf-8")
     except urllib.error.HTTPError as e:
         return e.code, e.read().decode("utf-8")
 
+
 def post_json(url, data):
-    req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers={'Content-Type': 'application/json'})
+    headers = _make_headers()
+    headers['Content-Type'] = 'application/json'
+    req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers)
     try:
         resp = urllib.request.urlopen(req)
         return resp.getcode(), resp.read().decode("utf-8")

@@ -1,8 +1,8 @@
-import React from 'react';
-import { HelpCircle } from 'lucide-react';
-import AnimatedCard from './animations/AnimatedCard';
-import AnimatedNumber from './animations/AnimatedNumber';
-import type { ModelBiasResult, CounterfactualResult } from '../types';
+import React from "react";
+import AnimatedCard from "./animations/AnimatedCard";
+import AnimatedNumber from "./animations/AnimatedNumber";
+import HelpButton from "./HelpButton";
+import type { ModelBiasResult, CounterfactualResult } from "../types";
 
 interface FairnessMetricsPanelProps {
   biasResult: ModelBiasResult | null;
@@ -12,6 +12,8 @@ interface FairnessMetricsPanelProps {
 interface MetricItemProps {
   title: string;
   value: number | string;
+  module: string;
+  metricName: string;
   description: string;
   thresholds: {
     good: (v: number) => boolean;
@@ -21,82 +23,136 @@ interface MetricItemProps {
   index: number;
 }
 
-const MetricCard: React.FC<MetricItemProps> = ({ title, value, description, thresholds, isPercentage, index }) => {
-  const numValue = typeof value === 'number' ? value : parseFloat(value as string);
-  
-  let severity: 'green' | 'amber' | 'red' | 'gray' = 'red';
-  let interpretation = 'High disparity';
-  
+const MetricCard: React.FC<MetricItemProps> = ({
+  title,
+  value,
+  module,
+  metricName,
+  description,
+  thresholds,
+  isPercentage,
+  index,
+}) => {
+  const numValue =
+    typeof value === "number" ? value : parseFloat(value as string);
+
+  let severity: "green" | "amber" | "red" | "gray" = "red";
+  let interpretation = "High disparity";
+
   if (!isNaN(numValue)) {
     if (thresholds.good(numValue)) {
-      severity = 'green';
-      interpretation = 'Acceptable range';
+      severity = "green";
+      interpretation = "Acceptable range";
     } else if (thresholds.moderate(numValue)) {
-      severity = 'amber';
-      interpretation = 'Moderate disparity';
+      severity = "amber";
+      interpretation = "Moderate disparity";
     }
   } else {
-    severity = 'gray';
-    interpretation = 'No data';
+    severity = "gray";
+    interpretation = "No data";
   }
 
   const getSeverityColor = (sev: string) => {
     switch (sev) {
-      case 'green': return 'var(--accent)';
-      case 'amber': return 'var(--accent)';
-      case 'red': return 'var(--warning)';
-      default: return 'var(--text-secondary)';
+      case "green":
+        return "var(--accent)";
+      case "amber":
+        return "var(--accent)";
+      case "red":
+        return "var(--warning)";
+      default:
+        return "var(--text-secondary)";
     }
   };
 
   return (
-    <AnimatedCard severity={severity} delay={index * 0.1} style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>{title}</h4>
-        <div title={description} style={{ cursor: 'help', color: '#9ca3af' }}>
-          <HelpCircle size={16} />
-        </div>
+    <AnimatedCard
+      severity={severity}
+      delay={index * 0.1}
+      style={{ padding: "20px" }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "12px",
+        }}
+      >
+        <h4 style={{ margin: 0, fontSize: "1rem", fontWeight: 600 }}>
+          {title}
+        </h4>
+        <HelpButton
+          module={module}
+          metricName={metricName}
+          metricValue={numValue}
+        />
       </div>
-      
-      <div className="stat-number" style={{ fontSize: '2rem', marginBottom: '8px' }}>
+
+      <div
+        className="stat-number"
+        style={{ fontSize: "2rem", marginBottom: "8px" }}
+      >
         <AnimatedNumber value={numValue} isPercentage={isPercentage} />
       </div>
-      
-      <div style={{ 
-        display: 'inline-block',
-        padding: '4px 8px', 
-        borderRadius: '4px', 
-        fontSize: '0.875rem',
-        backgroundColor: `${getSeverityColor(severity)}20`,
-        color: getSeverityColor(severity),
-        fontWeight: 500
-      }}>
+
+      <div
+        style={{
+          display: "inline-block",
+          padding: "4px 8px",
+          borderRadius: "4px",
+          fontSize: "0.875rem",
+          backgroundColor: `${getSeverityColor(severity)}20`,
+          color: getSeverityColor(severity),
+          fontWeight: 500,
+        }}
+      >
         {interpretation}
       </div>
     </AnimatedCard>
   );
 };
 
-export default function FairnessMetricsPanel({ biasResult, counterfactualResult }: FairnessMetricsPanelProps) {
+export default function FairnessMetricsPanel({
+  biasResult,
+  counterfactualResult,
+}: FairnessMetricsPanelProps) {
   const dpGap = biasResult?.metrics?.demographic_parity_difference ?? NaN;
   const eoGap = biasResult?.metrics?.equal_opportunity_difference ?? NaN;
   const accuracy = biasResult?.overall_accuracy ?? NaN;
   const flipRate = counterfactualResult?.flip_rate ?? NaN;
 
   return (
-    <div style={{ marginBottom: '24px' }}>
-      <div style={{ marginBottom: '16px' }}>
-        <h3 className="section-title" style={{ marginBottom: '4px' }}>Multi-Metric Fairness Analysis</h3>
-        <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.95rem' }}>
-          Fairness cannot be reduced to a single number. These metrics show different perspectives of model behavior across groups.
+    <div style={{ marginBottom: "24px" }}>
+      <div style={{ marginBottom: "16px" }}>
+        <h3 className="section-title" style={{ marginBottom: "4px" }}>
+          Multi-Metric Fairness Analysis
+        </h3>
+        <p
+          style={{
+            color: "var(--text-secondary)",
+            margin: 0,
+            fontSize: "0.95rem",
+          }}
+        >
+          Fairness cannot be reduced to a single number. These metrics show
+          different perspectives of model behavior across groups.
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          gap: "16px",
+        }}
+      >
         <MetricCard
           index={0}
           title="Demographic Parity Gap"
           value={dpGap}
+          module="model_bias"
+          metricName="demographic_parity_difference"
           description="Difference in selection rates between groups. A value closer to 0 indicates groups are selected at similar rates."
           thresholds={{
             good: (v) => Math.abs(v) <= 0.1,
@@ -107,6 +163,8 @@ export default function FairnessMetricsPanel({ biasResult, counterfactualResult 
           index={1}
           title="Equal Opportunity Gap"
           value={eoGap}
+          module="model_bias"
+          metricName="equal_opportunity_difference"
           description="Difference in true positive rates between groups. A value closer to 0 indicates qualified individuals from all groups have similar chances."
           thresholds={{
             good: (v) => Math.abs(v) <= 0.1,
@@ -117,6 +175,8 @@ export default function FairnessMetricsPanel({ biasResult, counterfactualResult 
           index={2}
           title="Counterfactual Flip Rate"
           value={flipRate}
+          module="counterfactual"
+          metricName="flip_rate"
           isPercentage={true}
           description="Percentage of predictions that change when only the sensitive attribute is modified. A lower flip rate means the model is less reliant on the sensitive attribute."
           thresholds={{
@@ -128,6 +188,8 @@ export default function FairnessMetricsPanel({ biasResult, counterfactualResult 
           index={3}
           title="Overall Accuracy"
           value={accuracy}
+          module="model_bias"
+          metricName="overall_accuracy"
           isPercentage={true}
           description="Overall predictive accuracy of the model across all groups."
           thresholds={{

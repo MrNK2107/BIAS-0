@@ -1,0 +1,58 @@
+{
+  "issues": [],
+  "warnings": [
+    "Node 'config:.dockerignore' has no edges (orphan)",
+    "Node 'service:Dockerfile' has no edges (orphan)",
+    "Node 'document:PROMPT.md' has no edges (orphan)",
+    "Node 'document:README.md' has no edges (orphan)",
+    "Node 'document:context.md' has no edges (orphan)",
+    "Node 'config:backend/.env.example' has no edges (orphan)",
+    "Node 'document:backend/requirements.txt' has no edges (orphan)",
+    "Node 'table:backend/test_sample.csv' has no edges (orphan)",
+    "Node 'document:backend/uvicorn_err.txt' has no edges (orphan)",
+    "Node 'document:backend/uvicorn_out.txt' has no edges (orphan)",
+    "Node 'config:frontend/.env.example' has no edges (orphan)",
+    "Node 'document:frontend/immersive_design.md' has no edges (orphan)",
+    "Node 'file:frontend/index.html' has no edges (orphan)",
+    "Node 'config:frontend/package.json' has no edges (orphan)",
+    "Node 'document:frontend/search_results.md' has no edges (orphan)",
+    "Node 'config:frontend/tsconfig.json' has no edges (orphan)",
+    "Node 'file:.understand-anything/.understandignore' has no edges (orphan)",
+    "Node 'file:backend/__init__.py' has no edges (orphan)",
+    "Node 'file:backend/core/__init__.py' has no edges (orphan)",
+    "Node 'file:backend/firebase/__init__.py' has no edges (orphan)",
+    "Node 'file:backend/migrate_db.py' has no edges (orphan)",
+    "Node 'file:backend/models/__init__.py' has no edges (orphan)",
+    "Node 'file:backend/unbiased_ai.db' has no edges (orphan)",
+    "Node 'file:backend/utils/__init__.py' has no edges (orphan)",
+    "Node 'table:data/demo_hiring.csv' has no edges (orphan)",
+    "Node 'table:data/demo_loan.csv' has no edges (orphan)",
+    "Node 'file:frontend/eslint.config.js' has no edges (orphan)",
+    "Node 'file:frontend/playwright-report/index.html' has no edges (orphan)",
+    "Node 'file:frontend/playwright.config.ts' has no edges (orphan)",
+    "Node 'file:frontend/src/vite-env.d.ts' has no edges (orphan)",
+    "Node 'config:frontend/test-results/.last-run.json' has no edges (orphan)",
+    "Node 'document:frontend/test-results/e2e-E2E-Audit-Sequence-Workflow-chromium/error-context.md' has no edges (orphan)",
+    "Node 'file:frontend/tests/e2e.spec.ts' has no edges (orphan)",
+    "Node 'file:frontend/vite.config.ts' has no edges (orphan)"
+  ],
+  "stats": {
+    "totalNodes": 399,
+    "totalEdges": 449,
+    "totalLayers": 15,
+    "tourSteps": 9,
+    "nodeTypes": {
+      "config": 6,
+      "service": 1,
+      "document": 9,
+      "table": 3,
+      "file": 119,
+      "function": 175,
+      "class": 86
+    },
+    "edgeTypes": {
+      "contains": 261,
+      "imports": 188
+    }
+  }
+}

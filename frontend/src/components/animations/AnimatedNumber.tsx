@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import { useEffect, useState } from "react";
+import { motion, useSpring } from "framer-motion";
 
 interface AnimatedNumberProps {
   value: number;
@@ -7,26 +7,39 @@ interface AnimatedNumberProps {
   duration?: number;
 }
 
-export default function AnimatedNumber({ value, isPercentage = false, duration = 1.5 }: AnimatedNumberProps) {
-  // We use useSpring for a more organic feel than pure tween
+export default function AnimatedNumber({
+  value,
+  isPercentage = false,
+  duration = 1.5,
+}: AnimatedNumberProps) {
   const spring = useSpring(0, {
     stiffness: 50,
     damping: 15,
     mass: 1,
-    duration: duration * 1000 // duration in ms not perfectly mapping to spring, but loosely dictates feel
+    duration: duration * 1000,
   });
 
-  const displayValue = useTransform(spring, (current) => {
-    if (isNaN(current)) return '-';
-    if (isPercentage) return `${(current * 100).toFixed(1)}%`;
-    return current.toFixed(3);
-  });
+  const [displayText, setDisplayText] = useState("0");
 
   useEffect(() => {
-    if (!isNaN(value)) {
-      spring.set(value);
+    if (isNaN(value)) {
+      setDisplayText("-");
+      return;
     }
-  }, [value, spring]);
+    spring.set(value);
 
-  return <motion.span>{displayValue}</motion.span>;
+    const unsubscribe = spring.on("change", (current: number) => {
+      if (isNaN(current)) {
+        setDisplayText("-");
+      } else if (isPercentage) {
+        setDisplayText(`${(current * 100).toFixed(1)}%`);
+      } else {
+        setDisplayText(current.toFixed(3));
+      }
+    });
+
+    return () => unsubscribe();
+  }, [value, spring, isPercentage]);
+
+  return <motion.span>{displayText}</motion.span>;
 }

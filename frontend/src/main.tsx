@@ -1,33 +1,35 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
-import './styles/globals.css';
-import { AppProvider } from './context/AppContext';
-import { AuthProvider } from './context/AuthContext';
-import { ToastProvider } from './context/ToastContext';
-import { getConfigError, FirebaseConfigError } from './firebase/config';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import "./styles/globals.css";
+import { AppProvider } from "./context/AppContext";
+import { AuthProvider } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
+import { ChatbotProvider } from "./components/chatbot/ChatbotContext";
+import { ExplainProvider } from "./components/ExplainContext";
+import { getConfigError, FirebaseConfigError } from "./firebase/config";
 
 function ConfigErrorScreen({ error }: { error: FirebaseConfigError }) {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '40px 20px',
-        background: '#0F1115',
-        color: '#EAEAEA',
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "40px 20px",
+        background: "#0F1115",
+        color: "#EAEAEA",
         fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
       }}
     >
       <div
         style={{
           maxWidth: 720,
-          width: '100%',
-          background: '#1A1D23',
-          border: '1px solid #A24A46',
+          width: "100%",
+          background: "#1A1D23",
+          border: "1px solid #A24A46",
           borderRadius: 8,
           padding: 32,
         }}
@@ -35,30 +37,30 @@ function ConfigErrorScreen({ error }: { error: FirebaseConfigError }) {
         <h1
           style={{
             margin: 0,
-            color: '#A24A46',
+            color: "#A24A46",
             fontSize: 24,
             fontWeight: 600,
           }}
         >
           Firebase configuration error
         </h1>
-        <p style={{ marginTop: 12, color: '#9CA3AF' }}>
-          The frontend cannot start because the Firebase environment is invalid. Sign-in (and
-          any other auth flow) will not work until this is fixed.
+        <p style={{ marginTop: 12, color: "#9CA3AF" }}>
+          The frontend cannot start because the Firebase environment is invalid.
+          Sign-in (and any other auth flow) will not work until this is fixed.
         </p>
         <pre
           style={{
             marginTop: 20,
             padding: 16,
-            background: '#0F1115',
-            border: '1px solid #2A2D33',
+            background: "#0F1115",
+            border: "1px solid #2A2D33",
             borderRadius: 6,
-            color: '#EAEAEA',
+            color: "#EAEAEA",
             fontSize: 13,
             lineHeight: 1.6,
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-            overflowX: 'auto',
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-word",
+            overflowX: "auto",
           }}
         >
           {error.message}
@@ -70,7 +72,7 @@ function ConfigErrorScreen({ error }: { error: FirebaseConfigError }) {
 
 const configError = getConfigError();
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     {configError ? (
       <ConfigErrorScreen error={configError} />
@@ -79,7 +81,11 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <ToastProvider>
           <AuthProvider>
             <AppProvider>
-              <App />
+              <ExplainProvider>
+                <ChatbotProvider>
+                  <App />
+                </ChatbotProvider>
+              </ExplainProvider>
             </AppProvider>
           </AuthProvider>
         </ToastProvider>

@@ -1,10 +1,10 @@
 :root {
-  --hero-bg-1: #0F1115;
+  --hero-bg-1: #0f1115;
   --hero-bg-2: #171a21;
-  --hero-text: #F1F1F1;
-  --hero-muted: #8E9196;
-  --hero-copper: #C89D7C;
-  --hero-warning: #A24A46;
+  --hero-text: #f1f1f1;
+  --hero-muted: #8e9196;
+  --hero-copper: #c89d7c;
+  --hero-warning: #a24a46;
 }
 
 .hero-viewport {
@@ -13,7 +13,11 @@
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 22% 18%, rgba(200, 157, 124, 0.15), transparent 42%),
+    radial-gradient(
+      circle at 22% 18%,
+      rgba(200, 157, 124, 0.15),
+      transparent 42%
+    ),
     radial-gradient(circle at 78% 82%, rgba(162, 74, 70, 0.1), transparent 46%),
     linear-gradient(140deg, var(--hero-bg-1), var(--hero-bg-2));
 }
@@ -76,7 +80,7 @@
 
 .font-display,
 .hero-title {
-  font-family: 'Cinzel', var(--font-display, serif);
+  font-family: "Cinzel", var(--font-display, serif);
   font-weight: 800;
   letter-spacing: -0.03em;
 }
@@ -85,7 +89,7 @@
 .hero-brief,
 .cta-enter,
 .cta-primary {
-  font-family: 'Josefin Sans', var(--font-body, sans-serif);
+  font-family: "Josefin Sans", var(--font-body, sans-serif);
 }
 
 .max-center {
@@ -130,9 +134,15 @@
   z-index: 50;
 }
 
-.pointer-events-none { pointer-events: none; }
-.pointer-events-auto { pointer-events: auto; }
-.z-50 { z-index: 50; }
+.pointer-events-none {
+  pointer-events: none;
+}
+.pointer-events-auto {
+  pointer-events: auto;
+}
+.z-50 {
+  z-index: 50;
+}
 
 .cta-enter,
 .cta-primary {
@@ -144,7 +154,12 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 700;
-  transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease, background 300ms ease, color 300ms ease;
+  transition:
+    transform 300ms ease,
+    box-shadow 300ms ease,
+    border-color 300ms ease,
+    background 300ms ease,
+    color 300ms ease;
 }
 
 .cta-enter {

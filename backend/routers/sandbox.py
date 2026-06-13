@@ -3,15 +3,18 @@
 Owns POST /fixes/sandbox exclusively (deduplicated from fixes.py).
 Accepts the full field set that AppContext.runSandboxSimulation sends.
 """
+
 from __future__ import annotations
 
 import json
 from typing import Any
 
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 
+from core.auth import require_user
 from core.auto_fix import generate_fix_recommendations
 from core.common import get_metric_weights
+from core.deps import require_project
 from core.sandbox import run_sandbox_simulation
 from utils.data_io import upload_file_to_dataframe
 
@@ -20,6 +23,7 @@ router = APIRouter(prefix="/fixes", tags=["sandbox"])
 
 @router.post("/sandbox")
 async def run_sandbox(
+    project_id: str = Form(...),
     file: UploadFile = File(...),
     sensitiveCols: str = Form(...),
     targetCol: str = Form(...),
@@ -28,7 +32,9 @@ async def run_sandbox(
     audit_result: str = Form(...),
     proxy_result: str = Form(...),
     bias_result: str = Form(...),
+    uid: str = Depends(require_user),
 ) -> dict[str, Any]:
+    await require_project(project_id, uid)
     df = await upload_file_to_dataframe(file)
     sensitive_list = [item.strip() for item in sensitiveCols.split(",") if item.strip()]
     selected_ids = [s.strip() for s in strategies.split(",") if s.strip()]

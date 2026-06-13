@@ -1,0 +1,1177 @@
+{
+  "nodes": [
+    {
+      "id": "file:frontend/src/components/landing/Features.tsx",
+      "type": "file",
+      "name": "Features.tsx",
+      "filePath": "frontend/src/components/landing/Features.tsx",
+      "summary": "Landing page section: Features",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 75
+    },
+    {
+      "id": "class:frontend/src/components/landing/Features.tsx:Features",
+      "type": "class",
+      "name": "Features",
+      "filePath": "frontend/src/components/landing/Features.tsx",
+      "summary": "Class Features",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/landing/Footer.tsx",
+      "type": "file",
+      "name": "Footer.tsx",
+      "filePath": "frontend/src/components/landing/Footer.tsx",
+      "summary": "Landing page section: Footer",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 51
+    },
+    {
+      "id": "class:frontend/src/components/landing/Footer.tsx:Footer",
+      "type": "class",
+      "name": "Footer",
+      "filePath": "frontend/src/components/landing/Footer.tsx",
+      "summary": "Class Footer",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/landing/Header.tsx",
+      "type": "file",
+      "name": "Header.tsx",
+      "filePath": "frontend/src/components/landing/Header.tsx",
+      "summary": "Landing page section: Header",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 51
+    },
+    {
+      "id": "class:frontend/src/components/landing/Header.tsx:Header",
+      "type": "class",
+      "name": "Header",
+      "filePath": "frontend/src/components/landing/Header.tsx",
+      "summary": "Class Header",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/landing/HowItWorks.tsx",
+      "type": "file",
+      "name": "HowItWorks.tsx",
+      "filePath": "frontend/src/components/landing/HowItWorks.tsx",
+      "summary": "Landing page section: HowItWorks",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 57
+    },
+    {
+      "id": "class:frontend/src/components/landing/HowItWorks.tsx:HowItWorks",
+      "type": "class",
+      "name": "HowItWorks",
+      "filePath": "frontend/src/components/landing/HowItWorks.tsx",
+      "summary": "Class HowItWorks",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/landing/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "frontend/src/components/landing/index.ts",
+      "summary": "Landing page section: index.ts",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 6
+    },
+    {
+      "id": "class:frontend/src/components/landing/index.ts:LandingPage",
+      "type": "class",
+      "name": "LandingPage",
+      "filePath": "frontend/src/components/landing/index.ts",
+      "summary": "Class LandingPage",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:frontend/src/components/landing/index.ts:Header",
+      "type": "class",
+      "name": "Header",
+      "filePath": "frontend/src/components/landing/index.ts",
+      "summary": "Class Header",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:frontend/src/components/landing/index.ts:Features",
+      "type": "class",
+      "name": "Features",
+      "filePath": "frontend/src/components/landing/index.ts",
+      "summary": "Class Features",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:frontend/src/components/landing/index.ts:Stats",
+      "type": "class",
+      "name": "Stats",
+      "filePath": "frontend/src/components/landing/index.ts",
+      "summary": "Class Stats",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:frontend/src/components/landing/index.ts:HowItWorks",
+      "type": "class",
+      "name": "HowItWorks",
+      "filePath": "frontend/src/components/landing/index.ts",
+      "summary": "Class HowItWorks",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:frontend/src/components/landing/index.ts:Trust",
+      "type": "class",
+      "name": "Trust",
+      "filePath": "frontend/src/components/landing/index.ts",
+      "summary": "Class Trust",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:frontend/src/components/landing/index.ts:Footer",
+      "type": "class",
+      "name": "Footer",
+      "filePath": "frontend/src/components/landing/index.ts",
+      "summary": "Class Footer",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/landing/LandingPage.tsx",
+      "type": "file",
+      "name": "LandingPage.tsx",
+      "filePath": "frontend/src/components/landing/LandingPage.tsx",
+      "summary": "Landing page section: LandingPage",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 62
+    },
+    {
+      "id": "class:frontend/src/components/landing/LandingPage.tsx:LandingPage",
+      "type": "class",
+      "name": "LandingPage",
+      "filePath": "frontend/src/components/landing/LandingPage.tsx",
+      "summary": "Class LandingPage",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/landing/Stats.tsx",
+      "type": "file",
+      "name": "Stats.tsx",
+      "filePath": "frontend/src/components/landing/Stats.tsx",
+      "summary": "Landing page section: Stats",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 31
+    },
+    {
+      "id": "class:frontend/src/components/landing/Stats.tsx:Stats",
+      "type": "class",
+      "name": "Stats",
+      "filePath": "frontend/src/components/landing/Stats.tsx",
+      "summary": "Class Stats",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/landing/Trust.tsx",
+      "type": "file",
+      "name": "Trust.tsx",
+      "filePath": "frontend/src/components/landing/Trust.tsx",
+      "summary": "Landing page section: Trust",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 65
+    },
+    {
+      "id": "class:frontend/src/components/landing/Trust.tsx:Trust",
+      "type": "class",
+      "name": "Trust",
+      "filePath": "frontend/src/components/landing/Trust.tsx",
+      "summary": "Class Trust",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/Modal.tsx",
+      "type": "file",
+      "name": "Modal.tsx",
+      "filePath": "frontend/src/components/Modal.tsx",
+      "summary": "UI component: Modal",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 144
+    },
+    {
+      "id": "class:frontend/src/components/Modal.tsx:Modal",
+      "type": "class",
+      "name": "Modal",
+      "filePath": "frontend/src/components/Modal.tsx",
+      "summary": "Class Modal",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/MonitoringChart.tsx",
+      "type": "file",
+      "name": "MonitoringChart.tsx",
+      "filePath": "frontend/src/components/MonitoringChart.tsx",
+      "summary": "UI component: MonitoringChart",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 150
+    },
+    {
+      "id": "class:frontend/src/components/MonitoringChart.tsx:MonitoringChart",
+      "type": "class",
+      "name": "MonitoringChart",
+      "filePath": "frontend/src/components/MonitoringChart.tsx",
+      "summary": "Class MonitoringChart",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/Navbar.tsx",
+      "type": "file",
+      "name": "Navbar.tsx",
+      "filePath": "frontend/src/components/Navbar.tsx",
+      "summary": "UI component: Navbar",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 35
+    },
+    {
+      "id": "class:frontend/src/components/Navbar.tsx:Navbar",
+      "type": "class",
+      "name": "Navbar",
+      "filePath": "frontend/src/components/Navbar.tsx",
+      "summary": "Class Navbar",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/ProjectSelector.tsx",
+      "type": "file",
+      "name": "ProjectSelector.tsx",
+      "filePath": "frontend/src/components/ProjectSelector.tsx",
+      "summary": "UI component: ProjectSelector",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 118
+    },
+    {
+      "id": "class:frontend/src/components/ProjectSelector.tsx:ProjectSelector",
+      "type": "class",
+      "name": "ProjectSelector",
+      "filePath": "frontend/src/components/ProjectSelector.tsx",
+      "summary": "Class ProjectSelector",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/ProtectedRoute.tsx",
+      "type": "file",
+      "name": "ProtectedRoute.tsx",
+      "filePath": "frontend/src/components/ProtectedRoute.tsx",
+      "summary": "UI component: ProtectedRoute",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 20
+    },
+    {
+      "id": "class:frontend/src/components/ProtectedRoute.tsx:ProtectedRoute",
+      "type": "class",
+      "name": "ProtectedRoute",
+      "filePath": "frontend/src/components/ProtectedRoute.tsx",
+      "summary": "Class ProtectedRoute",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/SandboxComparison.tsx",
+      "type": "file",
+      "name": "SandboxComparison.tsx",
+      "filePath": "frontend/src/components/SandboxComparison.tsx",
+      "summary": "UI component: SandboxComparison",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 57
+    },
+    {
+      "id": "class:frontend/src/components/SandboxComparison.tsx:SandboxComparison",
+      "type": "class",
+      "name": "SandboxComparison",
+      "filePath": "frontend/src/components/SandboxComparison.tsx",
+      "summary": "Class SandboxComparison",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/ScoreGauge.tsx",
+      "type": "file",
+      "name": "ScoreGauge.tsx",
+      "filePath": "frontend/src/components/ScoreGauge.tsx",
+      "summary": "UI component: ScoreGauge",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 66
+    },
+    {
+      "id": "class:frontend/src/components/ScoreGauge.tsx:ScoreGauge",
+      "type": "class",
+      "name": "ScoreGauge",
+      "filePath": "frontend/src/components/ScoreGauge.tsx",
+      "summary": "Class ScoreGauge",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/UserMenu.tsx",
+      "type": "file",
+      "name": "UserMenu.tsx",
+      "filePath": "frontend/src/components/UserMenu.tsx",
+      "summary": "UI component: UserMenu",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 130
+    },
+    {
+      "id": "class:frontend/src/components/UserMenu.tsx:UserMenu",
+      "type": "class",
+      "name": "UserMenu",
+      "filePath": "frontend/src/components/UserMenu.tsx",
+      "summary": "Class UserMenu",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/components/WorkflowShell.tsx",
+      "type": "file",
+      "name": "WorkflowShell.tsx",
+      "filePath": "frontend/src/components/WorkflowShell.tsx",
+      "summary": "UI component: WorkflowShell",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 166
+    },
+    {
+      "id": "class:frontend/src/components/WorkflowShell.tsx:WorkflowShell",
+      "type": "class",
+      "name": "WorkflowShell",
+      "filePath": "frontend/src/components/WorkflowShell.tsx",
+      "summary": "Class WorkflowShell",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/context/AppContext.tsx",
+      "type": "file",
+      "name": "AppContext.tsx",
+      "filePath": "frontend/src/context/AppContext.tsx",
+      "summary": "React context provider: AppContext",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 435
+    },
+    {
+      "id": "class:frontend/src/context/AppContext.tsx:AppProvider",
+      "type": "class",
+      "name": "AppProvider",
+      "filePath": "frontend/src/context/AppContext.tsx",
+      "summary": "Class AppProvider",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/context/AppContext.tsx:useAppContext",
+      "type": "function",
+      "name": "useAppContext",
+      "filePath": "frontend/src/context/AppContext.tsx",
+      "summary": "Function useAppContext",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/context/AuthContext.tsx",
+      "type": "file",
+      "name": "AuthContext.tsx",
+      "filePath": "frontend/src/context/AuthContext.tsx",
+      "summary": "React context provider: AuthContext",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple",
+      "sizeLines": 37
+    },
+    {
+      "id": "class:frontend/src/context/AuthContext.tsx:AuthProvider",
+      "type": "class",
+      "name": "AuthProvider",
+      "filePath": "frontend/src/context/AuthContext.tsx",
+      "summary": "Class AuthProvider",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/context/AuthContext.tsx:useAuth",
+      "type": "function",
+      "name": "useAuth",
+      "filePath": "frontend/src/context/AuthContext.tsx",
+      "summary": "Function useAuth",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/context/ToastContext.tsx",
+      "type": "file",
+      "name": "ToastContext.tsx",
+      "filePath": "frontend/src/context/ToastContext.tsx",
+      "summary": "React context provider: ToastContext",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 158
+    },
+    {
+      "id": "class:frontend/src/context/ToastContext.tsx:ToastProvider",
+      "type": "class",
+      "name": "ToastProvider",
+      "filePath": "frontend/src/context/ToastContext.tsx",
+      "summary": "Class ToastProvider",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/context/ToastContext.tsx:useToast",
+      "type": "function",
+      "name": "useToast",
+      "filePath": "frontend/src/context/ToastContext.tsx",
+      "summary": "Function useToast",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/firebase/auth.ts",
+      "type": "file",
+      "name": "auth.ts",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Firebase configuration",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 112
+    },
+    {
+      "id": "class:frontend/src/firebase/auth.ts:FirebaseConfigError",
+      "type": "class",
+      "name": "FirebaseConfigError",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Class FirebaseConfigError",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/auth.ts:getConfigError",
+      "type": "function",
+      "name": "getConfigError",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Function getConfigError",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/auth.ts:updateProfile",
+      "type": "function",
+      "name": "updateProfile",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Function updateProfile",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/auth.ts:mapAuthError",
+      "type": "function",
+      "name": "mapAuthError",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Function mapAuthError",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/auth.ts:onAuthChange",
+      "type": "function",
+      "name": "onAuthChange",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Function onAuthChange",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/auth.ts:signup",
+      "type": "function",
+      "name": "signup",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Function signup",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/auth.ts:login",
+      "type": "function",
+      "name": "login",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Function login",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/auth.ts:loginWithGoogle",
+      "type": "function",
+      "name": "loginWithGoogle",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Function loginWithGoogle",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/auth.ts:logout",
+      "type": "function",
+      "name": "logout",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Function logout",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/auth.ts:getIdTokenCurrent",
+      "type": "function",
+      "name": "getIdTokenCurrent",
+      "filePath": "frontend/src/firebase/auth.ts",
+      "summary": "Function getIdTokenCurrent",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/firebase/config.ts",
+      "type": "file",
+      "name": "config.ts",
+      "filePath": "frontend/src/firebase/config.ts",
+      "summary": "Firebase configuration",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 117
+    },
+    {
+      "id": "class:frontend/src/firebase/config.ts:REQUIRED_FIELDS",
+      "type": "class",
+      "name": "REQUIRED_FIELDS",
+      "filePath": "frontend/src/firebase/config.ts",
+      "summary": "Class REQUIRED_FIELDS",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "class:frontend/src/firebase/config.ts:FirebaseConfigError",
+      "type": "class",
+      "name": "FirebaseConfigError",
+      "filePath": "frontend/src/firebase/config.ts",
+      "summary": "Class FirebaseConfigError",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/config.ts:ensureFirebase",
+      "type": "function",
+      "name": "ensureFirebase",
+      "filePath": "frontend/src/firebase/config.ts",
+      "summary": "Function ensureFirebase",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/config.ts:getConfigError",
+      "type": "function",
+      "name": "getConfigError",
+      "filePath": "frontend/src/firebase/config.ts",
+      "summary": "Function getConfigError",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/config.ts:isFirebaseConfigured",
+      "type": "function",
+      "name": "isFirebaseConfigured",
+      "filePath": "frontend/src/firebase/config.ts",
+      "summary": "Function isFirebaseConfigured",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "function:frontend/src/firebase/config.ts:getApp",
+      "type": "function",
+      "name": "getApp",
+      "filePath": "frontend/src/firebase/config.ts",
+      "summary": "Function getApp",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/main.tsx",
+      "type": "file",
+      "name": "main.tsx",
+      "filePath": "frontend/src/main.tsx",
+      "summary": "Frontend source module",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 89
+    },
+    {
+      "id": "file:frontend/src/pages/CreateProject.tsx",
+      "type": "file",
+      "name": "CreateProject.tsx",
+      "filePath": "frontend/src/pages/CreateProject.tsx",
+      "summary": "Page component: CreateProject",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 333
+    },
+    {
+      "id": "class:frontend/src/pages/CreateProject.tsx:CreateProject",
+      "type": "class",
+      "name": "CreateProject",
+      "filePath": "frontend/src/pages/CreateProject.tsx",
+      "summary": "Class CreateProject",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    },
+    {
+      "id": "file:frontend/src/pages/Dashboard.tsx",
+      "type": "file",
+      "name": "Dashboard.tsx",
+      "filePath": "frontend/src/pages/Dashboard.tsx",
+      "summary": "Page component: Dashboard",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex",
+      "sizeLines": 322
+    },
+    {
+      "id": "class:frontend/src/pages/Dashboard.tsx:Dashboard",
+      "type": "class",
+      "name": "Dashboard",
+      "filePath": "frontend/src/pages/Dashboard.tsx",
+      "summary": "Class Dashboard",
+      "tags": [
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "sizeLines": 0
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:frontend/src/components/landing/Features.tsx",
+      "target": "class:frontend/src/components/landing/Features.tsx:Features",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/Footer.tsx",
+      "target": "class:frontend/src/components/landing/Footer.tsx:Footer",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/Header.tsx",
+      "target": "class:frontend/src/components/landing/Header.tsx:Header",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/HowItWorks.tsx",
+      "target": "class:frontend/src/components/landing/HowItWorks.tsx:HowItWorks",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/index.ts",
+      "target": "class:frontend/src/components/landing/index.ts:LandingPage",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/index.ts",
+      "target": "class:frontend/src/components/landing/index.ts:Header",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/index.ts",
+      "target": "class:frontend/src/components/landing/index.ts:Features",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/index.ts",
+      "target": "class:frontend/src/components/landing/index.ts:Stats",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/index.ts",
+      "target": "class:frontend/src/components/landing/index.ts:HowItWorks",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/index.ts",
+      "target": "class:frontend/src/components/landing/index.ts:Trust",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/index.ts",
+      "target": "class:frontend/src/components/landing/index.ts:Footer",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/LandingPage.tsx",
+      "target": "class:frontend/src/components/landing/LandingPage.tsx:LandingPage",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/Stats.tsx",
+      "target": "class:frontend/src/components/landing/Stats.tsx:Stats",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/landing/Trust.tsx",
+      "target": "class:frontend/src/components/landing/Trust.tsx:Trust",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/Modal.tsx",
+      "target": "class:frontend/src/components/Modal.tsx:Modal",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/MonitoringChart.tsx",
+      "target": "class:frontend/src/components/MonitoringChart.tsx:MonitoringChart",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/Navbar.tsx",
+      "target": "class:frontend/src/components/Navbar.tsx:Navbar",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/ProjectSelector.tsx",
+      "target": "class:frontend/src/components/ProjectSelector.tsx:ProjectSelector",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/ProtectedRoute.tsx",
+      "target": "class:frontend/src/components/ProtectedRoute.tsx:ProtectedRoute",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/SandboxComparison.tsx",
+      "target": "class:frontend/src/components/SandboxComparison.tsx:SandboxComparison",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/ScoreGauge.tsx",
+      "target": "class:frontend/src/components/ScoreGauge.tsx:ScoreGauge",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/UserMenu.tsx",
+      "target": "class:frontend/src/components/UserMenu.tsx:UserMenu",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/WorkflowShell.tsx",
+      "target": "class:frontend/src/components/WorkflowShell.tsx:WorkflowShell",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/context/AppContext.tsx",
+      "target": "class:frontend/src/context/AppContext.tsx:AppProvider",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/context/AppContext.tsx",
+      "target": "function:frontend/src/context/AppContext.tsx:useAppContext",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/context/AuthContext.tsx",
+      "target": "class:frontend/src/context/AuthContext.tsx:AuthProvider",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/context/AuthContext.tsx",
+      "target": "function:frontend/src/context/AuthContext.tsx:useAuth",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/context/ToastContext.tsx",
+      "target": "class:frontend/src/context/ToastContext.tsx:ToastProvider",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/context/ToastContext.tsx",
+      "target": "function:frontend/src/context/ToastContext.tsx:useToast",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/auth.ts",
+      "target": "class:frontend/src/firebase/auth.ts:FirebaseConfigError",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/auth.ts",
+      "target": "function:frontend/src/firebase/auth.ts:getConfigError",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/auth.ts",
+      "target": "function:frontend/src/firebase/auth.ts:updateProfile",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/auth.ts",
+      "target": "function:frontend/src/firebase/auth.ts:mapAuthError",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/auth.ts",
+      "target": "function:frontend/src/firebase/auth.ts:onAuthChange",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/auth.ts",
+      "target": "function:frontend/src/firebase/auth.ts:signup",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/auth.ts",
+      "target": "function:frontend/src/firebase/auth.ts:login",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/auth.ts",
+      "target": "function:frontend/src/firebase/auth.ts:loginWithGoogle",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/auth.ts",
+      "target": "function:frontend/src/firebase/auth.ts:logout",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/auth.ts",
+      "target": "function:frontend/src/firebase/auth.ts:getIdTokenCurrent",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/config.ts",
+      "target": "class:frontend/src/firebase/config.ts:REQUIRED_FIELDS",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/config.ts",
+      "target": "class:frontend/src/firebase/config.ts:FirebaseConfigError",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/config.ts",
+      "target": "function:frontend/src/firebase/config.ts:ensureFirebase",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/config.ts",
+      "target": "function:frontend/src/firebase/config.ts:getConfigError",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/config.ts",
+      "target": "function:frontend/src/firebase/config.ts:isFirebaseConfigured",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/firebase/config.ts",
+      "target": "function:frontend/src/firebase/config.ts:getApp",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/CreateProject.tsx",
+      "target": "class:frontend/src/pages/CreateProject.tsx:CreateProject",
+      "type": "contains",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/Dashboard.tsx",
+      "target": "class:frontend/src/pages/Dashboard.tsx:Dashboard",
+      "type": "contains",
+      "weight": 1
+    }
+  ]
+}

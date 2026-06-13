@@ -1,0 +1,89 @@
+{
+  "issues": [
+    {
+      "severity": "high",
+      "message": "Project metadata has incorrect framework list: includes 'Next.js' (not used) but omits Vite, Firebase, Framer Motion, Three.js, SQLAlchemy, scikit-learn — all present in scan-result.json frameworks array",
+      "location": "project.frameworks"
+    },
+    {
+      "severity": "high",
+      "message": "Project metadata missing languages: Dockerfile and Markdown not listed in graph's languages array but present in scan-result.json languages array",
+      "location": "project.languages"
+    },
+    {
+      "severity": "medium",
+      "message": "ScanningSkeleton extracted as a class inside DataFlowEffect.tsx (`class:frontend/src/components/animations/DataFlowEffect.tsx:ScanningSkeleton`) but it has its own dedicated file ScanningSkeleton.tsx — likely a parser error confusing an import/export as a class definition",
+      "location": "node class:frontend/src/components/animations/DataFlowEffect.tsx:ScanningSkeleton"
+    },
+    {
+      "severity": "medium",
+      "message": "Barrel re-export files cause 7 duplicate class nodes: landing/index.ts re-exports LandingPage, Header, Features, Stats, HowItWorks, Trust, Footer — each appears as a class node in both their original .tsx file AND in index.ts. 1 duplicate in hero/index.ts for BiasNetworkHero",
+      "location": "nodes: class:frontend/src/components/landing/index.ts:*"
+    },
+    {
+      "severity": "medium",
+      "message": "270 of 408 nodes (66%) have completely uninformative summaries matching the pattern 'Function {name}' or 'Class {name}' — these provide no semantic description of what the function/class does",
+      "location": "nodes[*].summary"
+    },
+    {
+      "severity": "medium",
+      "message": "23 nodes have generic summaries like 'Project file', 'Frontend source module', or 'Frontend configuration file' — fails to convey the purpose of these artifacts",
+      "location": "nodes[*].summary"
+    },
+    {
+      "severity": "medium",
+      "message": "12 node summaries use the pattern 'Backend module: {filename}' which merely repeats the filename without adding context",
+      "location": "nodes[*].summary"
+    },
+    {
+      "severity": "low",
+      "message": "Layer 'backend-config' includes test_sample.csv (a CSV dataset) and unbiased_ai.db (a SQLite database) alongside config and entry-point files — these are data artifacts, not configuration",
+      "location": "layer:backend-config nodeIds"
+    },
+    {
+      "severity": "low",
+      "message": "Layer 'frontend-app' includes playwright-report/index.html, which is a generated Playwright test report artifact, not an application shell component",
+      "location": "layer:frontend-app nodeIds"
+    },
+    {
+      "severity": "low",
+      "message": "Layer 'backend-utils' includes uvicorn log files (uvicorn_err.txt, uvicorn_out.txt) alongside utility Python modules — log files are runtime artifacts, not utilities",
+      "location": "layer:backend-utils nodeIds"
+    },
+    {
+      "severity": "low",
+      "message": "Tour step 7 ('Workflow Pipeline UI') only references 3 of the 9 workflow steps (Step1, Step4, Step9), skipping critical steps like Step2Config, Step5Explanations, Step6Counterfactual, Step7StressTest, Step8Sandbox which are equally important for understanding the pipeline",
+      "location": "tour[6].nodeIds"
+    }
+  ],
+  "warnings": [
+    "All 138 files from scan inventory have corresponding graph nodes — no missing files detected",
+    "No orphan graph nodes — every node filePath matches an entry in the scan inventory",
+    "All 458 edges reference existing node IDs — structural edge integrity verified",
+    "All 15 layers reference existing nodeIds — layer structural integrity verified",
+    "All 9 tour steps reference existing nodeIds — tour structural integrity verified",
+    "Class/function sub-element nodes (270 of 408 total nodes) are excluded from layer nodeIds, which is expected since layers index only file-level nodes",
+    "\"signup\" appears 3 times as a node name but these are legitimate distinct elements (backend auth signup function, frontend auth signup function, and frontend Signup page component) — no deduplication needed",
+    "FirebaseConfigError and getConfigError appear in both auth.ts and config.ts — these are actually separate classes/functions in different modules, not duplicates",
+    "The graph reuses a previously assembled graph from a prior analysis run — this review confirms it is structurally valid with no missing/orphan files"
+  ],
+  "summary": {
+    "totalIssues": 11,
+    "highSeverity": 2,
+    "mediumSeverity": 5,
+    "lowSeverity": 4,
+    "missingFiles": [],
+    "orphanNodes": [],
+    "suggestedFixes": [
+      "Correct project.frameworks to match scan: [\"FastAPI\", \"React\", \"Vite\", \"Firebase\", \"Framer Motion\", \"Three.js\", \"SQLAlchemy\", \"scikit-learn\"] — remove Next.js",
+      "Add \"Dockerfile\" and \"Markdown\" to project.languages",
+      "Remove the spurious ScanningSkeleton class node from DataFlowEffect.tsx — it's a parsing artifact",
+      "Deduplicate barrel re-export class nodes: either skip barrel index.ts files during extraction, or filter out re-exported class nodes from index files",
+      "Improve summary quality for 270 function/class nodes by extracting docstrings or using semantic analysis to describe their purpose",
+      "Improve 23 generic file summaries ('Project file', 'Frontend source module', etc.) with actual descriptions of the file's role",
+      "Move test_sample.csv and unbiased_ai.db out of layer:backend-config into a more appropriate layer, or create a separate layer",
+      "Move playwright-report/index.html out of layer:frontend-app into layer:test or exclude test artifacts from node extraction",
+      "Expand tour step 7 to include all 9 workflow steps, or at minimum add Step2Config and Step5Explanations which are critical to the pipeline understanding"
+    ]
+  }
+}

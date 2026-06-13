@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
+
+logger = logging.getLogger(__name__)
 
 _firebase_app: firebase_admin.App | None = None
 
@@ -16,25 +19,34 @@ def _build_cred_from_env() -> credentials.Certificate | None:
     client_email = os.getenv("FIREBASE_CLIENT_EMAIL")
     if project_id and raw_key and client_email:
         private_key = raw_key.replace("\\n", "\n")
-        return credentials.Certificate({
-            "type": "service_account",
-            "project_id": project_id,
-            "private_key": private_key,
-            "client_email": client_email,
-            "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID", ""),
-            "client_id": os.getenv("FIREBASE_CLIENT_ID", ""),
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/{client_email}",
-            "universe_domain": "googleapis.com",
-        })
+        return credentials.Certificate(
+            {
+                "type": "service_account",
+                "project_id": project_id,
+                "private_key": private_key,
+                "client_email": client_email,
+                "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID", ""),
+                "client_id": os.getenv("FIREBASE_CLIENT_ID", ""),
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/{client_email}",
+                "universe_domain": "googleapis.com",
+            }
+        )
     return None
 
 
+_FIREBASE_DISABLED = False
+
+
+def is_firestore_available() -> bool:
+    return not _FIREBASE_DISABLED
+
+
 def init_firebase() -> None:
-    global _firebase_app
-    if _firebase_app is not None:
+    global _firebase_app, _FIREBASE_DISABLED
+    if _firebase_app is not None or _FIREBASE_DISABLED:
         return
 
     cred = _build_cred_from_env()
@@ -48,11 +60,13 @@ def init_firebase() -> None:
                 cred = credentials.Certificate(cred_path)
 
     if cred is None:
-        raise RuntimeError(
-            "Firebase credentials not found. Set FIREBASE_PROJECT_ID + "
-            "FIREBASE_PRIVATE_KEY + FIREBASE_CLIENT_EMAIL, or use the "
-            "legacy FIREBASE_SERVICE_ACCOUNT_JSON / FIREBASE_SERVICE_ACCOUNT_PATH."
+        logger.warning(
+            "Firebase credentials not found. Firestore/storage will be unavailable. "
+            "Set FIREBASE_PROJECT_ID + FIREBASE_PRIVATE_KEY + FIREBASE_CLIENT_EMAIL "
+            "or set AUTH_DISABLED=1 for local development."
         )
+        _FIREBASE_DISABLED = True
+        return
 
     storage_bucket = os.getenv("FIREBASE_STORAGE_BUCKET")
     _firebase_app = firebase_admin.initialize_app(
@@ -61,13 +75,15 @@ def init_firebase() -> None:
     )
 
 
-def get_firestore() -> firestore.Client:
+def get_firestore() -> firestore.Client | None:
+    init_firebase()
     if _firebase_app is None:
-        init_firebase()
+        return None
     return firestore.client()
 
 
-def get_storage_bucket() -> storage.Bucket:
+def get_storage_bucket() -> storage.Bucket | None:
+    init_firebase()
     if _firebase_app is None:
-        init_firebase()
+        return None
     return storage.bucket()

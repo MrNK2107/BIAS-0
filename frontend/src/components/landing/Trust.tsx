@@ -1,8 +1,15 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 export default function Trust() {
   const companies = [
-    'NEXUS LABS', 'VERTEX AI', 'QUANTUM9', 'CYBELE', 'SYNTHESIS', 'NEURA CORP', 'COGNIFY', 'ATLAS ML'
+    "NEXUS LABS",
+    "VERTEX AI",
+    "QUANTUM9",
+    "CYBELE",
+    "SYNTHESIS",
+    "NEURA CORP",
+    "COGNIFY",
+    "ATLAS ML",
   ];
 
   const duplicatedCompanies = [...companies, ...companies, ...companies];
@@ -27,11 +34,11 @@ export default function Trust() {
           <motion.div
             className="landing-trust-ticker"
             initial={{ x: 0 }}
-            animate={{ x: '-33.33%' }}
+            animate={{ x: "-33.33%" }}
             transition={{
               duration: 20,
               repeat: Infinity,
-              ease: 'linear'
+              ease: "linear",
             }}
           >
             {duplicatedCompanies.map((company, i) => (
@@ -51,13 +58,15 @@ export default function Trust() {
           className="card card-primary landing-testimonial"
         >
           <p className="landing-testimonial-text">
-            "BIAS.LAB helped us identify and mitigate proxy discrimination in our
-            hiring model within hours. The automated fix recommendations saved us
-            weeks of manual debugging."
+            "BIAS.LAB helped us identify and mitigate proxy discrimination in
+            our hiring model within hours. The automated fix recommendations
+            saved us weeks of manual debugging."
           </p>
           <div className="landing-testimonial-author">
             <span className="landing-testimonial-name">Sarah Chen</span>
-            <span className="landing-testimonial-role">Head of AI Ethics, TechFlow</span>
+            <span className="landing-testimonial-role">
+              Head of AI Ethics, TechFlow
+            </span>
           </div>
         </motion.div>
       </div>

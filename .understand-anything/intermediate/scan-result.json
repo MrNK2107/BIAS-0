@@ -1,0 +1,1273 @@
+{
+  "scriptCompleted": true,
+  "files": [
+    {
+      "path": ".dockerignore",
+      "language": "unknown",
+      "sizeLines": 13,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".understand-anything/.understandignore",
+      "language": "unknown",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/.env.example",
+      "language": "config",
+      "sizeLines": 14,
+      "fileCategory": "config"
+    },
+    {
+      "path": "backend/core/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/auth.py",
+      "language": "python",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/auto_fix.py",
+      "language": "python",
+      "sizeLines": 120,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/common.py",
+      "language": "python",
+      "sizeLines": 534,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/config.py",
+      "language": "python",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/counterfactual.py",
+      "language": "python",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/data_audit.py",
+      "language": "python",
+      "sizeLines": 138,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/explainability.py",
+      "language": "python",
+      "sizeLines": 303,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/feature_intelligence.py",
+      "language": "python",
+      "sizeLines": 277,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/model_bias.py",
+      "language": "python",
+      "sizeLines": 276,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/monitoring.py",
+      "language": "python",
+      "sizeLines": 227,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/sandbox.py",
+      "language": "python",
+      "sizeLines": 158,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/storage.py",
+      "language": "python",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/core/stress_test.py",
+      "language": "python",
+      "sizeLines": 194,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/firebase/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/firebase/client.py",
+      "language": "python",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/firebase/repositories/__init__.py",
+      "language": "python",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/firebase/repositories/alert_repo.py",
+      "language": "python",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/firebase/repositories/audit_run_repo.py",
+      "language": "python",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/firebase/repositories/flag_repo.py",
+      "language": "python",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/firebase/repositories/monitoring_repo.py",
+      "language": "python",
+      "sizeLines": 4,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/firebase/repositories/project_repo.py",
+      "language": "python",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/firebase/repository.py",
+      "language": "python",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/main.py",
+      "language": "python",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/migrate_db.py",
+      "language": "python",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/models/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/models/db.py",
+      "language": "python",
+      "sizeLines": 131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/models/schemas.py",
+      "language": "python",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/repositories/__init__.py",
+      "language": "python",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/repositories/local.py",
+      "language": "python",
+      "sizeLines": 269,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/requirements.txt",
+      "language": "txt",
+      "sizeLines": 21,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "backend/routers/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/routers/audit.py",
+      "language": "python",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/routers/auth.py",
+      "language": "python",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/routers/bias.py",
+      "language": "python",
+      "sizeLines": 197,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/routers/fixes.py",
+      "language": "python",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/routers/monitoring.py",
+      "language": "python",
+      "sizeLines": 366,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/routers/pipeline.py",
+      "language": "python",
+      "sizeLines": 375,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/routers/project.py",
+      "language": "python",
+      "sizeLines": 207,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/routers/sandbox.py",
+      "language": "python",
+      "sizeLines": 46,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/test_sample.csv",
+      "language": "csv",
+      "sizeLines": 101,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/tests/test_core.py",
+      "language": "python",
+      "sizeLines": 328,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/unbiased_ai.db",
+      "language": "db",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/utils/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/utils/data_io.py",
+      "language": "python",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/utils/model_loader.py",
+      "language": "python",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/utils/synthetic_data.py",
+      "language": "python",
+      "sizeLines": 127,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/uvicorn_err.txt",
+      "language": "txt",
+      "sizeLines": 4,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "backend/uvicorn_out.txt",
+      "language": "txt",
+      "sizeLines": 4,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "context.md",
+      "language": "markdown",
+      "sizeLines": 157,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "data/demo_hiring.csv",
+      "language": "csv",
+      "sizeLines": 3001,
+      "fileCategory": "data"
+    },
+    {
+      "path": "data/demo_loan.csv",
+      "language": "csv",
+      "sizeLines": 5001,
+      "fileCategory": "data"
+    },
+    {
+      "path": "Dockerfile",
+      "language": "dockerfile",
+      "sizeLines": 31,
+      "fileCategory": "infra"
+    },
+    {
+      "path": "e2e_test.py",
+      "language": "python",
+      "sizeLines": 115,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/.env.example",
+      "language": "config",
+      "sizeLines": 32,
+      "fileCategory": "config"
+    },
+    {
+      "path": "frontend/eslint.config.js",
+      "language": "javascript",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/immersive_design.md",
+      "language": "markdown",
+      "sizeLines": 53,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "frontend/index.html",
+      "language": "html",
+      "sizeLines": 17,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "frontend/package.json",
+      "language": "json",
+      "sizeLines": 45,
+      "fileCategory": "config"
+    },
+    {
+      "path": "frontend/playwright-report/index.html",
+      "language": "html",
+      "sizeLines": 89,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "frontend/playwright.config.ts",
+      "language": "typescript",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/search_results.md",
+      "language": "markdown",
+      "sizeLines": 53,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "frontend/src/api/client.ts",
+      "language": "typescript",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/App.tsx",
+      "language": "typescript",
+      "sizeLines": 249,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/animations/AnimatedBarChart.tsx",
+      "language": "typescript",
+      "sizeLines": 123,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/animations/AnimatedCard.tsx",
+      "language": "typescript",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/animations/AnimatedNumber.tsx",
+      "language": "typescript",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/animations/BackgroundGrid.tsx",
+      "language": "typescript",
+      "sizeLines": 55,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/animations/DataFlowEffect.tsx",
+      "language": "typescript",
+      "sizeLines": 65,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/animations/PageTransition.tsx",
+      "language": "typescript",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/animations/ScanningSkeleton.tsx",
+      "language": "typescript",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/CounterfactualFlip.tsx",
+      "language": "typescript",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/EmptyState.tsx",
+      "language": "typescript",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/ErrorBoundary.tsx",
+      "language": "typescript",
+      "sizeLines": 119,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/FairnessMetricsPanel.tsx",
+      "language": "typescript",
+      "sizeLines": 141,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/FairnessTable.tsx",
+      "language": "typescript",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/FlagDecisionModal.tsx",
+      "language": "typescript",
+      "sizeLines": 173,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/hero/BiasNetworkHero.tsx",
+      "language": "typescript",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/hero/ExperienceScene.tsx",
+      "language": "typescript",
+      "sizeLines": 236,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/hero/hero.css",
+      "language": "css",
+      "sizeLines": 212,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "frontend/src/components/hero/index.ts",
+      "language": "typescript",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/hero/ScrollExperience.tsx",
+      "language": "typescript",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/hero/UIOverlay.tsx",
+      "language": "typescript",
+      "sizeLines": 199,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/HiddenBiasExplorer.tsx",
+      "language": "typescript",
+      "sizeLines": 224,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/landing/Features.tsx",
+      "language": "typescript",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/landing/Footer.tsx",
+      "language": "typescript",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/landing/Header.tsx",
+      "language": "typescript",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/landing/HowItWorks.tsx",
+      "language": "typescript",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/landing/index.ts",
+      "language": "typescript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/landing/LandingPage.tsx",
+      "language": "typescript",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/landing/Stats.tsx",
+      "language": "typescript",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/landing/Trust.tsx",
+      "language": "typescript",
+      "sizeLines": 65,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/Modal.tsx",
+      "language": "typescript",
+      "sizeLines": 144,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/MonitoringChart.tsx",
+      "language": "typescript",
+      "sizeLines": 150,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/Navbar.tsx",
+      "language": "typescript",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/ProjectSelector.tsx",
+      "language": "typescript",
+      "sizeLines": 118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/ProtectedRoute.tsx",
+      "language": "typescript",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/SandboxComparison.tsx",
+      "language": "typescript",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/ScoreGauge.tsx",
+      "language": "typescript",
+      "sizeLines": 66,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/UserMenu.tsx",
+      "language": "typescript",
+      "sizeLines": 130,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/components/WorkflowShell.tsx",
+      "language": "typescript",
+      "sizeLines": 166,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/context/AppContext.tsx",
+      "language": "typescript",
+      "sizeLines": 435,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/context/AuthContext.tsx",
+      "language": "typescript",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/context/ToastContext.tsx",
+      "language": "typescript",
+      "sizeLines": 158,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/firebase/auth.ts",
+      "language": "typescript",
+      "sizeLines": 112,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/firebase/config.ts",
+      "language": "typescript",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/main.tsx",
+      "language": "typescript",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/CreateProject.tsx",
+      "language": "typescript",
+      "sizeLines": 333,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/Dashboard.tsx",
+      "language": "typescript",
+      "sizeLines": 322,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/HeroPage.tsx",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/Login.tsx",
+      "language": "typescript",
+      "sizeLines": 115,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/MonitoringDashboard.tsx",
+      "language": "typescript",
+      "sizeLines": 220,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/NotFound.tsx",
+      "language": "typescript",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/Profile.tsx",
+      "language": "typescript",
+      "sizeLines": 323,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/Signup.tsx",
+      "language": "typescript",
+      "sizeLines": 95,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/workflow/Step1Upload.tsx",
+      "language": "typescript",
+      "sizeLines": 112,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/workflow/Step2Config.tsx",
+      "language": "typescript",
+      "sizeLines": 446,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/workflow/Step3DataAudit.tsx",
+      "language": "typescript",
+      "sizeLines": 224,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/workflow/Step4ModelBias.tsx",
+      "language": "typescript",
+      "sizeLines": 152,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/workflow/Step5Explanations.tsx",
+      "language": "typescript",
+      "sizeLines": 240,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/workflow/Step6Counterfactual.tsx",
+      "language": "typescript",
+      "sizeLines": 193,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/workflow/Step7StressTest.tsx",
+      "language": "typescript",
+      "sizeLines": 252,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/workflow/Step8Sandbox.tsx",
+      "language": "typescript",
+      "sizeLines": 195,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/workflow/Step9Monitoring.tsx",
+      "language": "typescript",
+      "sizeLines": 574,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/styles/globals.css",
+      "language": "css",
+      "sizeLines": 2460,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "frontend/src/types.ts",
+      "language": "typescript",
+      "sizeLines": 267,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/vite-env.d.ts",
+      "language": "typescript",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/test-results/.last-run.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": "frontend/test-results/e2e-E2E-Audit-Sequence-Workflow-chromium/error-context.md",
+      "language": "markdown",
+      "sizeLines": 243,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "frontend/tests/e2e.spec.ts",
+      "language": "typescript",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/tsconfig.json",
+      "language": "json",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "frontend/vite.config.ts",
+      "language": "typescript",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "PROMPT.md",
+      "language": "markdown",
+      "sizeLines": 879,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 190,
+      "fileCategory": "docs"
+    }
+  ],
+  "totalFiles": 138,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "moderate",
+  "stats": {
+    "filesScanned": 138,
+    "byCategory": {
+      "infra": 2,
+      "code": 115,
+      "config": 5,
+      "docs": 9,
+      "data": 3,
+      "markup": 4
+    },
+    "byLanguage": {
+      "unknown": 2,
+      "python": 46,
+      "config": 2,
+      "txt": 3,
+      "csv": 3,
+      "db": 1,
+      "markdown": 6,
+      "dockerfile": 1,
+      "javascript": 1,
+      "html": 2,
+      "json": 3,
+      "typescript": 66,
+      "css": 2
+    }
+  },
+  "projectRoot": "C:\\Users\\nanda\\Desktop\\BIAS-0",
+  "projectName": "BIAS-0",
+  "projectDescription": "End-to-end fairness assurance platform for detecting, analyzing, and mitigating bias in machine learning pipelines",
+  "languages": [
+    "Python",
+    "TypeScript",
+    "JavaScript",
+    "CSS",
+    "HTML",
+    "Dockerfile",
+    "Markdown"
+  ],
+  "frameworks": [
+    "FastAPI",
+    "React",
+    "Vite",
+    "Firebase",
+    "Framer Motion",
+    "Three.js",
+    "SQLAlchemy",
+    "scikit-learn"
+  ],
+  "importMap": {
+    ".dockerignore": [],
+    ".understand-anything/.understandignore": [],
+    "backend/__init__.py": [],
+    "backend/.env.example": [],
+    "backend/core/__init__.py": [],
+    "backend/core/auth.py": [
+      "backend/core/config.py"
+    ],
+    "backend/core/auto_fix.py": [],
+    "backend/core/common.py": [],
+    "backend/core/config.py": [],
+    "backend/core/counterfactual.py": [
+      "backend/core/common.py"
+    ],
+    "backend/core/data_audit.py": [
+      "backend/core/common.py"
+    ],
+    "backend/core/explainability.py": [
+      "backend/core/common.py",
+      "backend/core/feature_intelligence.py"
+    ],
+    "backend/core/feature_intelligence.py": [],
+    "backend/core/model_bias.py": [
+      "backend/core/common.py"
+    ],
+    "backend/core/monitoring.py": [
+      "backend/repositories/__init__.py"
+    ],
+    "backend/core/sandbox.py": [
+      "backend/core/common.py"
+    ],
+    "backend/core/storage.py": [
+      "backend/core/config.py"
+    ],
+    "backend/core/stress_test.py": [
+      "backend/core/common.py"
+    ],
+    "backend/firebase/__init__.py": [],
+    "backend/firebase/client.py": [
+      "backend/core/config.py"
+    ],
+    "backend/firebase/repositories/__init__.py": [
+      "backend/firebase/repositories/alert_repo.py",
+      "backend/firebase/repositories/audit_run_repo.py",
+      "backend/firebase/repositories/flag_repo.py",
+      "backend/firebase/repositories/monitoring_repo.py",
+      "backend/firebase/repositories/project_repo.py"
+    ],
+    "backend/firebase/repositories/alert_repo.py": [
+      "backend/firebase/repository.py"
+    ],
+    "backend/firebase/repositories/audit_run_repo.py": [
+      "backend/firebase/repository.py"
+    ],
+    "backend/firebase/repositories/flag_repo.py": [
+      "backend/firebase/repository.py"
+    ],
+    "backend/firebase/repositories/monitoring_repo.py": [
+      "backend/firebase/repository.py"
+    ],
+    "backend/firebase/repositories/project_repo.py": [
+      "backend/firebase/repository.py"
+    ],
+    "backend/firebase/repository.py": [
+      "backend/firebase/client.py"
+    ],
+    "backend/main.py": [
+      "backend/core/config.py",
+      "backend/routers/__init__.py",
+      "backend/routers/audit.py",
+      "backend/routers/auth.py",
+      "backend/routers/bias.py",
+      "backend/routers/fixes.py",
+      "backend/routers/monitoring.py",
+      "backend/routers/pipeline.py",
+      "backend/routers/project.py",
+      "backend/routers/sandbox.py"
+    ],
+    "backend/migrate_db.py": [],
+    "backend/models/__init__.py": [],
+    "backend/models/db.py": [],
+    "backend/models/schemas.py": [],
+    "backend/repositories/__init__.py": [
+      "backend/core/config.py"
+    ],
+    "backend/repositories/local.py": [
+      "backend/models/db.py"
+    ],
+    "backend/requirements.txt": [],
+    "backend/routers/__init__.py": [],
+    "backend/routers/audit.py": [
+      "backend/core/auth.py",
+      "backend/core/data_audit.py",
+      "backend/core/feature_intelligence.py",
+      "backend/repositories/__init__.py",
+      "backend/utils/data_io.py"
+    ],
+    "backend/routers/auth.py": [
+      "backend/core/auth.py"
+    ],
+    "backend/routers/bias.py": [
+      "backend/core/common.py",
+      "backend/core/counterfactual.py",
+      "backend/core/explainability.py",
+      "backend/core/model_bias.py",
+      "backend/core/stress_test.py",
+      "backend/utils/data_io.py"
+    ],
+    "backend/routers/fixes.py": [
+      "backend/core/auto_fix.py"
+    ],
+    "backend/routers/monitoring.py": [
+      "backend/core/auth.py",
+      "backend/core/common.py",
+      "backend/core/monitoring.py",
+      "backend/repositories/__init__.py"
+    ],
+    "backend/routers/pipeline.py": [
+      "backend/core/auth.py",
+      "backend/core/auto_fix.py",
+      "backend/core/common.py",
+      "backend/core/counterfactual.py",
+      "backend/core/data_audit.py",
+      "backend/core/explainability.py",
+      "backend/core/feature_intelligence.py",
+      "backend/core/model_bias.py",
+      "backend/core/stress_test.py",
+      "backend/repositories/__init__.py",
+      "backend/utils/model_loader.py"
+    ],
+    "backend/routers/project.py": [
+      "backend/core/auth.py",
+      "backend/core/common.py",
+      "backend/core/storage.py",
+      "backend/repositories/__init__.py",
+      "backend/routers/pipeline.py"
+    ],
+    "backend/routers/sandbox.py": [
+      "backend/core/auto_fix.py",
+      "backend/core/common.py",
+      "backend/core/sandbox.py",
+      "backend/utils/data_io.py"
+    ],
+    "backend/test_sample.csv": [],
+    "backend/tests/test_core.py": [
+      "backend/core/auto_fix.py",
+      "backend/core/common.py",
+      "backend/core/counterfactual.py",
+      "backend/core/data_audit.py",
+      "backend/core/explainability.py",
+      "backend/core/feature_intelligence.py",
+      "backend/core/model_bias.py",
+      "backend/core/monitoring.py",
+      "backend/core/sandbox.py",
+      "backend/core/stress_test.py",
+      "backend/utils/synthetic_data.py"
+    ],
+    "backend/unbiased_ai.db": [],
+    "backend/utils/__init__.py": [],
+    "backend/utils/data_io.py": [],
+    "backend/utils/model_loader.py": [],
+    "backend/utils/synthetic_data.py": [],
+    "backend/uvicorn_err.txt": [],
+    "backend/uvicorn_out.txt": [],
+    "context.md": [],
+    "data/demo_hiring.csv": [],
+    "data/demo_loan.csv": [],
+    "Dockerfile": [],
+    "e2e_test.py": [],
+    "frontend/.env.example": [],
+    "frontend/eslint.config.js": [],
+    "frontend/immersive_design.md": [],
+    "frontend/index.html": [],
+    "frontend/package.json": [],
+    "frontend/playwright-report/index.html": [],
+    "frontend/playwright.config.ts": [],
+    "frontend/search_results.md": [],
+    "frontend/src/api/client.ts": [
+      "frontend/src/firebase/auth.ts"
+    ],
+    "frontend/src/App.tsx": [
+      "frontend/src/components/animations/BackgroundGrid.tsx",
+      "frontend/src/components/animations/PageTransition.tsx",
+      "frontend/src/components/ErrorBoundary.tsx",
+      "frontend/src/components/ProtectedRoute.tsx",
+      "frontend/src/components/WorkflowShell.tsx",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/context/AuthContext.tsx"
+    ],
+    "frontend/src/components/animations/AnimatedBarChart.tsx": [],
+    "frontend/src/components/animations/AnimatedCard.tsx": [],
+    "frontend/src/components/animations/AnimatedNumber.tsx": [],
+    "frontend/src/components/animations/BackgroundGrid.tsx": [],
+    "frontend/src/components/animations/DataFlowEffect.tsx": [],
+    "frontend/src/components/animations/PageTransition.tsx": [],
+    "frontend/src/components/animations/ScanningSkeleton.tsx": [],
+    "frontend/src/components/CounterfactualFlip.tsx": [],
+    "frontend/src/components/EmptyState.tsx": [],
+    "frontend/src/components/ErrorBoundary.tsx": [],
+    "frontend/src/components/FairnessMetricsPanel.tsx": [
+      "frontend/src/components/animations/AnimatedCard.tsx",
+      "frontend/src/components/animations/AnimatedNumber.tsx",
+      "frontend/src/types.ts"
+    ],
+    "frontend/src/components/FairnessTable.tsx": [],
+    "frontend/src/components/FlagDecisionModal.tsx": [
+      "frontend/src/components/Modal.tsx"
+    ],
+    "frontend/src/components/hero/BiasNetworkHero.tsx": [
+      "frontend/src/components/hero/hero.css",
+      "frontend/src/components/hero/ScrollExperience.tsx"
+    ],
+    "frontend/src/components/hero/ExperienceScene.tsx": [],
+    "frontend/src/components/hero/hero.css": [],
+    "frontend/src/components/hero/index.ts": [],
+    "frontend/src/components/hero/ScrollExperience.tsx": [
+      "frontend/src/components/hero/ExperienceScene.tsx",
+      "frontend/src/components/hero/UIOverlay.tsx"
+    ],
+    "frontend/src/components/hero/UIOverlay.tsx": [],
+    "frontend/src/components/HiddenBiasExplorer.tsx": [],
+    "frontend/src/components/landing/Features.tsx": [],
+    "frontend/src/components/landing/Footer.tsx": [],
+    "frontend/src/components/landing/Header.tsx": [],
+    "frontend/src/components/landing/HowItWorks.tsx": [],
+    "frontend/src/components/landing/index.ts": [],
+    "frontend/src/components/landing/LandingPage.tsx": [
+      "frontend/src/components/hero/index.ts",
+      "frontend/src/components/landing/Features.tsx",
+      "frontend/src/components/landing/Footer.tsx",
+      "frontend/src/components/landing/Header.tsx",
+      "frontend/src/components/landing/HowItWorks.tsx",
+      "frontend/src/components/landing/Stats.tsx",
+      "frontend/src/components/landing/Trust.tsx"
+    ],
+    "frontend/src/components/landing/Stats.tsx": [],
+    "frontend/src/components/landing/Trust.tsx": [],
+    "frontend/src/components/Modal.tsx": [],
+    "frontend/src/components/MonitoringChart.tsx": [],
+    "frontend/src/components/Navbar.tsx": [],
+    "frontend/src/components/ProjectSelector.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/context/ToastContext.tsx"
+    ],
+    "frontend/src/components/ProtectedRoute.tsx": [
+      "frontend/src/context/AuthContext.tsx"
+    ],
+    "frontend/src/components/SandboxComparison.tsx": [
+      "frontend/src/components/animations/AnimatedNumber.tsx"
+    ],
+    "frontend/src/components/ScoreGauge.tsx": [],
+    "frontend/src/components/UserMenu.tsx": [
+      "frontend/src/context/AuthContext.tsx",
+      "frontend/src/context/ToastContext.tsx",
+      "frontend/src/firebase/auth.ts"
+    ],
+    "frontend/src/components/WorkflowShell.tsx": [
+      "frontend/src/components/ProjectSelector.tsx",
+      "frontend/src/components/UserMenu.tsx",
+      "frontend/src/context/AppContext.tsx"
+    ],
+    "frontend/src/context/AppContext.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/context/ToastContext.tsx",
+      "frontend/src/types.ts"
+    ],
+    "frontend/src/context/AuthContext.tsx": [
+      "frontend/src/firebase/auth.ts"
+    ],
+    "frontend/src/context/ToastContext.tsx": [],
+    "frontend/src/firebase/auth.ts": [
+      "frontend/src/firebase/config.ts"
+    ],
+    "frontend/src/firebase/config.ts": [],
+    "frontend/src/main.tsx": [
+      "frontend/src/App.tsx",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/context/AuthContext.tsx",
+      "frontend/src/context/ToastContext.tsx",
+      "frontend/src/firebase/config.ts",
+      "frontend/src/styles/globals.css"
+    ],
+    "frontend/src/pages/CreateProject.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/context/AppContext.tsx"
+    ],
+    "frontend/src/pages/Dashboard.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/context/AppContext.tsx"
+    ],
+    "frontend/src/pages/HeroPage.tsx": [
+      "frontend/src/components/landing/index.ts"
+    ],
+    "frontend/src/pages/Login.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/firebase/auth.ts"
+    ],
+    "frontend/src/pages/MonitoringDashboard.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/context/AppContext.tsx"
+    ],
+    "frontend/src/pages/NotFound.tsx": [],
+    "frontend/src/pages/Profile.tsx": [
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/context/AuthContext.tsx",
+      "frontend/src/context/ToastContext.tsx",
+      "frontend/src/firebase/auth.ts"
+    ],
+    "frontend/src/pages/Signup.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/firebase/auth.ts"
+    ],
+    "frontend/src/pages/workflow/Step1Upload.tsx": [
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/context/AppContext.tsx"
+    ],
+    "frontend/src/pages/workflow/Step2Config.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/context/ToastContext.tsx"
+    ],
+    "frontend/src/pages/workflow/Step3DataAudit.tsx": [
+      "frontend/src/components/animations/AnimatedBarChart.tsx",
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/types.ts"
+    ],
+    "frontend/src/pages/workflow/Step4ModelBias.tsx": [
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/components/FairnessMetricsPanel.tsx",
+      "frontend/src/components/FairnessTable.tsx",
+      "frontend/src/components/HiddenBiasExplorer.tsx",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/types.ts"
+    ],
+    "frontend/src/pages/workflow/Step5Explanations.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/components/FlagDecisionModal.tsx",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/context/ToastContext.tsx"
+    ],
+    "frontend/src/pages/workflow/Step6Counterfactual.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/components/CounterfactualFlip.tsx",
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/components/FlagDecisionModal.tsx",
+      "frontend/src/components/ScoreGauge.tsx",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/context/ToastContext.tsx",
+      "frontend/src/types.ts"
+    ],
+    "frontend/src/pages/workflow/Step7StressTest.tsx": [
+      "frontend/src/components/animations/AnimatedNumber.tsx",
+      "frontend/src/components/animations/ScanningSkeleton.tsx",
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/types.ts"
+    ],
+    "frontend/src/pages/workflow/Step8Sandbox.tsx": [
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/components/SandboxComparison.tsx",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/types.ts"
+    ],
+    "frontend/src/pages/workflow/Step9Monitoring.tsx": [
+      "frontend/src/api/client.ts",
+      "frontend/src/components/EmptyState.tsx",
+      "frontend/src/components/MonitoringChart.tsx",
+      "frontend/src/context/AppContext.tsx",
+      "frontend/src/context/ToastContext.tsx",
+      "frontend/src/types.ts"
+    ],
+    "frontend/src/styles/globals.css": [],
+    "frontend/src/types.ts": [],
+    "frontend/src/vite-env.d.ts": [],
+    "frontend/test-results/.last-run.json": [],
+    "frontend/test-results/e2e-E2E-Audit-Sequence-Workflow-chromium/error-context.md": [],
+    "frontend/tests/e2e.spec.ts": [],
+    "frontend/tsconfig.json": [],
+    "frontend/vite.config.ts": [],
+    "PROMPT.md": [],
+    "README.md": []
+  }
+}

@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import type { ReactNode } from "react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 interface EmptyStateProps {
   icon?: ReactNode;
@@ -30,7 +30,7 @@ export default function EmptyState({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
       className="empty-state"
-      data-compact={compact ? 'true' : 'false'}
+      data-compact={compact ? "true" : "false"}
     >
       <div className="empty-state-rule" aria-hidden="true" />
 
@@ -63,7 +63,10 @@ export default function EmptyState({
             ))}
           {secondaryAction &&
             (secondaryAction.onClick ? (
-              <button className="btn btn-ghost" onClick={secondaryAction.onClick}>
+              <button
+                className="btn btn-ghost"
+                onClick={secondaryAction.onClick}
+              >
                 {secondaryAction.label}
               </button>
             ) : secondaryAction.to ? (

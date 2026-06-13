@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 interface PageTransitionProps {
   children: React.ReactNode;
@@ -7,11 +7,18 @@ interface PageTransitionProps {
 
 const pageVariants: Variants = {
   initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.25, ease: 'easeOut' } },
-  exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: 'easeIn' } },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.25, ease: "easeOut" },
+  },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } },
 };
 
-export default function PageTransition({ children, locationKey }: PageTransitionProps) {
+export default function PageTransition({
+  children,
+  locationKey,
+}: PageTransitionProps) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -20,7 +27,12 @@ export default function PageTransition({ children, locationKey }: PageTransition
         initial="initial"
         animate="animate"
         exit="exit"
-        style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
       >
         {children}
       </motion.div>

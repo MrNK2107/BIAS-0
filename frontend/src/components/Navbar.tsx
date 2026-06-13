@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import type { LucideIcon } from 'lucide-react';
+import { Link } from "react-router-dom";
+import type { LucideIcon } from "lucide-react";
 
 type NavItem = {
   to: string;
@@ -7,11 +7,22 @@ type NavItem = {
   icon: LucideIcon;
 };
 
-export default function Navbar({ items, activePath }: { items: NavItem[]; activePath: string }) {
+export default function Navbar({
+  items,
+  activePath,
+}: {
+  items: NavItem[];
+  activePath: string;
+}) {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <img src="/logo.png" alt="BIAS LAB Logo" className="brand-logo-img" style={{ width: '32px', height: '32px', marginRight: '10px' }} />
+        <img
+          src="/logo.png"
+          alt="BIAS LAB Logo"
+          className="brand-logo-img"
+          style={{ width: "32px", height: "32px", marginRight: "10px" }}
+        />
         <div>
           <strong>BIAS LAB</strong>
           <span>FAIRNESS SUITE</span>
@@ -23,7 +34,11 @@ export default function Navbar({ items, activePath }: { items: NavItem[]; active
           const Icon = item.icon;
           const isActive = activePath === item.to;
           return (
-            <Link key={item.to} to={item.to} className={`nav-link ${isActive ? 'active' : ''}`}>
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`nav-link ${isActive ? "active" : ""}`}
+            >
               <Icon size={16} />
               <span>{item.label}</span>
             </Link>
