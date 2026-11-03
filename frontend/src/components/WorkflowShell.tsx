@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -68,6 +68,20 @@ export default function WorkflowShell({
   const location = useLocation();
   const navigate = useNavigate();
   const { maxStep, projectId, advanceStep, file, isAnalyzing, pipelineResults } = useAppContext();
+
+  // Phones: the rail is one horizontally scrolling row, so bring the current page's item into view.
+  useEffect(() => {
+    if (window.innerWidth > 720) return;
+    // After the rail's enter animation has laid it out.
+    const t = window.setTimeout(() => {
+      const item = document.querySelector<HTMLElement>(".workflow-rail-item.active");
+      const rail = item?.closest<HTMLElement>(".workflow-rail");
+      if (!item || !rail) return;
+      const left = item.getBoundingClientRect().left - rail.getBoundingClientRect().left + rail.scrollLeft;
+      rail.scrollLeft = Math.max(0, left - (rail.clientWidth - item.offsetWidth) / 2);
+    }, 350);
+    return () => window.clearTimeout(t);
+  }, [location.pathname]);
 
   // ── Collapse state ──────────────────────────────────────────────────────
   const [collapsed, setCollapsed] = React.useState(() => {

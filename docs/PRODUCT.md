@@ -63,10 +63,11 @@ and the report seal) refers to the assay offices that test a metal and stamp wha
 - **Reproduce a report, new.** Each report carries a fingerprint of its settings and headline numbers. Whoever
   receives it (auditor, regulator, enterprise customer) uploads the report and the CSV; BIAS-0 checks the SHA-256
   and re-runs the audit, number by number. "Reproducible" becomes something a counterparty can check, not a claim.
-- **Paired test (Mode B, offline), new.** The strategy's standout, in its first shippable form: the customer
-  runs name-swap (or any one-signal) probes against a vendor API or LLM screener and uploads the results;
-  BIAS-0 gives the flip rate, an exact McNemar test and CIs on rate and score differences. Generating the probes
-  (Indian name and identity corpora, API runners) is the next step.
+- **Paired test (Mode B), new.** The strategy's standout, end to end: BIAS-0 builds the name-swapped probe set
+  (two editable name lists, seeded and fingerprinted, CSV or JSONL), the CLI sends it to a vendor API or LLM
+  screener over HTTP (dry-run and offline mock modes; keys stay on the customer's machine), and the results come
+  back for the flip rate, an exact McNemar test and CIs on rate and score differences. Indian name and identity
+  corpora are the next step.
 - **Fairness gate for ML teams, new.** `python -m cli audit log.csv --fail-on disparity` runs the same audit
   in CI with no server, prints the act-now steps and fails the build on an evidenced disparity; `cli verify`
   reproduces a report.
@@ -123,15 +124,16 @@ note to check each project's current release (summarised from public docs, Nov 2
 
 | Now (this build) | Next (1 quarter) | Later |
 |---|---|---|
-| Outcome audit, verdict, drift, change attribution, action plan, report reproduction, mitigation trade-off, framework report, hash-chained audit ledger, lending and hiring samples | Warehouse connectors (Postgres, BigQuery, Snowflake); scheduled ingestion and alerts; reviewer/approver sign-off workflow with dates | **Mode B probe generation and runners** for vendor APIs and LLM screeners using Indian name and identity corpora (the offline analysis ships now); "BIAS-0 Audited" public verification page; privacy-preserving group inference (research, legal review first) |
+| Outcome audit, verdict, drift, change attribution, action plan, report reproduction, mitigation trade-off, framework report, hash-chained audit ledger, lending and hiring samples | Warehouse connectors (Postgres, BigQuery, Snowflake); scheduled ingestion and alerts; reviewer/approver sign-off workflow with dates | **Mode B name corpora**: validated Indian name and identity lists for the probe generator, and probes that vary more than a name (the generator, HTTP runner and analysis ship now); "BIAS-0 Audited" public verification page; privacy-preserving group inference (research, legal review first) |
 
 ## Where this diverges from `docs/strategy/case-study-and-strategy.md`
 
 - **Same direction:** the evidence platform, three audit modes, the HR-tech beachhead, the independence
   warning, "never certified unbiased".
 - **Order changed:** the strategy puts Mode B (black-box/LLM probes) as the standout. This build ships
-  Mode A first, plus Mode B's offline analysis (upload probe results) because every customer can use it on day one, and its statistics (CIs, guards, verdicts,
-  drift) are the same engine Mode B will need for flip-rate significance.
+  Mode A first because every customer can use it on day one, and its statistics (CIs, guards, verdicts) are the
+  same engine Mode B uses for flip-rate significance. Mode B now ships too: probe generation, a CLI runner for HTTP
+  screeners, and the analysis.
 - **Single score demoted:** the strategy keeps a headline grade. Here the headline is the three-way verdict.
   The A–E grade is secondary, and it is capped when the evidence is inconclusive, so a small sample can't
   earn an A.

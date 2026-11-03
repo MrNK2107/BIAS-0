@@ -81,3 +81,15 @@ def test_sample_matches_generator_and_tells_its_story():
                      score_col="screen_score", reference="male-coded", config=FAST)
     assert r["n_pairs"] == 400 and r["verdict"]["status"] == "disparity" and r["favoured"] == "male-coded"
     assert r["score"]["mean_difference"] > 0 and r["score"]["ci"][0] > 0
+
+
+def test_pairs_with_a_missing_decision_are_counted_as_dropped():
+    df = pd.DataFrame({
+        "pair": [f"p{i}" for i in range(40) for _ in range(2)],
+        "v": ["a", "b"] * 40,
+        "d": [1, 0] * 40,
+    })
+    df.loc[1, "d"] = None
+    r = paired_probe(df, "pair", "v", "d", config={"n_boot": 50})
+    assert r["n_pairs"] == 39 and r["n_pairs_dropped"] == 1
+    assert any("no decision" in w for w in r["warnings"])

@@ -2982,3 +2982,44 @@ input[type="radio"]:checked::after {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* Phones: a single scrolling rail, a one-row top bar, and the demo pill in the page flow
+   (as a fixed overlay it covered the upload box and buttons at 390 px). */
+@media (max-width: 720px) {
+  .demo-banner {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    z-index: 1;
+    width: fit-content;
+    max-width: calc(100% - 32px);
+    margin: 10px 16px 0;
+  }
+  .workflow-rail {
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding: 10px 16px;
+    scrollbar-width: none;
+  }
+  .workflow-rail-brand,
+  .workflow-rail-nav,
+  .workflow-rail-item {
+    flex: none;
+  }
+  .workflow-rail-item-label {
+    overflow: visible;
+    text-overflow: clip;
+  }
+  .workflow-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 16px;
+    min-height: 0;
+  }
+  .workflow-topbar-center {
+    display: none;
+  }
+}

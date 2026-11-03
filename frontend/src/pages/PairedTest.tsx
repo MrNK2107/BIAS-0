@@ -2,19 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ArrowRight, Loader2, Play, Upload, Users } from "lucide-react";
 import { api, formApi } from "../api/client";
-import { guessPairedColumns, pct, toneOf, type PairedColumns as Cols, type PairedResult } from "../utils/assurance";
+import { guessPairedColumns, parseCsvHead as parseHead, pct, toneOf, type PairedColumns as Cols, type PairedResult } from "../utils/assurance";
+import ProbeGenerator from "../components/ProbeGenerator";
 import "../styles/brand.css";
 
 function errorText(err: unknown): string {
   const e = err as { response?: { data?: { detail?: unknown } }; message?: string };
   const d = e.response?.data?.detail;
   return typeof d === "string" ? d : e.message ?? "Something went wrong.";
-}
-
-function parseHead(text: string): { header: string[]; rows: string[][] } {
-  const lines = text.split(/\r?\n/).filter(Boolean).slice(0, 400);
-  const [h, ...rest] = lines;
-  return { header: (h ?? "").split(",").map((s) => s.trim()), rows: rest.map((l) => l.split(",")) };
 }
 
 function Bar({ value, label, tone }: { value: number; label: string; tone: "bad" | "good" | "muted" }) {
@@ -204,15 +199,17 @@ export default function PairedTest() {
           <h1>Same application, one signal changed</h1>
           <p>
             Send a tool pairs of applications that are identical except for one signal, such as a name that reads as
-            female or male, and upload what it decided. BIAS-0 counts the pairs it decided differently and tests
-            whether they lean one way. No model access, and evidence of disparate treatment rather than impact.
+            female or male, and upload what it decided. BIAS-0 builds the probes, counts the pairs decided differently
+            and tests whether they lean one way. No model access, and evidence of disparate treatment rather than impact.
           </p>
         </div>
       </header>
 
+      <ProbeGenerator />
+
       <section className="az-drop" aria-label="Upload paired-probe results">
         <div>
-          <span className="mono-label">Your probes · one row per application</span>
+          <span className="mono-label">Step 3 · Upload results · one row per probe</span>
           <h2>Drop a CSV of probe results</h2>
           <p>Columns: a pair id, the signal that differs within the pair (exactly two values), the tool's decision, and optionally its score.</p>
         </div>

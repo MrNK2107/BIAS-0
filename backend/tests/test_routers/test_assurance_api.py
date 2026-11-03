@@ -217,3 +217,17 @@ def test_paired_endpoint_and_sample(client, monkeypatch):
     bad = client.post("/api/assurance/paired", files={"file": ("probes.csv", s.content, "text/csv")},
                       data={**form, "variant_col": "role"})
     assert bad.status_code == 422
+
+
+def test_probe_generator_endpoint(client):
+    d = client.get("/api/assurance/paired/probes/defaults").json()
+    assert len(d["groups"]) == 2 and d["seed"] == 7
+    body = {"n_pairs": 25, "seed": 3, "groups": [{"label": "f", "names": ["Emily"]}, {"label": "m", "names": ["Greg"]}]}
+    r = client.post("/api/assurance/paired/probes", json=body)
+    assert r.status_code == 200 and r.headers["content-type"].startswith("text/csv")
+    assert r.headers["x-probe-set"] in r.headers["content-disposition"]
+    assert r.text.startswith("probe_id,pair_id,variant,") and r.text == client.post("/api/assurance/paired/probes", json=body).text
+    j = client.post("/api/assurance/paired/probes", json={**body, "format": "jsonl"})
+    assert j.headers["content-type"].startswith("application/x-ndjson") and len(j.text.splitlines()) == 50
+    bad = client.post("/api/assurance/paired/probes", json={**body, "groups": body["groups"][:1]})
+    assert bad.status_code == 422 and "exactly two" in bad.json()["detail"]

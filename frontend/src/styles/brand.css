@@ -418,3 +418,23 @@
   .pt-flip { width: 104px; height: 104px; }
   .pt-flip span { font-size: 28px; }
 }
+
+/* Paired test: probe generator (step 1) and the send-them snippet (step 2) */
+.pt-gen-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.pt-gen-group { display: grid; gap: 12px; margin: 0; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-inset); min-width: 0; }
+.pt-gen-group legend { padding: 0 6px; }
+.pt-gen-group textarea { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border-strong); border-radius: 6px; padding: 9px 10px; font: inherit; font-size: 14px; line-height: 1.45; resize: vertical; min-height: 64px; }
+.pt-gen-group input { background: var(--surface); }
+.pt-gen-group textarea:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 1px; }
+.pt-gen-opts { display: grid; grid-template-columns: repeat(3, minmax(0, 160px)); gap: 16px; margin-top: 16px; }
+.pt-send { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px; }
+.pt-send summary { cursor: pointer; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.pt-send summary:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 3px; border-radius: 4px; }
+.pt-send .az-panel-sub { margin-top: 10px; }
+.pt-send code, .pt-code { font-family: var(--font-mono); font-size: 12.5px; }
+.pt-code { margin-top: 10px; padding: 14px 16px; border-radius: 8px; background: var(--surface-inset); border: 1px solid var(--border); color: var(--text-primary); overflow-x: auto; white-space: pre; line-height: 1.6; max-width: 100%; }
+.pt-code:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
+@media (max-width: 720px) {
+  .pt-gen-groups { grid-template-columns: 1fr; }
+  .pt-gen-opts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+}

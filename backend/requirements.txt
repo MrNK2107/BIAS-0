@@ -3,7 +3,10 @@ uvicorn[standard]
 pandas>=2.0
 numpy
 scikit-learn>=1.4
-xgboost>=2.0
+# CPU-only XGBoost: the default Linux wheel is CUDA-enabled and pulls nvidia-nccl (~300 MB).
+# Same `import xgboost`; macOS has no xgboost-cpu wheel and its xgboost wheel is CPU-only anyway.
+xgboost-cpu>=2.1; sys_platform != "darwin"
+xgboost>=2.0; sys_platform == "darwin"
 shap
 fairlearn
 pydantic>=2.0

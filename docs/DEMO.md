@@ -117,8 +117,7 @@ export) and the new entry links to the previous one with a "since audit #1" comp
 ### 5:00 Close
 
 > "BIAS-0 tells you what was tested, on what data, with what uncertainty. It never says 'unbiased'. Next on our
-> roadmap: warehouse connectors and paired probes for vendor APIs and LLM screeners, using Indian name
-> corpora."
+> roadmap: warehouse connectors, and Indian name and identity corpora for the paired test."
 
 ---
 
@@ -162,6 +161,20 @@ sent to a vendor's LLM screener; within each pair only the name differs (female-
 - The 2x2 table highlights the 35. Selection rate 46.0% vs 37.8% (difference +8.3%, CI 5.5% to 11.3%); the score
   is 0.052 higher for the male-coded copy of the same resume.
 > "You can't open the vendor's model. You don't need to. Same resume, different name, different answer."
+
+Then scroll back up to **Step 1 · Build the probe set**: two name lists (edit them), 200 pairs, seed 7,
+**Download probes**. Open **Step 2** for the command that sends them to the vendor's endpoint.
+> "This is the file you send the vendor's API before you sign. Same settings, same seed, same file, so the vendor
+> can rebuild it and check we didn't stack the deck."
+
+In a terminal, the loop without a real vendor (the mock screener docks female-coded names):
+
+```bash
+cd backend
+python -m cli probes generate --pairs 300 --out probes.csv
+python -m cli probes run probes.csv --endpoint mock --mock-penalise female-coded --out results.csv
+python -m cli paired results.csv          # Differential treatment evidenced: 61 of 70 flips favour male-coded
+```
 
 ---
 

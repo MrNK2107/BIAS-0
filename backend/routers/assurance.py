@@ -11,6 +11,8 @@
 - ``GET /assurance/history``: the caller's hash-chained audit ledger, verified.
 - ``POST /assurance/paired``: paired-probe results (matched applications that differ in one signal):
   flip rate, exact McNemar test, rate and score differences with CIs. ``GET /assurance/paired/sample``.
+- ``POST /assurance/paired/probes``: the name-swapped probe set to send to a screener (CSV or JSONL,
+  two groups of names, seeded). Sending them is done client-side (``python -m cli probes run``).
 - ``POST /assurance/ll144-summary``: the NYC LL144 public summary (6 RCNY 5-303) as HTML.
 - ``POST /assurance/verify-report``: a report plus its decision log: does the file match the
   report's SHA-256, and does re-running the recorded settings reproduce its numbers?
@@ -29,7 +31,8 @@ from typing import Any
 import pandas as pd
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response
+from pydantic import BaseModel, Field
 
 from core.assurance_report import render_report
 from core.audit_ledger import GENESIS, build_entry, compare_to_previous, verify_chain
@@ -45,6 +48,7 @@ from core.outcome_audit import (
 )
 from core.ll144_summary import render_public_summary
 from core.paired import paired_probe
+from core.probes import DEFAULT_GROUPS, ROLE_SKILLS, generate_probes, probes_to_csv, probes_to_jsonl
 from core.report_verify import ReportFormatError, extract_fingerprint, reproduce
 from core.tradeoff import TradeoffInputError, threshold_tradeoff
 from repositories import assurance_ledger_repo
@@ -259,6 +263,48 @@ async def paired_sample() -> FileResponse:
     if not PAIRED_SAMPLE_PATH.exists():
         raise HTTPException(status_code=404, detail="Sample not found; run python -m utils.paired_probe_sample.")
     return FileResponse(PAIRED_SAMPLE_PATH, media_type="text/csv", filename=PAIRED_SAMPLE_PATH.name)
+
+
+class ProbeGroup(BaseModel):
+    label: str = Field(..., max_length=40)
+    names: list[str]
+
+
+class ProbeRequest(BaseModel):
+    n_pairs: int = 200
+    seed: int = 7
+    groups: list[ProbeGroup] | None = None
+    roles: list[str] | None = None
+    format: str = Field("csv", pattern="^(csv|jsonl)$")
+
+
+@router.get("/paired/probes/defaults")
+async def probe_defaults() -> dict[str, Any]:
+    """Default name groups and roles for the probe generator."""
+    return {"groups": DEFAULT_GROUPS, "roles": list(ROLE_SKILLS), "n_pairs": 200, "seed": 7}
+
+
+@router.post("/paired/probes")
+async def paired_probes(req: ProbeRequest) -> Response:
+    """The name-swapped probe set: two probes per pair, identical but for the first name. Same input, same file."""
+    groups = [g.model_dump() for g in req.groups] if req.groups is not None else None
+    try:
+        rows = await run_in_threadpool(generate_probes, req.n_pairs, req.seed, groups, req.roles)
+    except AuditInputError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+    set_id = rows[0]["probe_set"]
+    if req.format == "jsonl":
+        body, media, ext = probes_to_jsonl(rows), "application/x-ndjson", "jsonl"
+    else:
+        body, media, ext = probes_to_csv(rows), "text/csv", "csv"
+    return Response(
+        body, media_type=f"{media}; charset=utf-8",
+        headers={
+            "Content-Disposition": f'attachment; filename="bias0-probes-{set_id}.{ext}"',
+            "X-Probe-Set": set_id,
+            "Access-Control-Expose-Headers": "X-Probe-Set, Content-Disposition",
+        },
+    )
 
 
 @router.post("/ll144-summary", response_class=HTMLResponse)

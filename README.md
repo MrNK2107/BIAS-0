@@ -31,11 +31,12 @@ the lending or the hiring sample.
   customer drops the report and the CSV into **Reproduce a report**: BIAS-0 checks the file's SHA-256 and re-runs
   the audit, then compares the verdict, grade and every impact-ratio interval. An edited report or a doctored
   log shows up line by line.
-- **Paired test (Mode B, offline).** For vendor APIs and LLM screeners you cannot inspect: send the tool pairs
-  of applications that differ in one signal (say a female- or male-coded name), upload what it decided, and
-  BIAS-0 counts the pairs decided differently, runs an exact McNemar test and puts CIs on the rate and score
-  differences. The bundled sample is a name-swap test of an LLM resume screener: 37 flips, 35 of them favouring
-  the male-coded version (p < 0.0001).
+- **Paired test (Mode B).** For vendor APIs and LLM screeners you cannot inspect. BIAS-0 builds the probe set
+  (synthetic resumes sent twice, identical except for a first name from each of two lists you can edit; seeded,
+  so the same settings always give the same file), the CLI sends it to the screener's HTTP endpoint (with a
+  dry-run and an offline mock screener), and the results come back for an exact McNemar test with CIs on the rate
+  and score differences. The bundled sample is a name-swap test of an LLM resume screener: 37 flips, 35 of them
+  favouring the male-coded version (p < 0.0001).
 - **NYC LL144 public summary.** One click drafts the page an NYC employer must post for an automated
   employment decision tool (6 RCNY 5-303): audit date, data source and explanation, applicants assessed, unknown
   category count, selection *and* scoring rates with impact ratios per category and for the sex × race/ethnicity
@@ -50,6 +51,7 @@ the lending or the hiring sample.
 | **What to do next (hiring sample)**<br>![Action plan](docs/screenshots/hiring-plan.png) | **Drift linked to the screener release**<br>![Hiring drift](docs/screenshots/hiring-drift.png) |
 | **Reproduce a report from its CSV**<br>![Reproduce](docs/screenshots/assurance-reproduce.png) | **The report opens with the action plan**<br>![Report](docs/screenshots/assurance-report.png) |
 | **NYC LL144 public summary (hiring sample)**<br>![LL144 summary](docs/screenshots/ll144-summary.png) | **Paired test of an LLM screener (Mode B)**<br>![Paired test](docs/screenshots/paired-test.png) |
+| **Paired test, step 1: build the name-swapped probe set**<br>![Probe generator](docs/screenshots/paired-probes.png) | |
 
 ### Everything it does
 
@@ -92,7 +94,7 @@ A 5-minute demo script: [`docs/DEMO.md`](docs/DEMO.md).
 | **Regulatory mapping**<br>![Frameworks](docs/screenshots/assurance-frameworks.png) | **The assurance report (print to PDF)**<br>![Report](docs/screenshots/assurance-report.png) |
 | **Mitigation trade-off (holdout)**<br>![Trade-off](docs/screenshots/assurance-tradeoff.png) | **Hash-chained audit history**<br>![History](docs/screenshots/assurance-history.png) |
 | **What to do next (lending sample)**<br>![Plan](docs/screenshots/assurance-plan.png) | **Where it fits: BIAS-0 next to the toolkits**<br>![Compare](docs/screenshots/landing-compare.png) |
-| **Mobile (390 px)**<br><img src="docs/screenshots/landing-mobile.png" width="160" alt="Landing on mobile"> | |
+| **Mobile (390 px)**<br><img src="docs/screenshots/landing-mobile.png" width="160" alt="Landing on mobile"> | **Paired test on a phone**<br><img src="docs/screenshots/paired-mobile.png" width="160" alt="Paired test on mobile"> |
 
 All screenshots are taken headlessly from the bundled synthetic sample
 (`cd frontend && BASE=http://localhost:8000 node scripts/screenshots.mjs`).
@@ -141,6 +143,31 @@ python -m cli verify report.html samples/sample_hiring_screen.csv   # exit 0 onl
 ```
 
 Column roles you do not pass are detected as in the UI (`--time ''` skips a detected one).
+
+A paired test of a vendor or LLM screener, end to end (the probe set can also be downloaded from the Paired Test
+page or `POST /api/assurance/paired/probes`):
+
+```bash
+cd backend
+python -m cli probes generate --pairs 300 --seed 7 --out probes.csv \
+  --group "female-coded=Emily,Anne,Sarah" --group "male-coded=Greg,Todd,Neil"   # or .jsonl
+python -m cli probes run probes.csv --endpoint https://screener.example/v1/score --dry-run --limit 2
+python -m cli probes run probes.csv --endpoint https://screener.example/v1/score \
+  --template '{"resume": "{{resume_text}}", "role": "{{role}}"}' \
+  --decision-path result.shortlisted --score-path result.score \
+  --header "Authorization: Bearer $SCREENER_KEY" --delay 0.2 --out results.csv
+python -m cli paired results.csv --fail-on disparity
+# (output with --endpoint mock --mock-penalise female-coded in place of the real screener)
+# BIAS-0 paired test: Differential treatment evidenced
+#   300 pairs, flip rate 23.3%, exact McNemar p < 0.0001
+#   Of 70 pairs decided differently, 61 favoured male-coded and 9 favoured female-coded ...
+# Gate (--fail-on disparity): FAILED
+```
+
+`--endpoint mock` answers with a built-in, seeded stand-in screener (`--mock-penalise female-coded` docks one
+version) so the whole loop can be rehearsed offline. The requests go from your machine, not from the BIAS-0
+server: the server never calls a URL a user typed, and the screener's key stays in your shell. A probe whose
+call fails is recorded in an `error` column, and its pair is dropped and counted in the analysis.
 In GitHub Actions, after the step that exports last month's decisions:
 
 ```yaml
@@ -193,6 +220,9 @@ docker run -p 8080:8080 --env-file backend/.env bias0        # real use: Firebas
 - The container runs as an unprivileged user, has a `/health` healthcheck, and writes demo uploads to
   `LOCAL_STORAGE_DIR`. With Firebase configured, uploads go to Firebase Storage and data to Firestore.
 - `DEMO_MODE=1` is only for a public demo on the bundled synthetic logs. Anyone can use it and nothing is kept.
+- The image installs the CPU-only XGBoost wheel (`xgboost-cpu`). The default Linux `xgboost` wheel is built with
+  CUDA (57.6 MB) and pulls `nvidia-nccl-cu13` (305 MB); `xgboost-cpu` is 5.8 MB, so the image is about 357 MB
+  smaller, and nothing probes for a GPU. macOS keeps `xgboost`, which is CPU-only there.
 - The frontend reads its Firebase web config from `frontend/.env` at build time (`frontend/.env.example`). With
   no config it builds in demo mode.
 
@@ -262,8 +292,9 @@ graph LR
 | `backend/core/assurance_report.py` | Self-contained HTML report: no scripts, every user string escaped |
 | `backend/core/tradeoff.py` | Group-threshold sweep: seeded stratified 50/50 split, holdout accuracy / impact ratio / TPR gap |
 | `backend/core/audit_ledger.py` | Hash-chained audit history (RFC 8785 canonical JSON) |
-| `backend/routers/assurance.py` | `POST /inspect`, `POST /outcome-audit`, `POST /outcome-audit/report`, `POST /tradeoff`, `POST /paired`, `GET /paired/sample`, `POST /ll144-summary`, `POST /verify-report`, `GET /history`, `GET /samples`, `GET /sample?name=`, `GET /frameworks` |
+| `backend/routers/assurance.py` | `POST /inspect`, `POST /outcome-audit`, `POST /outcome-audit/report`, `POST /tradeoff`, `POST /paired`, `GET /paired/sample`, `POST /paired/probes`, `POST /ll144-summary`, `POST /verify-report`, `GET /history`, `GET /samples`, `GET /sample?name=`, `GET /frameworks` |
 | `backend/core/paired.py` | Paired-probe analysis: 2x2 table, flip rate, exact McNemar, bootstrap CIs, verdict |
+| `backend/core/probes.py`, `core/probe_runner.py` | Name-swapped probe sets (seeded, fingerprinted, CSV/JSONL) and the HTTP runner behind `cli probes run` (mock, dry-run) |
 | `backend/core/ll144_summary.py` | The NYC LL144 public summary page (5-303 facts, rates and impact ratios, intersections) |
 | `backend/cli.py` | Command-line audit and verify: a fairness gate for CI (`python -m cli audit`, `python -m cli verify`) |
 | `backend/core/report_verify.py` | Report fingerprint (settings + expected numbers) and reproduction from the CSV |
@@ -315,6 +346,11 @@ binomial (McNemar) test against an even split. The selection-rate difference and
 get percentile-bootstrap CIs over pairs (seeded). Verdict: *differential treatment evidenced* when p < 0.05;
 *no material difference* when the rate-difference CI lies within ±5 points; otherwise *inconclusive* (also below
 30 pairs). The test isolates the signal you varied, so it speaks to disparate treatment, not disparate impact.
+Generated probe sets share everything within a pair (role, years, skills, employers, degree, surname) except the
+first name; the order of the two versions is randomised per pair, and each probe carries a `probe_set`
+fingerprint (a short SHA-256 of the groups, names, pair count, roles and seed). The default name lists follow the
+correspondence-study tradition (Bertrand and Mullainathan, 2004) and are examples, not a validated instrument:
+use names validated for the population and signal you test.
 
 **Change attribution.** A column is a *switch* when its dominant value (at least 80% of a period's rows) changes
 between consecutive periods, at most three times (more is noise, not a release). Decision, outcome, score and group
@@ -352,7 +388,7 @@ but a different file; same file but different numbers (an edited report or anoth
 - The 0.80 threshold is the EEOC four-fifths **heuristic**. LL144 sets no pass mark. A ratio above 0.80 is not a
   certificate of fairness.
 - Groups that were not recorded cannot be assessed. Proxies (pincode, surname, institution) need the workbench's
-  proxy analysis or future paired probes (Mode B, see the roadmap).
+  proxy analysis or a paired test (Mode B), which varies a signal such as a name rather than reading a column.
 - Error-rate metrics inherit the quality of the outcome label. If outcomes exist only for approved applicants
   (selective labels), they are biased. BIAS-0 warns when outcome coverage is below 100%.
 - Bootstrap intervals assume independent decisions. Repeat applicants or batch effects make them too narrow.
@@ -366,7 +402,7 @@ but a different file; same file but different numbers (an edited report or anoth
 
 ```bash
 cd backend && pip install -r requirements-dev.txt
-python -m pytest -q                              # 288 tests, about a minute
+python -m pytest -q                              # 306 tests, about a minute
 cd frontend
 npm run check                                    # eslint + tsc
 npm run test:unit                                # node:test unit tests

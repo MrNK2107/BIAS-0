@@ -98,10 +98,17 @@ await desk.evaluate(() => {
 });
 await desk.screenshot({ path: `${out}/paired-test.png` });
 
+// Paired test step 1: the probe generator with the send-them snippet open.
+await desk.locator(".pt-send summary").click();
+await desk.locator(".pt-gen").screenshot({ path: `${out}/paired-probes.png` });
+
 const phone = await page({ width: 390, height: 844 });
 await phone.goto(`${base}/`, { waitUntil: "networkidle" });
 await phone.evaluate(() => document.fonts.ready);
 await phone.screenshot({ path: `${out}/landing-mobile.png`, fullPage: true });
+// Phones: the demo pill sits in the page flow, above a one-row top bar.
+await phone.goto(`${base}/paired`, { waitUntil: "networkidle" });
+await phone.screenshot({ path: `${out}/paired-mobile.png` });
 const overflow = await phone.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 
 await browser.close();

@@ -90,6 +90,7 @@ def paired_probe(
     wide = frame.pivot(index="pair", columns="variant", values="d").dropna()
     if ref not in wide.columns or other not in wide.columns:
         raise AuditInputError("No complete pairs: each pair needs one row for each variant.")
+    unanswered = int(len(valid) - len(wide))  # complete pairs with a missing decision (a failed call)
     a = wide[ref].to_numpy(int)
     b = wide[other].to_numpy(int)
     n = len(a)
@@ -155,7 +156,7 @@ def paired_probe(
         "reference": ref,
         "other": other,
         "n_pairs": n,
-        "n_pairs_dropped": dropped,
+        "n_pairs_dropped": dropped + unanswered,
         "table": {"both_selected": n11, "only_reference": n10, "only_other": n01, "neither": n00},
         "flip_rate": round(discordant / n, 4) if n else None,
         "flip_rate_ci": [round(flip_ci[0], 4), round(flip_ci[1], 4)] if n else None,
@@ -167,5 +168,9 @@ def paired_probe(
         "score": score,
         "verdict": {"status": status, "label": label, "reason": reason},
         "config": {"n_boot": n_boot, "seed": int(cfg["seed"]), "margin": margin, "min_pairs": MIN_PAIRS},
-        "warnings": ([f"{dropped} pair id(s) did not have exactly one row per variant and were left out."] if dropped else []),
+        "warnings": (
+            ([f"{dropped} pair id(s) did not have exactly one row per variant and were left out."] if dropped else [])
+            + ([f"{unanswered} pair(s) had a probe with no decision (for example a failed call) and were left out."]
+               if unanswered else [])
+        ),
     }

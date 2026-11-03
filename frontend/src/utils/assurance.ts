@@ -581,6 +581,40 @@ export interface PairedResult {
 }
 
 /** Guess the roles from the header: pair id, the two-valued signal, the decision, a score. */
+/** The first rows of a CSV, honouring quoted fields (probe files carry multi-line resume text). */
+export function parseCsvHead(text: string, maxRows = 400): { header: string[]; rows: string[][] } {
+  const out: string[][] = [];
+  let row: string[] = [];
+  let field = "";
+  let quoted = false;
+  for (let i = 0; i < text.length && out.length <= maxRows; i++) {
+    const ch = text[i];
+    if (quoted) {
+      if (ch === '"' && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else if (ch === '"') quoted = false;
+      else field += ch;
+    } else if (ch === '"') quoted = true;
+    else if (ch === ",") {
+      row.push(field);
+      field = "";
+    } else if (ch === "\n" || ch === "\r") {
+      if (ch === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      if (row.some((c) => c !== "")) out.push(row);
+      row = [];
+      field = "";
+    } else field += ch;
+  }
+  if (out.length <= maxRows && (field || row.length)) {
+    row.push(field);
+    out.push(row);
+  }
+  const [h, ...rest] = out;
+  return { header: (h ?? []).map((c) => c.trim()), rows: rest };
+}
+
 export function guessPairedColumns(header: string[], rows: string[][]): PairedColumns {
   const lower = header.map((h) => h.toLowerCase());
   const distinct = (i: number) => new Set(rows.map((r) => r[i]).filter((v) => v !== undefined && v !== "")).size;
@@ -588,10 +622,14 @@ export function guessPairedColumns(header: string[], rows: string[][]): PairedCo
     const i = lower.findIndex(pred);
     return i >= 0 ? header[i] : "";
   };
-  const pair = find((h) => h.includes("pair"));
-  const decision = find((h, i) => /(shortlist|decision|selected|approved|hired|advance)/.test(h) && distinct(i) === 2);
-  const score = find((h) => /(score|prob)/.test(h));
-  const variant = find((h, i) => header[i] !== pair && header[i] !== decision && distinct(i) === 2);
+  // Exact names first: the files BIAS-0 writes (python -m cli probes run) use pair_id / variant / decision / score.
+  const exact = (...names: string[]) => find((h) => names.includes(h));
+  const pair = exact("pair_id") || find((h) => h.includes("pair"));
+  const decision =
+    exact("decision") || find((h, i) => /(shortlist|decision|selected|approved|hired|advance)/.test(h) && distinct(i) === 2);
+  const score = exact("score") || find((h) => /(score|prob)/.test(h));
+  const variant =
+    exact("variant", "name_signal") || find((h, i) => header[i] !== pair && header[i] !== decision && distinct(i) === 2);
   return { pair_col: pair, variant_col: variant, decision_col: decision, score_col: score, reference: "" };
 }
 
