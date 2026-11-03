@@ -22,6 +22,12 @@ from fastapi import (
 from core.auth import require_user
 from core.column_profiler import analyze_columns
 from core.common import get_metric_weights
+from core.evidence import (
+    LL144_RATE_TYPES,
+    display_name,
+    original_name_from_stored,
+    project_ll144_rate_type,
+)
 from core.storage import download_file_bytes, upload_file
 from repositories import (
     alert_repo,
@@ -96,11 +102,18 @@ async def upload_assets(
         project_id,
         {
             "datasetPath": dataset_url,
+            # Name as uploaded; the storage path above carries a uuid prefix.
+            "datasetFilename": display_name(dataset.filename),
             "modelPath": model_url,
+            "modelFilename": display_name(model_file.filename) if model_url and model_file else "",
             "maxStep": 2,
         },
     )
-    return {"status": "uploaded", "datasetPath": dataset_url}
+    return {
+        "status": "uploaded",
+        "datasetPath": dataset_url,
+        "datasetFilename": display_name(dataset.filename),
+    }
 
 
 @router.post("/{project_id}/run")
@@ -108,6 +121,7 @@ async def run_project_pipeline(
     project_id: str,
     background_tasks: BackgroundTasks,
     metric_priority: str = Form(default="balanced"),
+    positive_label: str | None = Form(None),
     uid: str = Depends(require_user),
 ) -> dict[str, Any]:
     project = project_repo.get(project_id)
@@ -137,7 +151,10 @@ async def run_project_pipeline(
         _run_pipeline,
         task_id=task_id,
         df_bytes=df_bytes,
-        filename=os.path.basename(dataset_url),
+        # Older project records have no datasetFilename: derive it from the path.
+        filename=project.get("datasetFilename")
+        or original_name_from_stored(dataset_url),
+        stored_name=os.path.basename(dataset_url),
         sensitive_list=project.get("sensitiveColumns", []),
         target_col=project.get("targetColumn", ""),
         project_id=project_id,
@@ -145,6 +162,8 @@ async def run_project_pipeline(
         model_bytes=model_bytes,
         domain=project.get("domain", "general"),
         uid=uid,
+        positive_label=(positive_label or "").strip() or None,
+        ll144_rate_type=project_ll144_rate_type(project),
     )
 
     return {"task_id": task_id, "status": "processing"}
@@ -223,6 +242,13 @@ async def list_projects(uid: str = Depends(require_user)) -> list[dict[str, Any]
             "sensitive_columns": p.get("sensitiveColumns", []),
             "target_column": p.get("targetColumn", ""),
             "max_step": p.get("maxStep", 1),
+            "ll144_rate_type": project_ll144_rate_type(p)["value"],
+            "dataset_filename": p.get("datasetFilename")
+            or (
+                original_name_from_stored(p["datasetPath"])
+                if p.get("datasetPath")
+                else None
+            ),
         }
         for p in projects
     ]
@@ -249,6 +275,27 @@ async def update_project_config(
         },
     )
     return {"status": "updated"}
+
+
+@router.patch("/{project_id}/settings")
+async def update_project_settings(
+    project_id: str,
+    ll144_rate_type: str = Form(...),
+    uid: str = Depends(require_user),
+) -> dict[str, Any]:
+    """Audit settings kept on the project. ``ll144_rate_type`` is recorded in
+    the provenance of every later run."""
+    project = project_repo.get(project_id)
+    if not project or project.get("userId") != uid:
+        raise HTTPException(status_code=404, detail="Project not found")
+    value = ll144_rate_type.strip().lower()
+    if value not in LL144_RATE_TYPES:
+        raise HTTPException(
+            status_code=422,
+            detail=f"ll144_rate_type must be one of {', '.join(LL144_RATE_TYPES)}",
+        )
+    project_repo.update(project_id, {"ll144RateType": value})
+    return {"status": "updated", "ll144_rate_type": value}
 
 
 @router.patch("/{project_id}/step")

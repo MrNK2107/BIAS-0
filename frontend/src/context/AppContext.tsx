@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useRef,
+  useCallback,
   ReactNode,
 } from "react";
 import { formApi, api, setUnauthorizedHandler } from "../api/client";
@@ -31,6 +32,8 @@ interface AppState {
   file: File | null;
   sensitiveCols: string[];
   targetCol: string;
+  /** Target value counted as the positive (selected) class; "" = infer. */
+  positiveLabel: string;
   domain: string;
   projectId: string | null;
   modelType: "file" | "api";
@@ -60,6 +63,7 @@ interface AppContextType extends AppState {
   setFile: (val: File | null) => void;
   setSensitiveCols: (val: string[]) => void;
   setTargetCol: (val: string) => void;
+  setPositiveLabel: (val: string) => void;
   setDomain: (val: string) => void;
   setProjectId: (val: string | null) => void;
   setModelType: (val: "file" | "api") => void;
@@ -105,7 +109,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [file, setFile] = useState<File | null>(null);
   const [sensitiveCols, setSensitiveCols] = useState<string[]>([]);
-  const [targetCol, setTargetCol] = useState("");
+  const [targetCol, setTargetColState] = useState("");
+  const [positiveLabel, setPositiveLabel] = useState("");
+  // A positive label belongs to one target column: reset it when the target changes.
+  const setTargetCol = useCallback((val: string) => {
+    setTargetColState(val);
+    setPositiveLabel("");
+  }, []);
   const [domain, setDomain] = useState("loan");
   const prevUserId = useRef<string | null>(null);
 
@@ -162,6 +172,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       fd.append("project_id", projectId ?? "0");
       fd.append("metric_priority", metricPriority);
       fd.append("domain", domain);
+      if (positiveLabel) fd.append("positive_label", positiveLabel);
       if (customModelFile) {
         fd.append("custom_model_file", customModelFile);
       }
@@ -331,6 +342,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     fd.append("sensitive_cols", sensitiveCols.join(","));
     fd.append("target_col", targetCol);
     fd.append("metric_priority", metricPriority);
+    if (positiveLabel) fd.append("positive_label", positiveLabel);
     if (file) fd.append("file", file);
     return fd;
   };
@@ -552,7 +564,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (p.domain && domain === "loan") setDomain(p.domain);
       }
     }
-  }, [projects, projectId, domain, sensitiveCols.length, targetCol]);
+  }, [projects, projectId, domain, sensitiveCols.length, targetCol, setTargetCol]);
 
   // Sync projects and active project selection on auth state change
   useEffect(() => {
@@ -605,6 +617,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setSensitiveCols,
         targetCol,
         setTargetCol,
+        positiveLabel,
+        setPositiveLabel,
         domain,
         setDomain,
         projectId,

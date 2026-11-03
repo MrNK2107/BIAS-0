@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
@@ -44,7 +45,9 @@ export default function Modal({
     };
   }, [open, onClose]);
 
-  return (
+  // Portal to <body>: a parent with backdrop-filter or transform (the sticky
+  // top bar) would otherwise become the containing block of position: fixed.
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -139,6 +142,7 @@ export default function Modal({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

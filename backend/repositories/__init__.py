@@ -1,5 +1,6 @@
 from firebase.repositories import (
     alert_repo,
+    assurance_ledger_repo,
     audit_run_repo,
     compliance_repo,
     flag_repo,
@@ -16,4 +17,5 @@ __all__ = [
     "monitoring_log_repo",
     "alert_repo",
     "flag_repo",
+    "assurance_ledger_repo",
 ]

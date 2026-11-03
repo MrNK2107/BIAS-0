@@ -7,7 +7,6 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 
 from .common import (
-    bootstrap_fairness_gaps,
     build_and_fit_default,
     fairness_gaps,
     fairness_score_from_gaps,
@@ -15,6 +14,7 @@ from .common import (
     prepare_split,
 )
 from .metrics import ZERO_GAPS
+from .rigour import bootstrap_gap_cis
 
 
 def _minority_group(series: pd.Series) -> str:
@@ -65,14 +65,17 @@ def run_stress_tests(
     )
     baseline_score = fairness_score_from_gaps(baseline_gaps)
 
-    # Bootstrap baseline CI for comparison
-    baseline_ci = {}
-    if sensitive_cols and sensitive_cols[0] in df.columns:
-        baseline_ci = bootstrap_fairness_gaps(
-            baseline_pred,
-            prepared.y_test,
-            df.loc[prepared.y_test.index, sensitive_cols[0]],
-        )
+    # Baseline CIs per sensitive column (stratified bootstrap from core.rigour),
+    # computed lazily: a custom scenario may target a column other than the first.
+    baseline_test = df.loc[prepared.y_test.index]
+    baseline_ci_cache: dict[str, dict[str, Any]] = {}
+
+    def _baseline_ci(col: str) -> dict[str, Any]:
+        if col not in baseline_ci_cache:
+            baseline_ci_cache[col] = bootstrap_gap_cis(
+                prepared.y_test, baseline_pred, baseline_test[col]
+            )
+        return baseline_ci_cache[col]
 
     scenarios: list[dict[str, Any]] = []
 
@@ -202,19 +205,21 @@ def run_stress_tests(
         scenario_score = fairness_score_from_gaps(scenario_gaps)
         fairness_drop = round(baseline_score - scenario_score)
 
-        # Statistical comparison using bootstrap overlap
-        ci_overlap = False
-        if baseline_ci and s_col and s_col in modified_df.columns:
-            boot_scenario = bootstrap_fairness_gaps(
-                scenario_pred,
+        # Statistical comparison: do the baseline and scenario DPD CIs overlap?
+        significant: bool | None = None
+        dpd_ci: dict[str, Any] | None = None
+        baseline_dpd_ci: dict[str, Any] | None = None
+        if s_col and s_col in modified_df.columns and s_col in df.columns:
+            baseline_dpd_ci = _baseline_ci(s_col)["demographic_parity_difference"]
+            dpd_ci = bootstrap_gap_cis(
                 scenario_split.y_test,
+                scenario_pred,
                 modified_df.loc[scenario_split.y_test.index, s_col],
-            )
-            bci = baseline_ci.get("demographic_parity_difference", {})
-            sci = boot_scenario.get("demographic_parity_difference", {})
-            b_lower, b_upper = bci.get("ci_lower", 0), bci.get("ci_upper", 0)
-            s_lower, s_upper = sci.get("ci_lower", 0), sci.get("ci_upper", 0)
-            ci_overlap = not (b_upper < s_lower or s_upper < b_lower)
+            )["demographic_parity_difference"]
+            b_lo, b_hi = baseline_dpd_ci["ci_lower"], baseline_dpd_ci["ci_upper"]
+            s_lo, s_hi = dpd_ci["ci_lower"], dpd_ci["ci_upper"]
+            if None not in (b_lo, b_hi, s_lo, s_hi):
+                significant = bool(b_hi < s_lo or s_hi < b_lo)
 
         scenarios.append(
             {
@@ -223,7 +228,9 @@ def run_stress_tests(
                 "accuracy": round(scenario_accuracy, 4),
                 "fairness_drop": fairness_drop,
                 "fragile": fairness_drop > 20,
-                "statistically_significant": not ci_overlap if baseline_ci else None,
+                "statistically_significant": significant,
+                "dpd_ci": dpd_ci,
+                "baseline_dpd_ci": baseline_dpd_ci,
                 "note": (
                     f"Fairness dropped {fairness_drop} points under {name.lower()}."
                     if fairness_drop > 0

@@ -36,16 +36,35 @@ from core.deps import require_project
 from core.tuning import train_best_model
 from core.counterfactual import run_counterfactual_test
 from core.data_audit import run_data_audit
+from core.evidence import (
+    UNIFIED_SCORE_WEIGHTS,
+    build_provenance,
+    display_name,
+    project_ll144_rate_type,
+)
 from core.explainability import explain_flagged_decisions, generate_narrative_summary
 from core.feature_intelligence import detect_proxy_features
-from core.model_bias import run_model_bias_analysis
+from core.data import describe_target_binarisation, resolve_target_positive
+from core.model_bias import run_model_bias_analysis, wrap_label_model
 from core.stress_test import run_stress_tests
-from repositories import alert_repo, audit_run_repo, monitoring_log_repo
+from repositories import alert_repo, audit_run_repo, monitoring_log_repo, project_repo
 from utils.model_loader import load_model_from_bytes
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/pipeline", tags=["pipeline"])
+
+
+def _worst_disparate_impact(model_bias: dict[str, Any]) -> float | None:
+    """Lowest disparate impact ratio (min/max selection rate) over the sensitive
+    columns, from the statistical-rigour block; None when it is absent."""
+    per_attr = (model_bias.get("statistical_rigour") or {}).get("per_attribute") or {}
+    values = [
+        res["gaps"]["disparate_impact_ratio"]["point"]
+        for res in per_attr.values()
+        if res.get("gaps", {}).get("disparate_impact_ratio", {}).get("point") is not None
+    ]
+    return float(min(values)) if values else None
 
 
 def _now() -> str:
@@ -65,6 +84,12 @@ def _store_get(task_id: str) -> dict[str, Any] | None:
 def _store_set(task_id: str, value: dict[str, Any]) -> None:
     with _task_lock:
         _task_store[task_id] = value
+
+
+def _stage(task_id: str, stage: str) -> None:
+    """Record the running stage so /status shows where a slow run is."""
+    logger.info("Pipeline task %s: %s", task_id, stage)
+    _store_set(task_id, {"status": "processing", "stage": stage})
 
 
 def _persist_pipeline_result(
@@ -102,9 +127,7 @@ def _persist_pipeline_result(
             "predictionDriftScore": 0.0,
             "keyMetrics": {
                 "accuracy": float(model_bias.get("overall_accuracy", 0.0)),
-                "disparate_impact": model_bias.get("metrics", {}).get(
-                    "disparate_impact"
-                ),
+                "disparate_impact": _worst_disparate_impact(model_bias),
                 "demographic_parity": model_bias.get("metrics", {}).get(
                     "demographic_parity_difference"
                 ),
@@ -165,6 +188,29 @@ def _persist_pipeline_result(
             )
 
 
+def unified_score(scores: dict[str, float]) -> int:
+    """Weighted blend of the stage scores (weights in core.evidence)."""
+    return round(sum(w * scores[k] for k, w in UNIFIED_SCORE_WEIGHTS.items()))
+
+
+FINAL_WORKFLOW_STEP = 9
+
+
+def _unlock_all_steps(project_id: str, uid: str) -> None:
+    """A finished analysis has results for every stage, so every workflow
+    step (Data Audit .. Monitoring) should be reachable. Without this the
+    project stayed at maxStep 3 and steps 4-9 were locked forever."""
+    try:
+        project = project_repo.get(project_id)
+        if project and project.get("userId") == uid:
+            project_repo.update(
+                project_id,
+                {"maxStep": max(project.get("maxStep", 1), FINAL_WORKFLOW_STEP)},
+            )
+    except Exception as exc:  # never fail a finished run over bookkeeping
+        logger.warning("Could not unlock steps for project %s: %s", project_id, exc)
+
+
 def _run_pipeline(
     task_id: str,
     df_bytes: bytes,
@@ -176,6 +222,9 @@ def _run_pipeline(
     model_bytes: bytes | None,
     domain: str,
     uid: str,
+    stored_name: str | None = None,
+    positive_label: str | None = None,
+    ll144_rate_type: dict[str, Any] | None = None,
 ) -> None:
     """Background worker: runs all 8 stages and persists to Firestore."""
     _store_set(task_id, {"status": "processing"})
@@ -192,12 +241,27 @@ def _run_pipeline(
             return
 
         # ── Normalize target to binary 0/1 ─────────────────────────────────
-        normalize_target_binary(df, target_col)
+        # The positive class is the user's choice, else the inferred label;
+        # either way it is recorded in the provenance block.
+        raw_target = df[target_col].dropna()
+        target_labels = list(pd.unique(raw_target))
+        positive = resolve_target_positive(raw_target, positive_label)
+        binarisation = describe_target_binarisation(raw_target, positive_label or None)
+        try:
+            normalize_target_binary(df, target_col, positive_label=positive_label or None)
+        except ValueError as exc:
+            _store_set(task_id, {"status": "error", "error": str(exc)})
+            return
 
         # ── Build / load / tune model ───────────────────────────────────────────
+        _stage(task_id, "training")
         prepared = prepare_split(df, target_col)
         if model_bytes:
-            shared_model = load_model_from_bytes(model_bytes)
+            # A user model may predict the original text labels; map them
+            # with the same positive class for every stage.
+            shared_model = wrap_label_model(
+                load_model_from_bytes(model_bytes), positive["value"], target_labels
+            )
             model_used = "user_provided"
         else:
             shared_model, model_type = train_best_model(
@@ -206,12 +270,14 @@ def _run_pipeline(
             model_used = f"tuned_{model_type}"
 
         # ── Stage 1: Data Audit ───────────────────────────────────────────────
+        _stage(task_id, "data_audit")
         data_audit = run_data_audit(df, sensitive_list, target_col, domain=domain)
 
         # ── Stage 2: Proxy Detection ──────────────────────────────────────────
         proxy = detect_proxy_features(df, sensitive_list)
 
         # ── Stage 3: Model Bias ───────────────────────────────────────────────
+        _stage(task_id, "model_bias")
         model_bias = run_model_bias_analysis(
             df,
             sensitive_list,
@@ -222,6 +288,7 @@ def _run_pipeline(
         )
 
         # ── Stage 4: Explainability (SHAP / contrastive) ─────────────────────
+        _stage(task_id, "explanations")
         explanations = explain_flagged_decisions(
             df, shared_model, sensitive_list, target_col, n_samples=5, proxy_result=proxy
         )
@@ -233,6 +300,7 @@ def _run_pipeline(
 
         # ── Stage 6: Counterfactual (first sensitive col) ─────────────────────
         primary_sensitive_col = sensitive_list[0] if sensitive_list else target_col
+        _stage(task_id, "counterfactual")
         counterfactual = run_counterfactual_test(
             df,
             shared_model,
@@ -242,6 +310,7 @@ def _run_pipeline(
         )
 
         # ── Stage 7: Stress Tests ─────────────────────────────────────────────
+        _stage(task_id, "stress")
         stress = run_stress_tests(df, shared_model, sensitive_list, target_col)
 
         # ── Scores & Decision Calculation ─────────────────────────────────────
@@ -261,12 +330,14 @@ def _run_pipeline(
         else:
             stress_test_score = 100
 
-        unified_fairness_score = round(
-            0.25 * model_bias_score
-            + 0.20 * counterfactual_score
-            + 0.20 * stress_test_score
-            + 0.20 * data_bias_score
-            + 0.15 * proxy_risk_score
+        unified_fairness_score = unified_score(
+            {
+                "model_bias_score": model_bias_score,
+                "counterfactual_score": counterfactual_score,
+                "stress_test_score": stress_test_score,
+                "data_bias_score": data_bias_score,
+                "proxy_risk_score": proxy_risk_score,
+            }
         )
 
         if unified_fairness_score < 50:
@@ -309,6 +380,28 @@ def _run_pipeline(
             "stress": stress,
             "model_used": model_used,
         }
+        rigour_cfg = (model_bias.get("statistical_rigour") or {}).get("config")
+        if rigour_cfg is None:
+            from core.rigour import default_config
+
+            rigour_cfg = default_config()
+        result["provenance"] = build_provenance(
+            df_bytes=df_bytes,
+            filename=filename,
+            n_rows=len(df),
+            columns=list(df.columns),
+            sensitive_cols=sensitive_list,
+            target_col=target_col,
+            domain=domain,
+            metric_weights=metric_weights,
+            model_used=model_used,
+            model_bytes=model_bytes,
+            rigour_config=rigour_cfg,
+            stored_name=stored_name,
+            positive_label=positive,
+            target_binarisation=binarisation,
+            ll144_rate_type=ll144_rate_type,
+        )
 
         # ── Persist to Firestore ──────────────────────────────────────────────
         _persist_pipeline_result(
@@ -322,6 +415,7 @@ def _run_pipeline(
             decision=decision,
         )
 
+        _unlock_all_steps(str(project_id), uid)
         _store_set(task_id, {"status": "complete", "result": result})
 
     except Exception as exc:
@@ -341,10 +435,11 @@ async def run_all(
     project_id: str = Form(...),
     metric_priority: str = Form(default="balanced"),
     domain: str = Form(default="general"),
+    positive_label: str | None = Form(None),
     custom_model_file: UploadFile | None = None,
     uid: str = Depends(require_user),
 ) -> dict[str, str]:
-    await require_project(project_id, uid)
+    project = await require_project(project_id, uid)
     if file.size and file.size > MAX_UPLOAD_SIZE:
         raise HTTPException(
             status_code=413,
@@ -372,7 +467,7 @@ async def run_all(
         _run_pipeline,
         task_id=task_id,
         df_bytes=df_bytes,
-        filename=file.filename or "upload.csv",
+        filename=display_name(file.filename),
         sensitive_list=sensitive_list,
         target_col=target_col,
         project_id=project_id,
@@ -380,6 +475,8 @@ async def run_all(
         model_bytes=model_bytes,
         domain=domain,
         uid=uid,
+        positive_label=(positive_label or "").strip() or None,
+        ll144_rate_type=project_ll144_rate_type(project),
     )
 
     return {"task_id": task_id, "status": "processing"}

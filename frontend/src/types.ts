@@ -17,7 +17,18 @@ export interface GroupStatDetail {
   representation_ratio?: number;
 }
 
+export interface TargetBinarisation {
+  method: "two_class" | "one_vs_rest" | "median_threshold" | "unsupported";
+  n_classes: number;
+  note: string | null;
+  threshold?: number;
+  positive?: string | number | boolean;
+}
+
 export interface DataAuditResult {
+  /** how a multi-valued target was binarised (null note = plain two classes) */
+  target_binarisation?: TargetBinarisation | null;
+  warnings?: string[];
   group_stats: Record<string, Record<string, GroupStatDetail>>;
   class_distribution: { approved: number; rejected: number };
   under_represented_groups: string[];
@@ -81,8 +92,8 @@ export interface ModelSummary {
 
 export interface GroupMetricValue {
   approval_rate: number;
-  tpr: number;
-  fpr: number;
+  tpr: number | null;
+  fpr: number | null;
   accuracy: number;
 }
 
@@ -106,6 +117,90 @@ export interface ModelBiasResult {
   model_used: string;
   hidden_bias?: HiddenBiasEntry[];
   all_models?: Record<string, ModelSummary>;
+  statistical_rigour?: StatisticalRigour;
+  /** NYC LL144 rates on the test set (backend core.model_bias._ll144_block) */
+  ll144?: {
+    selection?: Ll144Rates;
+    /** null when the model has no score (predict_proba) */
+    scoring?: Ll144Rates | null;
+  };
+}
+
+export interface Ll144Rates {
+  rate_type: "selection" | "scoring";
+  rates: Record<string, Record<string, number>>;
+  counts: Record<string, Record<string, number>>;
+}
+
+// ── Statistical rigour (Backend: core/rigour.py) ─────────────────────────
+
+export interface GapWithCI {
+  point: number;
+  ci_lower: number | null;
+  ci_upper: number | null;
+  se: number | null;
+}
+
+export interface RigourGroup {
+  count: number;
+  positives: number;
+  negatives: number;
+  selection_rate: number | null;
+  selection_rate_ci: [number, number];
+  tpr: number | null;
+  fpr: number | null;
+  fnr: number | null;
+  reliable: boolean;
+  warnings: string[];
+}
+
+export interface CalibrationSummary {
+  n: number;
+  ece: number | null;
+  mce: number | null;
+  brier: number | null;
+  reliable?: boolean;
+  bins: {
+    lower: number;
+    upper: number;
+    count: number;
+    mean_predicted: number;
+    observed_rate: number;
+  }[];
+}
+
+export interface RigourAttribute {
+  n_rows: number;
+  n_groups: number;
+  n_reliable_groups: number;
+  gaps_scope: "all_groups" | "reliable_groups";
+  gaps: Record<string, GapWithCI>;
+  groups: Record<string, RigourGroup>;
+  groups_omitted: number;
+  n_small_groups: number;
+  small_groups: { group: string; count: number }[];
+  unreliable: boolean;
+  columns?: string[];
+  calibration?: {
+    overall: CalibrationSummary;
+    by_group: Record<string, CalibrationSummary>;
+    ece_gap: number | null;
+  };
+}
+
+export interface StatisticalRigour {
+  config: {
+    n_boot: number;
+    seed: number;
+    ci_level: number;
+    min_group_size: number;
+    min_rate_denominator: number;
+    calibration_bins: number;
+    ci_method: string;
+  };
+  per_attribute: Record<string, RigourAttribute>;
+  intersectional: Record<string, RigourAttribute>;
+  warnings: string[];
 }
 
 // ── Explanations (Backend: explain_flagged_decisions) ───────────────────
@@ -160,6 +255,9 @@ export interface StressScenario {
   fairness_drop: number;
   fragile: boolean;
   statistically_significant?: boolean | null;
+  /** demographic parity difference with a stratified bootstrap CI (core.rigour) */
+  dpd_ci?: GapWithCI | null;
+  baseline_dpd_ci?: GapWithCI | null;
   note: string;
   baseline_fairness_score: number;
   baseline_accuracy: number;
@@ -226,6 +324,44 @@ export interface PipelineFullResult {
   counterfactual?: CounterfactualResult;
   stress?: StressTestResult;
   model_used?: string;
+  /** what was audited and how (Backend: core/evidence.py); absent on older runs */
+  provenance?: Provenance;
+}
+
+export interface Provenance {
+  schema_version: string;
+  generated_at: string;
+  input: {
+    /** name the file was uploaded under (schema >= 1.1.0); older runs stored the storage object name here */
+    filename: string;
+    /** storage object the bytes were read from ("<uuid hex>_<name>"); null for direct uploads, absent before 1.1.0 */
+    stored_name?: string | null;
+    sha256: string;
+    size_bytes: number;
+    n_rows: number;
+    n_columns: number;
+    columns: string[];
+  };
+  model: { used: string; sha256: string | null };
+  config: {
+    sensitive_cols: string[];
+    target_col: string;
+    /** positive (selected) class of the target; schema >= 1.2.0 (absent before) */
+    positive_label?: { value: string | number | boolean | null; source: "user" | "inferred" } | null;
+    /** how the target became 0/1; schema >= 1.3.0 (backend core.data.describe_target_binarisation) */
+    target_binarisation?: TargetBinarisation | null;
+    /** NYC LL144 rate type from the project setting; schema >= 1.4.0 */
+    ll144_rate_type?: { value: "selection" | "scoring"; source: "project" | "default" } | null;
+    domain: string;
+    metric_weights: Record<string, number>;
+    unified_score_weights: Record<string, number>;
+    statistical_rigour: Partial<StatisticalRigour["config"]>;
+  };
+  versions: {
+    bias0: string;
+    metrics: Record<string, string>;
+    libraries: Record<string, string | null>;
+  };
 }
 
 // Wrapper types for endpoint-specific responses
@@ -348,6 +484,8 @@ export interface ProjectRecord {
   sensitive_columns: string[];
   target_column: string;
   max_step: number;
+  /** NYC LL144 rate type (6 RCNY 5-301(b) selection / (c) scoring); recorded in provenance */
+  ll144_rate_type?: "selection" | "scoring";
 }
 
 export interface ProjectCompareRun {

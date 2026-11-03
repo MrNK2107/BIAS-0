@@ -20,6 +20,13 @@ from .feature_intelligence import detect_proxy_features
 logger = logging.getLogger(__name__)
 
 
+_TREE_BACKGROUND_ROWS = 100
+
+
+def _dense(X):
+    return X.toarray() if hasattr(X, "toarray") else np.asarray(X)
+
+
 def _get_shap_values(
     model, X_background: pd.DataFrame, X_explain: pd.DataFrame
 ) -> np.ndarray | None:
@@ -44,11 +51,23 @@ def _get_shap_values(
     if is_sklearn:
         try:
             estimator = _extract_estimator(model)
-            explainer = shap.TreeExplainer(estimator)
-            X_t = _transform(model, X_explain)
+            # Interventional TreeSHAP against a small background sample.
+            # The default path-dependent mode took ~70 s on 10 rows of the
+            # 5000-row demo (3k one-hot columns) and then failed its additivity
+            # check, so every run paid that cost before falling back to
+            # KernelExplainer. Interventional mode takes ~1 s and is exact.
+            n_bg = max(1, min(_TREE_BACKGROUND_ROWS, len(X_background)))
+            bg = _dense(_transform(model, X_background.sample(n_bg, random_state=0)))
+            explainer = shap.TreeExplainer(
+                estimator, data=bg, feature_perturbation="interventional"
+            )
+            X_t = _dense(_transform(model, X_explain))
             sv = explainer.shap_values(X_t)
-            if isinstance(sv, list) and len(sv) == 2:
-                return sv[1]
+            if isinstance(sv, list):
+                return sv[1] if len(sv) == 2 else sv[0]
+            sv = np.asarray(sv)
+            if sv.ndim == 3:  # (rows, features, classes)
+                return sv[:, :, 1] if sv.shape[2] == 2 else sv[:, :, 0]
             return sv
         except Exception as exc:
             logger.debug("TreeExplainer failed, trying KernelExplainer: %s", exc)

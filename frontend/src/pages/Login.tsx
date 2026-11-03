@@ -5,6 +5,7 @@ import {
   loginWithGoogle,
   getIdTokenCurrent,
   mapAuthError,
+  isDemoMode,
 } from "../firebase/auth";
 import { api } from "../api/client";
 
@@ -57,12 +58,54 @@ export default function Login() {
     }
   }
 
+  if (isDemoMode()) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <div className="auth-header">
+            <img src="/logo.png" alt="BIAS-0" className="auth-logo" />
+            <h1 className="auth-title">BIAS-0</h1>
+            <p className="auth-subtitle">Local demo mode</p>
+          </div>
+          <div className="auth-demo-note" role="note">
+            Firebase is not configured, so accounts are disabled. You can use
+            every feature as a local demo user. Projects live in the backend's
+            memory and reset when it restarts.
+          </div>
+          {error && <div className="auth-error">{error}</div>}
+          <button
+            type="button"
+            className="auth-btn"
+            disabled={submitting}
+            onClick={async () => {
+              setSubmitting(true);
+              try {
+                await login("", "");
+                navigate("/dashboard");
+              } catch (err) {
+                setError(mapAuthError(err));
+              } finally {
+                setSubmitting(false);
+              }
+            }}
+          >
+            Continue as demo user
+          </button>
+          <p className="auth-footer">
+            Start the API with <code>DEMO_MODE=1</code>. To enable real accounts,
+            fill in <code>frontend/.env</code> (see <code>.env.example</code>).
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <img src="/logo.png" alt="BIAS LAB" className="auth-logo" />
-          <h1 className="auth-title">BIAS LAB</h1>
+          <img src="/logo.png" alt="BIAS-0" className="auth-logo" />
+          <h1 className="auth-title">BIAS-0</h1>
           <p className="auth-subtitle">Sign in to your account</p>
         </div>
 

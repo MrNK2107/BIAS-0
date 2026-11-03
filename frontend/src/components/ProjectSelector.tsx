@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChevronDown, Plus, LayoutGrid, Check, Trash2 } from "lucide-react";
+import { ChevronDown, Plus, LayoutGrid, Check, Trash2, Settings } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
 import { useToast } from "../context/ToastContext";
 import { formApi } from "../api/client";
+import ProjectSettingsModal from "./ProjectSettingsModal";
+import type { ProjectRecord } from "../types";
 
 export default function ProjectSelector() {
   const { projects, projectId, setProjectId, refreshProjects, deleteProject } =
@@ -16,6 +18,7 @@ export default function ProjectSelector() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
   const [newDomain, setNewDomain] = useState("finance");
+  const [settingsFor, setSettingsFor] = useState<ProjectRecord | null>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -151,7 +154,28 @@ export default function ProjectSelector() {
                         )}
                         <button
                           type="button"
+                          aria-label={`Settings for ${p.name}`}
+                          title="Project settings"
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "var(--text-muted)",
+                            cursor: "pointer",
+                            padding: 2,
+                            display: "flex",
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsOpen(false);
+                            setSettingsFor(p);
+                          }}
+                        >
+                          <Settings size={13} />
+                        </button>
+                        <button
+                          type="button"
                           disabled={deletingId === String(p.id)}
+                          aria-label={`Delete ${p.name}`}
                           style={{
                             background: "none",
                             border: "none",
@@ -239,6 +263,11 @@ export default function ProjectSelector() {
           </div>
         </>
       )}
+      <ProjectSettingsModal
+        project={settingsFor}
+        onClose={() => setSettingsFor(null)}
+        onSaved={refreshProjects}
+      />
     </div>
   );
 }

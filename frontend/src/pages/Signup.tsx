@@ -45,8 +45,8 @@ export default function Signup() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <img src="/logo.png" alt="BIAS LAB" className="auth-logo" />
-          <h1 className="auth-title">BIAS LAB</h1>
+          <img src="/logo.png" alt="BIAS-0" className="auth-logo" />
+          <h1 className="auth-title">BIAS-0</h1>
           <p className="auth-subtitle">Create your account</p>
         </div>
 

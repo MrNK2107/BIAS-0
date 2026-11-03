@@ -3,8 +3,12 @@ import HelpButton from "./HelpButton";
 
 type GroupMetrics = Record<
   string,
-  { approval_rate: number; tpr: number; fpr: number; accuracy: number }
+  { approval_rate: number; tpr: number | null; fpr: number | null; accuracy: number }
 >;
+
+// TPR (FPR) is null for a group with no actual positives (negatives).
+const rate = (v: number | null) =>
+  v === null || v === undefined ? "n/a" : `${(v * 100).toFixed(1)}%`;
 
 export default function FairnessTable({ data }: { data: GroupMetrics }) {
   const rows = Object.entries(data ?? {});
@@ -17,6 +21,12 @@ export default function FairnessTable({ data }: { data: GroupMetrics }) {
     1,
   );
   return (
+    <div
+      style={{ overflowX: "auto", position: "relative" }}
+      tabIndex={0}
+      role="region"
+      aria-label="Per-group model performance"
+    >
     <table className="table">
       <thead>
         <tr>
@@ -71,8 +81,8 @@ export default function FairnessTable({ data }: { data: GroupMetrics }) {
             >
               {(metrics.approval_rate * 100).toFixed(1)}%
             </td>
-            <td>{(metrics.tpr * 100).toFixed(1)}%</td>
-            <td>{(metrics.fpr * 100).toFixed(1)}%</td>
+            <td>{rate(metrics.tpr)}</td>
+            <td>{rate(metrics.fpr)}</td>
             <td
               style={{
                 color:
@@ -85,5 +95,6 @@ export default function FairnessTable({ data }: { data: GroupMetrics }) {
         ))}
       </tbody>
     </table>
+    </div>
   );
 }

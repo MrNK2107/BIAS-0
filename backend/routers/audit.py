@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from core.auth import require_user
 from core.common import utcnow_iso
@@ -22,13 +22,17 @@ async def audit_data(
     sensitive_cols: str = Form(...),
     target_col: str = Form(...),
     file: UploadFile = File(...),
+    positive_label: str | None = Form(None),
     uid: str = Depends(require_user),
 ) -> dict[str, Any]:
     df = await upload_file_to_dataframe(file)
     sensitive_list = [
         item.strip() for item in sensitive_cols.split(",") if item.strip()
     ]
-    result = run_data_audit(df, sensitive_list, target_col)
+    try:
+        result = run_data_audit(df, sensitive_list, target_col, positive_label=positive_label or None)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     audit_run_repo.create(
         {
             "projectId": project_id,

@@ -30,10 +30,10 @@ REGULATION_NARRATIVES: dict[str, dict[str, str]] = {
         "non_compliant": "Your model does not currently meet EU AI Act requirements for high-risk AI systems. Significant remediation is needed to address fairness gaps before this system could be deployed in regulated contexts.",
     },
     "nyc_law_144": {
-        "intro": "NYC Local Law 144 requires independent bias audits for automated employment decision tools (AEDTs). The law mandates specific fairness metrics, public disclosure, and notification to candidates.",
+        "intro": "NYC Local Law 144 requires independent bias audits for automated employment decision tools (AEDTs). The audit must report selection (or scoring) rates and impact ratios for each sex, race/ethnicity and intersectional category, publish a summary, and notify candidates. The rule sets no pass/fail impact-ratio threshold.",
         "compliant": "Your model meets NYC Local Law 144's audit requirements. Ensure you maintain documentation and notification procedures as required by the law's ongoing compliance provisions.",
-        "near_compliant": "Your model partially satisfies NYC Local Law 144 requirements. To achieve full compliance, address the specific gaps highlighted below — particularly around independent audit and fairness thresholds.",
-        "non_compliant": "Your model does not satisfy NYC Local Law 144 requirements. The law mandates an independent bias audit with specific fairness thresholds that your current model does not meet. Remediation is strongly recommended.",
+        "near_compliant": "Your model partially satisfies NYC Local Law 144 requirements. To achieve full compliance, address the specific gaps highlighted below — particularly the independent audit and the per-category impact ratios.",
+        "non_compliant": "Your model does not satisfy NYC Local Law 144 requirements. The law requires an independent bias audit that reports impact ratios per category; the items below are missing.",
     },
     "gdpr_article_22": {
         "intro": "GDPR Article 22 grants individuals the right to not be subject to decisions based solely on automated processing that produce legal effects. This requires meaningful human oversight and algorithmic fairness.",
@@ -128,7 +128,7 @@ def _get_failed_metrics(compliance: dict[str, Any]) -> list[str]:
     failed: set[str] = set()
     for reg_key, reg in compliance.get("regulations", {}).items():
         for check in reg.get("checks", []):
-            if not check.get("passed", False):
+            if not check.get("passed", False) and not check.get("informational"):
                 check_name = check.get("check", "").lower()
                 if "fairness score" in check_name:
                     failed.add("fairness_score")
@@ -226,7 +226,11 @@ def generate_compliance_narrative(compliance: dict[str, Any]) -> dict[str, Any]:
             status_narrative = narratives.get("non_compliant", "")
 
         # Generate specific failure details
-        failed_checks = [c for c in reg.get("checks", []) if not c.get("passed", False)]
+        failed_checks = [
+            c
+            for c in reg.get("checks", [])
+            if not c.get("passed", False) and not c.get("informational")
+        ]
         failure_details: list[str] = []
         for check in failed_checks:
             check_name = check.get("check", "")

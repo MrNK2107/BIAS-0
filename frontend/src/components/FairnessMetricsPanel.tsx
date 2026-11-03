@@ -28,7 +28,6 @@ const MetricCard: React.FC<MetricItemProps> = ({
   value,
   module,
   metricName,
-  description,
   thresholds,
   isPercentage,
   index,

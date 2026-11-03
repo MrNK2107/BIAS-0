@@ -12,7 +12,6 @@ export default function Step3DataAudit() {
     auditResult: audit,
     proxyResult: proxy,
     domain,
-    advanceStep,
   } = useAppContext();
   const [dismissed, setDismissed] = useState<string[]>([]);
   const navigate = useNavigate();

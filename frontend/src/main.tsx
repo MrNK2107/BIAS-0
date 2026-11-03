@@ -8,7 +8,11 @@ import { AuthProvider } from "./context/AuthContext";
 import { ToastProvider } from "./context/ToastContext";
 import { ChatbotProvider } from "./components/chatbot/ChatbotContext";
 import { ExplainProvider } from "./components/ExplainContext";
-import { getConfigError, FirebaseConfigError } from "./firebase/config";
+import {
+  getConfigError,
+  FirebaseConfigError,
+  isDemoMode,
+} from "./firebase/config";
 
 function ConfigErrorScreen({ error }: { error: FirebaseConfigError }) {
   return (
@@ -70,7 +74,7 @@ function ConfigErrorScreen({ error }: { error: FirebaseConfigError }) {
   );
 }
 
-const configError = getConfigError();
+const configError = isDemoMode() ? null : getConfigError();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

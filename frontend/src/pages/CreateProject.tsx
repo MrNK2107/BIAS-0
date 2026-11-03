@@ -279,6 +279,7 @@ export default function CreateProject() {
                     Industry Domain
                   </label>
                   <select
+                    aria-label="Industry Domain"
                     className="select"
                     value={projectData.domain}
                     onChange={(e) =>

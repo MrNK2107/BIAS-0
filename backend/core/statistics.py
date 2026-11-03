@@ -20,6 +20,11 @@ def bootstrap_fairness_gaps(
 ) -> dict[str, dict[str, float]]:
     """Bootstrap fairness gaps to get confidence intervals.
 
+    ``point`` is the gap observed on the full sample; ``ci_lower`` / ``ci_upper``
+    are percentile bootstrap bounds. (``point`` used to be the bootstrap mean,
+    which is biased for max-minus-min gaps.) Not called by the app, which uses
+    ``core.rigour.bootstrap_gap_cis``; kept for the public ``core.common`` API.
+
     Returns a dict like:
       {
         "demographic_parity_difference": {"point": 0.12, "ci_lower": 0.08, "ci_upper": 0.17},
@@ -28,6 +33,7 @@ def bootstrap_fairness_gaps(
       }
     """
     rng = np.random.default_rng(seed)
+    observed = fairness_gaps(y_pred, y_true, group)
     n = len(y_pred)
     alpha = 1.0 - ci_level
     lower_q = alpha / 2.0 * 100
@@ -53,20 +59,21 @@ def bootstrap_fairness_gaps(
             logger.debug("Bootstrap iteration failed: %s", exc)
             continue
 
-    def _ci(values: list[float]) -> dict[str, float]:
+    def _ci(key: str, values: list[float]) -> dict[str, float]:
+        point = float(observed.get(key, 0.0))
         if not values:
-            return {"point": 0.0, "ci_lower": 0.0, "ci_upper": 0.0}
+            return {"point": point, "ci_lower": point, "ci_upper": point}
         return {
-            "point": float(np.mean(values)),
+            "point": point,
             "ci_lower": float(np.percentile(values, lower_q)),
             "ci_upper": float(np.percentile(values, upper_q)),
         }
 
     return {
-        "demographic_parity_difference": _ci(boot_dpd),
-        "equal_opportunity_difference": _ci(boot_eod),
-        "fpr_gap": _ci(boot_fpr),
-        "fnr_gap": _ci(boot_fnr),
+        "demographic_parity_difference": _ci("demographic_parity_difference", boot_dpd),
+        "equal_opportunity_difference": _ci("equal_opportunity_difference", boot_eod),
+        "fpr_gap": _ci("fpr_gap", boot_fpr),
+        "fnr_gap": _ci("fnr_gap", boot_fnr),
     }
 
 
@@ -85,29 +92,29 @@ def permutation_fairness_pvalue(
     """
     rng = np.random.default_rng(seed)
     observed = fairness_gaps(y_pred, y_true, group)
-    n = len(y_pred)
-
     n_tests = 4  # 4 fairness metrics
 
-    pvalues: dict[str, float] = {}
-    for metric_key in [
+    keys = [
         "demographic_parity_difference",
         "equal_opportunity_difference",
         "fpr_gap",
         "fnr_gap",
-    ]:
-        obs_val = observed.get(metric_key, 0.0)
-        extreme_count = 0
-        for _ in range(n_perm):
-            shuffled = group.sample(
-                frac=1.0, random_state=rng.integers(0, 2**31)
-            ).reset_index(drop=True)
-            shuffled.index = group.index
-            perm_gaps = fairness_gaps(y_pred, y_true, shuffled)
-            if perm_gaps.get(metric_key, 0.0) >= obs_val:
-                extreme_count += 1
+    ]
+    # One shuffle per permutation, all four gaps evaluated on it (previously a
+    # separate set of shuffles per metric, which was 4x slower for the same test).
+    extreme_counts = dict.fromkeys(keys, 0)
+    group_values = group.to_numpy()
+    for _ in range(n_perm):
+        shuffled = pd.Series(rng.permutation(group_values), index=group.index)
+        perm_gaps = fairness_gaps(y_pred, y_true, shuffled)
+        for metric_key in keys:
+            if perm_gaps.get(metric_key, 0.0) >= observed.get(metric_key, 0.0):
+                extreme_counts[metric_key] += 1
+
+    pvalues: dict[str, float] = {}
+    for metric_key in keys:
         # Raw p-value
-        raw_p = (extreme_count + 1) / (n_perm + 1)
+        raw_p = (extreme_counts[metric_key] + 1) / (n_perm + 1)
         # Bonferroni correction: multiply by number of tests, cap at 1.0
         corrected_p = min(raw_p * n_tests, 1.0)
         pvalues[metric_key] = round(corrected_p, 4)

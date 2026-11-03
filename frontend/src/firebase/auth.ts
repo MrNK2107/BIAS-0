@@ -6,15 +6,79 @@ import {
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
-  updateProfile,
+  updateProfile as fbUpdateProfile,
   getIdToken,
   User,
 } from "firebase/auth";
-import { ensureFirebase, FirebaseConfigError, getConfigError } from "./config";
+import {
+  ensureFirebase,
+  FirebaseConfigError,
+  getConfigError,
+  isDemoMode,
+} from "./config";
 
-export { FirebaseConfigError, getConfigError };
+export { FirebaseConfigError, getConfigError, isDemoMode };
 
-export { updateProfile };
+// ── Demo mode (no Firebase) ────────────────────────────────────────────────
+// A fake, locally-held user. The backend must run with DEMO_MODE=1 (or
+// AUTH_DISABLED=1), which treats every request as the dev user, so no token
+// is sent.
+
+const DEMO_SIGNED_OUT_KEY = "bias0.demoSignedOut";
+
+function makeDemoUser(): User {
+  return {
+    uid: "dev-user-id",
+    email: "demo@local.dev",
+    displayName: "Demo User",
+    photoURL: null,
+    emailVerified: true,
+    isAnonymous: false,
+    providerId: "demo",
+    providerData: [],
+    metadata: { creationTime: new Date().toUTCString() },
+  } as unknown as User;
+}
+
+let demoUser: User | null = null;
+const demoListeners = new Set<(u: User | null) => void>();
+
+function demoSignedOut(): boolean {
+  try {
+    return sessionStorage.getItem(DEMO_SIGNED_OUT_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function setDemoUser(user: User | null) {
+  demoUser = user;
+  try {
+    if (user) sessionStorage.removeItem(DEMO_SIGNED_OUT_KEY);
+    else sessionStorage.setItem(DEMO_SIGNED_OUT_KEY, "1");
+  } catch {
+    /* storage unavailable: state stays in memory */
+  }
+  demoListeners.forEach((cb) => cb(user));
+}
+
+function demoSignIn() {
+  const user = demoUser ?? makeDemoUser();
+  setDemoUser(user);
+  return { user, idToken: null as string | null };
+}
+
+export async function updateProfile(
+  user: User,
+  profile: { displayName?: string | null; photoURL?: string | null },
+): Promise<void> {
+  if (isDemoMode()) {
+    const next = { ...user, ...profile } as User;
+    setDemoUser(next);
+    return;
+  }
+  await fbUpdateProfile(user, profile);
+}
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   "auth/api-key-not-valid":
@@ -53,7 +117,7 @@ export function mapAuthError(err: unknown): string {
   if (err instanceof FirebaseConfigError) {
     return err.message;
   }
-  const configErr = getConfigError();
+  const configErr = isDemoMode() ? null : getConfigError();
   if (configErr) {
     return configErr.message;
   }
@@ -71,10 +135,23 @@ function auth() {
 }
 
 export function onAuthChange(cb: (user: User | null) => void) {
+  if (isDemoMode()) {
+    demoListeners.add(cb);
+    if (!demoUser && !demoSignedOut()) demoUser = makeDemoUser();
+    queueMicrotask(() => cb(demoUser));
+    return () => {
+      demoListeners.delete(cb);
+    };
+  }
   return onAuthStateChanged(auth(), cb);
 }
 
 export async function signup(email: string, password: string, name: string) {
+  if (isDemoMode()) {
+    const res = demoSignIn();
+    if (name) await updateProfile(res.user, { displayName: name });
+    return { user: demoUser as User, idToken: null };
+  }
   const cred = await createUserWithEmailAndPassword(auth(), email, password);
   await updateProfile(cred.user, { displayName: name });
   const idToken = await getIdToken(cred.user);
@@ -82,6 +159,7 @@ export async function signup(email: string, password: string, name: string) {
 }
 
 export async function login(email: string, password: string) {
+  if (isDemoMode()) return demoSignIn();
   const cred = await signInWithEmailAndPassword(auth(), email, password);
   const idToken = await getIdToken(cred.user);
   return { user: cred.user, idToken };
@@ -91,16 +169,22 @@ const _googleProvider = new GoogleAuthProvider();
 _googleProvider.setCustomParameters({ prompt: "select_account" });
 
 export async function loginWithGoogle() {
+  if (isDemoMode()) return demoSignIn();
   const cred = await signInWithPopup(auth(), _googleProvider);
   const idToken = await getIdToken(cred.user);
   return { user: cred.user, idToken };
 }
 
 export async function logout() {
+  if (isDemoMode()) {
+    setDemoUser(null);
+    return;
+  }
   await signOut(auth());
 }
 
 export async function getIdTokenCurrent(): Promise<string | null> {
+  if (isDemoMode()) return null;
   const a = auth();
   const user = a.currentUser;
   if (!user) return null;

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import SandboxComparison from "../../components/SandboxComparison";
 import { useAppContext } from "../../context/AppContext";
 import type { FixRecommendation } from "../../types";
@@ -13,13 +12,11 @@ export default function Step8Sandbox() {
     recommendResult,
     runSandboxSimulation,
     sandboxResult,
-    advanceStep,
   } = useAppContext();
   const [selected, setSelected] = useState<string[]>([]);
   const [loading] = useState(false);
   const [scenarioLoading, setScenarioLoading] = useState(false);
   const [simulateError, setSimulateError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!recommendResult) return;

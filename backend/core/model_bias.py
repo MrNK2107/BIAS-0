@@ -17,7 +17,6 @@ from sklearn.metrics import accuracy_score
 
 from .common import (
     MIN_SUBGROUP_SIZE,
-    bootstrap_fairness_gaps,
     build_classifier,
     fairness_gaps,
     fairness_score_from_gaps,
@@ -30,9 +29,90 @@ from .common import (
     risk_from_score,
     train_multiple_models,
 )
+from .data import _binary_codes, _norm_label, infer_positive_label
 from .metrics import ZERO_GAPS
+from .rigour import analyse_statistical_rigour
 
 logger = logging.getLogger(__name__)
+
+
+def _to_native(d: dict) -> dict:
+    """JSON-safe floats. NaN (e.g. TPR of a group with no actual positives)
+    becomes None, not 0.0, so an undefined rate is not reported as zero."""
+    clean: dict[str, float | None] = {}
+    for k, v in d.items():
+        try:
+            val = float(v)
+        except (ValueError, TypeError):
+            clean[str(k)] = None
+            continue
+        clean[str(k)] = None if (np.isnan(val) or np.isinf(val)) else val
+    return clean
+
+
+class LabelMappedModel:
+    """Adapter for a user model that predicts the original target labels
+    ("hired" / "rejected"): ``predict`` returns 0/1 with ``positive_label`` as 1,
+    matching how the target column was encoded. 0/1 and boolean predictions
+    pass through unchanged."""
+
+    def __init__(self, model: Any, positive_label: Any = None, target_labels: Any = None):
+        self.model = model
+        self.positive_label = positive_label
+        self.target_labels = (
+            {_norm_label(v) for v in target_labels} if target_labels is not None else None
+        )
+        self.classes_ = np.array([0, 1])
+
+    def __getattr__(self, name: str) -> Any:
+        # Only reached for attributes not set in __init__ (named_steps, ...).
+        return getattr(self.__dict__["model"], name)
+
+    def encode(self, pred: Any) -> np.ndarray:
+        arr = np.asarray(pred)
+        if arr.dtype == bool:
+            return arr.astype(int)
+        if np.issubdtype(arr.dtype, np.number):
+            uniq = set(np.unique(arr[~np.isnan(arr.astype(float))]).tolist())
+            if uniq <= {0, 1} or self.positive_label is None:
+                return arr
+            try:
+                return (arr.astype(float) == float(self.positive_label)).astype(int)
+            except (TypeError, ValueError):
+                return arr
+        norm = pd.Series(arr).astype(str).str.strip().str.lower()
+        predicted = set(norm.unique())
+        if self.positive_label is None:
+            return _binary_codes(pd.Series(arr)).to_numpy()
+        pos = _norm_label(self.positive_label)
+        unknown = predicted - self.target_labels if self.target_labels else set()
+        if unknown or len(predicted) > 2 or (pos not in predicted and not self.target_labels):
+            raise ValueError(
+                f"The model predicted labels {sorted(predicted)}, which cannot be mapped "
+                f"to the target's positive label '{self.positive_label}'."
+            )
+        return (norm == pos).astype(int).to_numpy()
+
+    def predict(self, X: Any) -> np.ndarray:
+        return self.encode(self.model.predict(X))
+
+    def predict_proba(self, X: Any) -> np.ndarray:
+        proba = np.asarray(self.model.predict_proba(X), dtype=float)
+        classes = list(getattr(self.model, "classes_", [0, 1]))
+        if proba.ndim != 2 or proba.shape[1] != 2 or len(classes) != 2:
+            return proba
+        pos = self.positive_label
+        idx = next(
+            (i for i, c in enumerate(classes) if pos is not None and _norm_label(c) == _norm_label(pos)),
+            classes.index(1) if 1 in classes else 1,
+        )
+        return np.column_stack([1.0 - proba[:, idx], proba[:, idx]])
+
+
+def wrap_label_model(model: Any, positive_label: Any = None, target_labels: Any = None) -> Any:
+    if model is None or isinstance(model, LabelMappedModel):
+        return model
+    return LabelMappedModel(model, positive_label, target_labels)
 
 
 def run_model_bias_analysis(
@@ -44,17 +124,33 @@ def run_model_bias_analysis(
     metric_weights: dict[str, float] | None = None,
     domain: str = "other",
     model_types: list[str] | None = None,
+    rigour_config: dict[str, Any] | None = None,
+    positive_label: Any = None,
 ) -> dict[str, Any]:
-    normalize_target_binary(df, target_col)
+    """``positive_label`` is the target label the user treats as the positive
+    (selected) class, in the original label space; None infers it."""
+    target_labels = None
+    if target_col in df.columns:
+        raw = df[target_col].dropna()
+        already_binary = pd.api.types.is_numeric_dtype(raw) and set(pd.unique(raw)) <= {0, 1}
+        if not already_binary:
+            target_labels = list(pd.unique(raw))
+        if positive_label is None and not already_binary:
+            positive_label = infer_positive_label(raw)
+    normalize_target_binary(df, target_col, positive_label=positive_label)
     prepared = prepare_split(df, target_col)
 
     # ── Multi-model training ─────────────────────────────────────────────
     trained_models: dict[str, Any] = {}
 
+    # User models may predict the original text labels: map them to 0/1 with
+    # the same positive class as the target.
     if model is not None:
-        trained_models["shared"] = model
+        trained_models["shared"] = wrap_label_model(model, positive_label, target_labels)
     elif model_path:
-        trained_models["user_provided"] = joblib.load(model_path)
+        trained_models["user_provided"] = wrap_label_model(
+            joblib.load(model_path), positive_label, target_labels
+        )
     else:
         if model_types is None:
             model_types = ["rf", "xgb", "linear"]
@@ -90,8 +186,8 @@ def run_model_bias_analysis(
                 for key, value in current_metrics.items():
                     metrics[key] = max(metrics[key], value)
 
-                # Bootstrap CI
-                boot = bootstrap_fairness_gaps(y_pred, prepared.y_test, group_series)
+                # Confidence intervals are computed once, for the selected
+                # model, in the statistical-rigour block below.
 
                 # Permutation p-values
                 pvals = permutation_fairness_pvalue(
@@ -120,16 +216,19 @@ def run_model_bias_analysis(
                 )
 
             low_confidence: list[dict[str, Any]] = []
-            for sensitive, gp in group_performance.items():
-                for group, grp_info in gp.items():
-                    if isinstance(grp_info, dict):
-                        n = grp_info.get("count", 0) or 0
-                        if n < MIN_SUBGROUP_SIZE:
-                            low_confidence.append({
-                                "sensitive": sensitive,
-                                "group": group,
-                                "count": n,
-                            })
+            for sensitive in group_performance:
+                # group_metrics has no "count" key, so this used to read 0 and
+                # flag every group as low confidence.
+                sizes = (
+                    df.loc[prepared.y_test.index, sensitive].astype(str).value_counts()
+                )
+                for group, n in sizes.items():
+                    if int(n) < MIN_SUBGROUP_SIZE:
+                        low_confidence.append({
+                            "sensitive": sensitive,
+                            "group": str(group),
+                            "count": int(n),
+                        })
 
             model_results[model_name] = {
                 "overall_accuracy": round(overall_accuracy, 4),
@@ -170,19 +269,6 @@ def run_model_bias_analysis(
                     continue
                 sensitive_features = df.loc[prepared.y_test.index, sensitive]
 
-                def _to_native(d: dict) -> dict:
-                    clean = {}
-                    for k, v in d.items():
-                        try:
-                            val = float(v)
-                            if pd.isna(val) or np.isinf(val):
-                                clean[str(k)] = 0.0
-                            else:
-                                clean[str(k)] = val
-                        except (ValueError, TypeError):
-                            clean[str(k)] = 0.0
-                    return clean
-
                 try:
                     mf = MetricFrame(
                         metrics={
@@ -215,9 +301,29 @@ def run_model_bias_analysis(
             logger.debug("Fairlearn evaluation overall failed: %s", exc)
 
     # ── Intersectional bias (3+ columns) ─────────────────────────────────
-    hidden_bias = _compute_intersectional_bias(
-        df, prepared, sensitive_cols, best_model_name, trained_models
-    )
+    hidden_bias: list[dict[str, Any]] = []
+    if "error" not in best:
+        hidden_bias = _compute_intersectional_bias(
+            df, prepared, sensitive_cols, best_model_name, trained_models
+        )
+
+    # ── Statistical rigour (CIs, small groups, intersections, calibration) ─
+    statistical_rigour: dict[str, Any] = {}
+    if best_model_name in trained_models and "error" not in best:
+        try:
+            statistical_rigour = _statistical_rigour(
+                df, prepared, sensitive_cols, trained_models[best_model_name], rigour_config
+            )
+        except Exception as exc:  # never fail the audit over the extra block
+            logger.warning("Statistical rigour analysis failed: %s", exc)
+
+    # ── NYC LL144 rates (selection always; scoring when the model gives a score) ─
+    ll144: dict[str, Any] = {}
+    if best_model_name in trained_models and "error" not in best:
+        try:
+            ll144 = _ll144_block(df, prepared, sensitive_cols, trained_models[best_model_name])
+        except Exception as exc:  # never fail the audit over the extra block
+            logger.warning("LL144 rates failed: %s", exc)
 
     return {
         "overall_accuracy": best.get("overall_accuracy", 0.0),
@@ -229,11 +335,69 @@ def run_model_bias_analysis(
         "fairlearn_metrics": fairlearn_metrics,
         "model_used": best_model_name,
         "hidden_bias": hidden_bias,
+        "statistical_rigour": statistical_rigour,
+        "ll144": ll144,
         "all_models": {
             name: {k: v for k, v in res.items() if k != "group_performance"}
             for name, res in model_results.items()
         },
     }
+
+
+def _ll144_block(
+    df: pd.DataFrame, prepared: Any, sensitive_cols: list[str], pipe: Any
+) -> dict[str, Any]:
+    """Test-set rates for the LL144 impact-ratio table: ``selection`` from the
+    model's decisions, ``scoring`` from its P(positive) score when it has one
+    (scoring rate = share above the full-sample median, 6 RCNY 5-301(c))."""
+    from .compliance import ll144_rates
+
+    cols = [c for c in sensitive_cols if c in df.columns]
+    if not cols:
+        return {}
+    groups = df.loc[prepared.y_test.index, cols]
+    decisions = np.asarray(pipe.predict(prepared.X_test), dtype=float)
+    out: dict[str, Any] = {"selection": ll144_rates(groups, decisions, "selection")}
+    scores = _positive_scores(pipe, prepared.X_test)
+    out["scoring"] = ll144_rates(groups, scores, "scoring") if scores is not None else None
+    return out
+
+
+def _positive_scores(pipe: Any, X: pd.DataFrame) -> np.ndarray | None:
+    """P(y=1) from the model, or None when it has no usable predict_proba."""
+    if not hasattr(pipe, "predict_proba"):
+        return None
+    try:
+        proba = np.asarray(pipe.predict_proba(X), dtype=float)
+    except Exception as exc:
+        logger.debug("predict_proba unavailable: %s", exc)
+        return None
+    if proba.ndim != 2 or proba.shape[1] != 2:
+        return None
+    classes = list(getattr(pipe, "classes_", [0, 1]))
+    col = classes.index(1) if 1 in classes else 1
+    return proba[:, col]
+
+
+def _statistical_rigour(
+    df: pd.DataFrame,
+    prepared: Any,
+    sensitive_cols: list[str],
+    pipe: Any,
+    config: dict[str, Any] | None,
+) -> dict[str, Any]:
+    idx = prepared.y_test.index
+    y_pred = np.asarray(pipe.predict(prepared.X_test))
+    y_score = _positive_scores(pipe, prepared.X_test)
+    frame = df.loc[idx, [c for c in sensitive_cols if c in df.columns]]
+    return analyse_statistical_rigour(
+        frame,
+        sensitive_cols,
+        prepared.y_test.to_numpy(),
+        y_pred,
+        y_score,
+        config=config,
+    )
 
 
 def _compute_intersectional_bias(

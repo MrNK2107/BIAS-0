@@ -27,6 +27,7 @@ from contextlib import asynccontextmanager  # noqa: E402
 
 from core.config import configure_logging  # noqa: E402
 from routers import (  # noqa: E402
+    assurance,
     audit,
     auth,
     bias,
@@ -34,6 +35,7 @@ from routers import (  # noqa: E402
     colab,
     compliance,
     datasets,
+    evidence,
     explain,
     fixes,
     gemini_narrative,
@@ -50,11 +52,19 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
-    from firebase.client import init_firebase
+    from core.auth import is_auth_disabled, is_demo_mode
+    from firebase.client import init_firebase, is_firestore_available
 
     try:
         init_firebase()
-        logger.info("Firebase initialized successfully")
+        if is_firestore_available():
+            logger.info("Firebase initialized successfully")
+        else:
+            logger.info(
+                "Running without Firebase: in-memory repositories + local file storage"
+            )
+        if is_demo_mode() or is_auth_disabled():
+            logger.warning("Auth disabled (DEMO_MODE/AUTH_DISABLED): all requests act as the dev user")
     except Exception as exc:
         logger.warning("Firebase unavailable — running without persistence: %s", exc)
     yield
@@ -69,6 +79,9 @@ _CORS_ORIGINS = [
     "http://localhost:5174",
     "http://localhost:5175",
 ]
+
+# Extra origins for a deployed UI on another domain, comma-separated (the bundled UI is same-origin).
+_CORS_ORIGINS += [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
 
 _allow_all = os.getenv("CORS_ALLOW_ALL", "0") == "1"
 
@@ -121,12 +134,27 @@ app.include_router(compliance.router, prefix="/api")
 app.include_router(explain.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 app.include_router(datasets.router, prefix="/api")
+app.include_router(evidence.router, prefix="/api")
 app.include_router(gemini_narrative.router, prefix="/api")
+app.include_router(assurance.router, prefix="/api")
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/api/config")
+def public_config() -> dict[str, bool]:
+    """Non-secret runtime flags the frontend can use to adapt (e.g. demo banner)."""
+    from core.auth import is_auth_disabled, is_demo_mode
+    from firebase.client import is_firestore_available
+
+    return {
+        "demo_mode": is_demo_mode(),
+        "auth_disabled": is_auth_disabled(),
+        "persistence": is_firestore_available(),
+    }
 
 
 # ── Frontend Static Serving ──────────────────────────────────────────────
@@ -136,10 +164,22 @@ _frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist
 if os.path.isdir(os.path.join(_frontend_dist, "assets")):
     app.mount("/assets", StaticFiles(directory=os.path.join(_frontend_dist, "assets")), name="assets")
 
+    _dist_root = os.path.realpath(_frontend_dist)
+
+    def _dist_file(rel: str) -> str | None:
+        candidate = os.path.realpath(os.path.join(_dist_root, rel))
+        if candidate.startswith(_dist_root + os.sep) and os.path.isfile(candidate):
+            return candidate
+        return None
+
     @app.get("/{full_path:path}")
     async def serve_frontend(full_path: str):
         if "." in full_path.split("/")[-1]:
-            file_path = os.path.join(_frontend_dist, full_path)
-            if os.path.exists(file_path):
-                return FileResponse(file_path)
+            found = _dist_file(full_path)
+            # The SPA is built with base "./", so on deep links such as
+            # /workflow/step-3 the browser asks for /workflow/assets/x.js.
+            if found is None and "assets/" in full_path:
+                found = _dist_file("assets/" + full_path.rsplit("assets/", 1)[1])
+            if found is not None:
+                return FileResponse(found)
         return FileResponse(os.path.join(_frontend_dist, "index.html"))

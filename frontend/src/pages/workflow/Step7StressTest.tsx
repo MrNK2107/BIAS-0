@@ -15,7 +15,6 @@ export default function Step7StressTest() {
     stressResult,
     biasResult,
     runModelBias,
-    advanceStep,
   } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [customScenarios, setCustomScenarios] = useState<CustomScenario[]>([]);

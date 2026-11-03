@@ -8,6 +8,7 @@ import pandas as pd
 from scipy.stats import chi2_contingency
 from sklearn.cluster import KMeans
 from sklearn.feature_selection import mutual_info_classif
+from threadpoolctl import threadpool_limits
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,25 @@ def _chi2_pvalue(series_a: pd.Series, series_b: pd.Series) -> float:
         return 1.0
 
 
+# Above this many distinct values a sensitive column is treated as top-N + "other"
+# (age, ~50 values, is unaffected).
+MAX_MI_CLASSES = 50
+
+
+def _cap_label_cardinality(labels: np.ndarray, max_classes: int = MAX_MI_CLASSES) -> np.ndarray:
+    """Keep the most frequent ``max_classes`` labels and pool the rest into one.
+
+    mutual_info_classif runs a kNN search per class, so a near-unique sensitive
+    column (e.g. ~3000 zip codes in 5000 rows) took minutes per feature pair.
+    """
+    values, counts = np.unique(labels, return_counts=True)
+    if len(values) <= max_classes:
+        return labels
+    keep = values[np.argsort(-counts, kind="stable")[:max_classes]]
+    other = labels.min() - 1 if np.issubdtype(labels.dtype, np.number) else "__other__"
+    return np.where(np.isin(labels, keep), labels, other)
+
+
 def _mutual_information_score(
     feature: pd.Series, sensitive_encoded: np.ndarray
 ) -> float:
@@ -60,8 +80,12 @@ def _mutual_information_score(
         X = feature_clean.values.reshape(-1, 1).astype(float)
     else:
         X = pd.factorize(feature_clean.astype(str))[0].reshape(-1, 1)
+    sens_aligned = _cap_label_cardinality(np.asarray(sens_aligned))
     try:
-        mi = mutual_info_classif(X, sens_aligned, random_state=42)
+        # One feature column: OpenMP threads in the kNN estimator only add
+        # sync overhead (see the KMeans note below).
+        with threadpool_limits(limits=1):
+            mi = mutual_info_classif(X, sens_aligned, random_state=42)
         return float(mi[0])
     except Exception as exc:
         logger.debug("Mutual information failed: %s", exc)
@@ -86,6 +110,8 @@ def detect_proxy_via_clustering(
             continue
 
         encoded_sensitive, _ = pd.factorize(df[sensitive].astype(str))
+        # A near-unique column (zip_code) meant ~3000 KMeans clusters: >30 s.
+        encoded_sensitive = _cap_label_cardinality(encoded_sensitive)
         n_clusters = max(len(np.unique(encoded_sensitive)), 2)
 
         numeric_features = [
@@ -112,7 +138,11 @@ def detect_proxy_via_clustering(
 
             try:
                 kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-                cluster_labels = kmeans.fit_predict(feature_clean)
+                # One feature column: OpenMP threads only add sync overhead.
+                # Unpinned, each Lloyd run took ~0.7 s on a busy 16-core box
+                # (vs ms), so 3-4 sensitive columns cost 40-100+ s per run.
+                with threadpool_limits(limits=1):
+                    cluster_labels = kmeans.fit_predict(feature_clean)
 
                 purities: list[float] = []
                 for cluster_id in range(n_clusters):

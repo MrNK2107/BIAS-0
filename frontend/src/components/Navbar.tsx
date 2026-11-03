@@ -19,12 +19,12 @@ export default function Navbar({
       <div className="brand">
         <img
           src="/logo.png"
-          alt="BIAS LAB Logo"
+          alt="BIAS-0 Logo"
           className="brand-logo-img"
           style={{ width: "32px", height: "32px", marginRight: "10px" }}
         />
         <div>
-          <strong>BIAS LAB</strong>
+          <strong>BIAS-0</strong>
           <span>FAIRNESS SUITE</span>
         </div>
       </div>

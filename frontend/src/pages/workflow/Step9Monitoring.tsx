@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import MonitoringChart from "../../components/MonitoringChart";
 import MonitoringStatsRow from "../../components/MonitoringStatsRow";
 import MonitoringTimeline from "../../components/MonitoringTimeline";
@@ -74,7 +73,6 @@ export default function Step9Monitoring() {
   const [filterType, setFilterType] = useState<string>("all");
   const [monitorData, setMonitorData] = useState<MonitorData | null>(null);
   const [trendData, setTrendData] = useState<TrendData | null>(null);
-  const navigate = useNavigate();
   const { showToast } = useToast();
 
   const fetchFlags = useCallback(async () => {

@@ -9,11 +9,17 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
-      - CORS_ALLOW_ALL=1
       - LOG_LEVEL=INFO
+      # Comma-separated extra origins if the UI is served from another domain
+      - CORS_ORIGINS=${CORS_ORIGINS:-}
+      # 1 = run without Firebase (auth off, in-memory data, local uploads)
+      - DEMO_MODE=${DEMO_MODE:-0}
 
+    env_file:
+      - path: backend/.env
+        required: false
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=4)"]
       interval: 15s
       timeout: 5s
       retries: 3

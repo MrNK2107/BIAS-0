@@ -31,6 +31,9 @@ import {
   Sparkles,
   TrendingUp,
   Brain,
+  FileJson,
+  FileSpreadsheet,
+  FileArchive,
 } from "lucide-react";
 import { api } from "../api/client";
 import EmptyState from "../components/EmptyState";
@@ -40,6 +43,11 @@ import GuidedTour, {
   DEFAULT_STEPS,
 } from "../components/GuidedTour";
 import { downloadAuditReport } from "../utils/reportExport";
+import {
+  downloadEvidenceBundle,
+  downloadEvidenceCsv,
+  downloadEvidencePack,
+} from "../utils/evidencePack";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -95,9 +103,9 @@ export default function Dashboard() {
         style={{ maxWidth: 880, margin: "0 auto", paddingTop: 80 }}
       >
         <div className="dashboard-intro">
-          <div className="kicker">Intelligence Workspace</div>
+          <div className="kicker">Model workbench · Mode C</div>
           <h1 className="page-title" style={{ marginBottom: 18 }}>
-            Forensic AI Hub
+            Audit a model you own
           </h1>
         </div>
         <div
@@ -131,16 +139,16 @@ export default function Dashboard() {
           style={{ maxWidth: 880, margin: "0 auto", paddingTop: 80 }}
         >
           <div className="dashboard-intro">
-            <div className="kicker">Intelligence Workspace</div>
+            <div className="kicker">Model workbench · Mode C</div>
             <h1 className="page-title" style={{ marginBottom: 18 }}>
-              Forensic AI Hub
+              Audit a model you own
             </h1>
             <p
               className="page-subtitle"
               style={{ margin: "0 auto", textAlign: "center" }}
             >
               {projects.length === 0
-                ? "Create your first project to start auditing a model for bias."
+                ? "A project holds a model, its training data and every audit run: SHAP, proxies, counterfactuals, stress tests and a mitigation sandbox. Only have a log of decisions? The outcome audit needs no model."
                 : "Pick a project from the selector at the top of the page, or create a new one."}
             </p>
           </div>
@@ -155,6 +163,7 @@ export default function Dashboard() {
                 label: "Open Project Selector",
                 to: "#open-selector",
               }}
+              secondaryAction={{ label: "Audit a decision log instead", to: "/assurance" }}
             />
           ) : (
             <EmptyState
@@ -234,18 +243,22 @@ export default function Dashboard() {
   const decisionConfig = {
     "HIGH RISK": {
       color: "#A24A46",
+      // lighter red for the label text: #A24A46 is ~3:1 on the badge (axe color-contrast)
+      text: "#D9837E",
       icon: ShieldAlert,
       bg: "rgba(162, 74, 70, 0.1)",
       label: "High Risk",
     },
     "MODERATE RISK": {
       color: "#C89D7C",
+      text: "#C89D7C",
       icon: AlertTriangle,
       bg: "rgba(200, 157, 124, 0.1)",
       label: "Moderate Risk",
     },
     "LOW RISK": {
       color: "#8FA89B",
+      text: "#8FA89B",
       icon: CheckCircle2,
       bg: "rgba(143, 168, 155, 0.1)",
       label: "Low Risk",
@@ -287,7 +300,7 @@ export default function Dashboard() {
           <DecisionIcon size={18} color={config.color} />
           <strong
             style={{
-              color: config.color,
+              color: config.text,
               letterSpacing: 1,
               fontSize: "0.78rem",
             }}
@@ -702,6 +715,42 @@ export default function Dashboard() {
             whileTap={{ scale: 0.98 }}
           >
             <History size={13} /> Export Report
+          </motion.button>
+          <motion.button
+            className="btn btn-small"
+            disabled={!pipelineResults}
+            onClick={() =>
+              pipelineResults && downloadEvidencePack(pipelineResults)
+            }
+            title="Versioned JSON: input SHA-256, config, metric versions, CIs, calibration bins"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <FileJson size={13} /> Evidence JSON
+          </motion.button>
+          <motion.button
+            className="btn btn-small"
+            disabled={!pipelineResults}
+            onClick={() =>
+              pipelineResults && downloadEvidenceCsv(pipelineResults)
+            }
+            title="Every metric, CI and reliability bin as one flat CSV"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <FileSpreadsheet size={13} /> CSV
+          </motion.button>
+          <motion.button
+            className="btn btn-small"
+            disabled={!pipelineResults}
+            onClick={() =>
+              pipelineResults && downloadEvidenceBundle(pipelineResults)
+            }
+            title="ZIP: evidence pack JSON, CSV, HTML report and a SHA-256 manifest you can verify"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <FileArchive size={13} /> Bundle (.zip)
           </motion.button>
         </div>
       </motion.div>

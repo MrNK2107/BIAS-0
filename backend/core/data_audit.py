@@ -13,6 +13,7 @@ from .common import (
     resolve_positive_label,
     risk_from_gap,
 )
+from .data import describe_target_binarisation, group_labels
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +25,16 @@ def run_data_audit(
     domain: str = "other",
     positive_label: Any = None,
 ) -> dict[str, Any]:
-    normalize_target_binary(df, target_col)
-    if target_col not in df.columns:
-        pos_label = None
-    else:
-        pos_label = resolve_positive_label(df[target_col]) if positive_label is None else positive_label
+    # The user's positive label (original label space) is applied while
+    # encoding; afterwards the positive class is 1. A multi-valued target is
+    # binarised visibly (target_binarisation + warning), never silently.
+    binarisation = (
+        describe_target_binarisation(df[target_col], positive_label)
+        if target_col in df.columns
+        else None
+    )
+    normalize_target_binary(df, target_col, positive_label=positive_label)
+    pos_label = resolve_positive_label(df[target_col]) if target_col in df.columns else None
 
     # ── Dataset Quality Report ───────────────────────────────────────────
     quality = check_dataset_quality(df, target_col, sensitive_cols)
@@ -41,14 +47,13 @@ def run_data_audit(
         if sensitive not in df.columns:
             continue
         stats_for_sensitive: dict[str, Any] = {}
-        counts = df[sensitive].value_counts(dropna=False)
+        # Missing protected values are one visible "(missing)" group, not skipped.
+        labels = group_labels(df[sensitive])
+        counts = labels.value_counts()
 
         for group_value, count in counts.items():
-            if pd.isna(group_value) or str(group_value).lower() == "nan":
-                continue
-
             count_int = int(count)
-            mask = df[sensitive].astype(str) == str(group_value)
+            mask = labels == group_value
             group_df = df[mask]
 
             if target_col in group_df.columns and not group_df.empty:
@@ -111,7 +116,7 @@ def run_data_audit(
         try:
             pd.to_numeric(df[target_col], errors="coerce")
             rates = (
-                df.groupby(sensitive)[target_col]
+                df.groupby(group_labels(df[sensitive]))[target_col]
                 .apply(lambda s: float(pd.to_numeric(s, errors="coerce").mean()))
                 .dropna()
             )
@@ -140,4 +145,6 @@ def run_data_audit(
         "dataset_quality": quality.to_dict(),
         "balanced_attributes": balanced_attributes,
         "imbalanced_attributes": imbalanced_attributes,
+        "target_binarisation": binarisation,
+        "warnings": [binarisation["note"]] if binarisation and binarisation["note"] else [],
     }

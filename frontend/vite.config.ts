@@ -5,10 +5,12 @@ export default defineConfig({
   base: './',
   plugins: [react()],
   server: {
-    port: 5173,
+    // VITE_PORT / API_PORT let e2e runs avoid ports other local servers hold.
+    port: Number(process.env.VITE_PORT) || 5173,
+    strictPort: !!process.env.VITE_PORT,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: `http://127.0.0.1:${process.env.API_PORT || 8000}`,
         changeOrigin: true,
       },
     },
@@ -28,7 +30,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          three: ['three', '@react-three/fiber', '@react-three/drei'],
           recharts: ['recharts'],
           vendor: ['react', 'react-dom', 'framer-motion'],
           firebase: ['firebase/app', 'firebase/auth'],

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FairnessTable from "../../components/FairnessTable";
 import FairnessMetricsPanel from "../../components/FairnessMetricsPanel";
 import HiddenBiasExplorer from "../../components/HiddenBiasExplorer";
+import StatisticalRigourPanel from "../../components/StatisticalRigourPanel";
 import { useAppContext } from "../../context/AppContext";
 import { ArrowRight } from "lucide-react";
 import EmptyState from "../../components/EmptyState";
@@ -10,7 +11,7 @@ import type { ModelSummary } from "../../types";
 import HelpButton from "../../components/HelpButton";
 
 export default function Step4ModelBias() {
-  const { pipelineResults, biasResult, counterfactualResult, advanceStep } =
+  const { pipelineResults, biasResult, counterfactualResult } =
     useAppContext();
   const navigate = useNavigate();
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
@@ -196,6 +197,10 @@ export default function Step4ModelBias() {
         biasResult={biasResult}
         counterfactualResult={counterfactualResult}
       />
+
+      {biasResult.statistical_rigour?.per_attribute && (
+        <StatisticalRigourPanel rigour={biasResult.statistical_rigour} />
+      )}
 
       {displayGroupKey && (
         <div className="card" style={{ marginBottom: 16 }}>

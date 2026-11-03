@@ -4,7 +4,7 @@ import { Upload as UploadIcon } from "lucide-react";
 import EmptyState from "../../components/EmptyState";
 
 export default function Step1Upload() {
-  const { file, setFile, projectId, projects, advanceStep, pipelineResults } = useAppContext();
+  const { file, setFile, projectId, projects, pipelineResults } = useAppContext();
 
   const [headers, setHeaders] = useState<string[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);

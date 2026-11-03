@@ -18,14 +18,18 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeft,
-  ChevronDown,
+  FileCheck2,
+  Users,
 } from "lucide-react";
+import Hallmark from "./brand/Hallmark";
 import ProjectSelector from "./ProjectSelector";
 import UserMenu from "./UserMenu";
 import { useAppContext } from "../context/AppContext";
 import ChatButton from "./chatbot/ChatButton";
 import ChatbotPanel from "./chatbot/ChatbotPanel";
 import ExplainPanel from "./ExplainPanel";
+
+export const START_ANALYSIS_EVENT = "bias:start-analysis";
 
 const STEPS = [
   { id: 1, to: "/workflow/step-1", label: "Upload", icon: Upload },
@@ -40,6 +44,8 @@ const STEPS = [
 ];
 
 const WORKSPACE_ITEMS = [
+  { to: "/assurance", label: "Outcome Audit", icon: FileCheck2 },
+  { to: "/paired", label: "Paired Test", icon: Users },
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/compliance", label: "Compliance", icon: Shield },
   { to: "/versions", label: "Versions", icon: GitCompare },
@@ -61,7 +67,7 @@ export default function WorkflowShell({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { maxStep, projectId, advanceStep, file, runFullAnalysis, isAnalyzing, pipelineResults } = useAppContext();
+  const { maxStep, projectId, advanceStep, file, isAnalyzing, pipelineResults } = useAppContext();
 
   // ── Collapse state ──────────────────────────────────────────────────────
   const [collapsed, setCollapsed] = React.useState(() => {
@@ -84,6 +90,8 @@ export default function WorkflowShell({
 
   const isWorkspacePage =
     location.pathname === "/dashboard" ||
+    location.pathname === "/assurance" ||
+    location.pathname === "/paired" ||
     location.pathname === "/compliance" ||
     location.pathname === "/versions" ||
     location.pathname === "/monitoring" ||
@@ -100,31 +108,52 @@ export default function WorkflowShell({
     : "";
 
   // ── Prev / Next navigation ──────────────────────────────────────────────
+  // React Router applies navigations inside startTransition. While the target
+  // step's lazy chunk is still loading, React keeps rendering the old step and
+  // `location` (so currentStepNum) stays stale even though window.location has
+  // already changed. A Next click in that window used to be handled for the
+  // old step: it re-navigated to the step already being loaded, so the
+  // workflow silently stopped advancing. Remember which location a step
+  // navigation started from and block step navigation until the router has
+  // committed a new location (every push gets a new location.key).
+  const [navFromKey, setNavFromKey] = React.useState<string | null>(null);
+  const navPending = navFromKey !== null && navFromKey === location.key;
+
+  const goToStep = useCallback(
+    (to: string) => {
+      setNavFromKey(location.key);
+      navigate(to);
+    },
+    [location.key, navigate],
+  );
+
   const handlePrev = useCallback(() => {
-    if (!isStep || currentStepNum <= 1) return;
-    navigate(`/workflow/step-${currentStepNum - 1}`);
-  }, [isStep, currentStepNum, navigate]);
+    if (navPending || !isStep || currentStepNum <= 1) return;
+    goToStep(`/workflow/step-${currentStepNum - 1}`);
+  }, [navPending, isStep, currentStepNum, goToStep]);
 
   const handleNext = useCallback(async () => {
-    if (!isStep || currentStepNum >= STEPS.length) return;
+    if (navPending || !isStep || currentStepNum >= STEPS.length) return;
     const nextStep = currentStepNum + 1;
     if (currentStepNum === 1 && !file && !pipelineResults) return; // need file first
 
     // Step 2 → 3: analysis must be triggered from Step2Config's "Start Full Analysis" button.
     // The shell's Next button only navigates if analysis has already completed.
     if (currentStepNum === 2 && nextStep > maxStep) {
-      // Don't trigger analysis here — Step2Config owns the trigger.
-      // Just navigate to step 2's loading state if analysis is running.
+      // Step2Config owns the analysis (it saves the config first), so ask it
+      // to start. This button used to return here and do nothing at all.
+      if (!isAnalyzing) window.dispatchEvent(new Event(START_ANALYSIS_EVENT));
       return;
     }
 
     if (nextStep > maxStep && nextStep > 2) return; // locked
     advanceStep(nextStep);
-    navigate(`/workflow/step-${nextStep}`);
-  }, [isStep, currentStepNum, maxStep, navigate, advanceStep, file, projectId, runFullAnalysis, isAnalyzing, pipelineResults]);
+    goToStep(`/workflow/step-${nextStep}`);
+  }, [navPending, isStep, currentStepNum, maxStep, goToStep, advanceStep, file, isAnalyzing, pipelineResults]);
 
-  const prevDisabled = !isStep || currentStepNum <= 1;
+  const prevDisabled = navPending || !isStep || currentStepNum <= 1;
   const nextLocked =
+    navPending ||
     !isStep ||
     currentStepNum >= STEPS.length ||
     (currentStepNum === 1 && !file && !pipelineResults) ||
@@ -146,12 +175,10 @@ export default function WorkflowShell({
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
       >
         {/* Brand */}
-        <Link to="/" className="workflow-rail-brand" aria-label="BIAS LAB home">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            style={{ width: "24px", height: "24px", flexShrink: 0 }}
-          />
+        <Link to="/" className="workflow-rail-brand" aria-label="BIAS-0 home">
+          <span style={{ flexShrink: 0, display: "inline-flex" }}>
+            <Hallmark mark="0" size={28} ring="BIAS-0 · ASSURANCE · BIAS-0 · ASSURANCE ·" label="BIAS-0" />
+          </span>
           <AnimatePresence>
             {!collapsed && (
               <motion.span
@@ -161,7 +188,7 @@ export default function WorkflowShell({
                 transition={{ duration: 0.2 }}
                 className="workflow-rail-brand-text"
               >
-                BIAS LAB
+                BIAS-0
               </motion.span>
             )}
           </AnimatePresence>
@@ -175,7 +202,7 @@ export default function WorkflowShell({
           {WORKSPACE_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.to;
-            const isLocked = !projectId && item.to !== "/dashboard";
+            const isLocked = !projectId && item.to !== "/dashboard" && item.to !== "/assurance" && item.to !== "/paired";
             return (
               <NavItem
                 key={item.to}
@@ -293,8 +320,8 @@ export default function WorkflowShell({
                     onClick={() => {
                       const stepAccessible = step.id <= maxStep || step.id <= 2;
                       const fileOk = step.id !== 2 || !!file || !!pipelineResults;
-                      if (stepAccessible && fileOk) {
-                        navigate(step.to);
+                      if (stepAccessible && fileOk && !navPending) {
+                        goToStep(step.to);
                       }
                     }}
                     title={step.label}
@@ -306,6 +333,7 @@ export default function WorkflowShell({
             <button
               className="btn btn-primary"
               disabled={nextLocked}
+              aria-busy={navPending || undefined}
               onClick={handleNext}
             >
               {currentStepNum === 2 && maxStep < 3 ? (
@@ -349,7 +377,7 @@ function NavItem({
     <>
       <span style={{ position: "relative", flexShrink: 0 }}>
         {icon}
-        {badge && (
+        {badge && collapsed && (
           <span className="workflow-rail-badge">{badge}</span>
         )}
       </span>
@@ -366,6 +394,9 @@ function NavItem({
           </motion.span>
         )}
       </AnimatePresence>
+      {badge && !collapsed && (
+        <span className="workflow-rail-step" aria-hidden>{badge.padStart(2, "0")}</span>
+      )}
       {isActive && <span className="workflow-rail-active-indicator" />}
     </>
   );

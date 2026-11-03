@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { START_ANALYSIS_EVENT } from "../../components/WorkflowShell";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
+import { binaryTargetValues, csvPreviewRows } from "../../utils/positiveLabel";
 import { useToast } from "../../context/ToastContext";
 import { api, formApi } from "../../api/client";
 import {
@@ -136,6 +138,8 @@ export default function Step2Config() {
     setSensitiveCols,
     targetCol,
     setTargetCol,
+    positiveLabel,
+    setPositiveLabel,
     domain,
     setDomain,
     projectId,
@@ -153,6 +157,7 @@ export default function Step2Config() {
   } = useAppContext();
 
   const [headers, setHeaders] = useState<string[]>([]);
+  const [previewRows, setPreviewRows] = useState<Record<string, string>[]>([]);
   const [localError, setLocalError] = useState<string | null>(null);
   const [analyzingCols, setAnalyzingCols] = useState(false);
   const [suggestions, setSuggestions] = useState<
@@ -167,6 +172,7 @@ export default function Step2Config() {
       const lines = text.trim().split(/\r?\n/);
       const parsedHeaders = lines[0]?.split(",") ?? [];
       setHeaders(parsedHeaders);
+      setPreviewRows(csvPreviewRows(text));
       if (!targetCol && parsedHeaders.length > 0) {
         setTargetCol(parsedHeaders[parsedHeaders.length - 1]);
       }
@@ -178,8 +184,16 @@ export default function Step2Config() {
     if (modelType === "api") setModelType("file");
   }, [modelType, setModelType]);
 
+  // Latest target column, read when column analysis starts. Kept in a ref so
+  // changing the target alone does not re-trigger the (expensive) analysis.
+  const targetColRef = useRef(targetCol);
+  useEffect(() => {
+    targetColRef.current = targetCol;
+  }, [targetCol]);
+
   useEffect(() => {
     if (headers.length < 2 || sensitiveCols.length > 0) return;
+    const currentTarget = targetColRef.current;
     let cancelled = false;
     setAnalyzingCols(true);
     runColumnAnalysis(headers, file!)
@@ -188,14 +202,14 @@ export default function Step2Config() {
         setSuggestions(result);
         const high = result
           .filter((r) => r.confidence >= 0.5)
-          .filter((r) => r.column !== targetCol)
+          .filter((r) => r.column !== currentTarget)
           .map((r) => r.column);
         if (high.length > 0) setSensitiveCols(high);
       })
       .catch(() => {
         if (!cancelled) {
           const guessed = guessSensitiveColumns(headers).filter(
-            (c) => c !== targetCol,
+            (c) => c !== currentTarget,
           );
           if (guessed.length > 0) setSensitiveCols(guessed);
         }
@@ -205,6 +219,10 @@ export default function Step2Config() {
       });
     return () => { cancelled = true; };
   }, [headers, file, sensitiveCols.length, setSensitiveCols]);
+
+  // Two-valued target: let the user say which value is the positive
+  // (favourable / selected) outcome instead of relying on the inference.
+  const targetValues = binaryTargetValues(previewRows, targetCol);
 
   const handleStartAnalysis = async () => {
     setLocalError(null);
@@ -246,6 +264,13 @@ export default function Step2Config() {
       setLocalError(msg);
     }
   };
+
+  // The shell's "Start Full Analysis" button fires this event.
+  useEffect(() => {
+    const onStart = () => { void handleStartAnalysis(); };
+    window.addEventListener(START_ANALYSIS_EVENT, onStart);
+    return () => window.removeEventListener(START_ANALYSIS_EVENT, onStart);
+  });
 
   // Show full-page loading/error overlay while analysis is running
   if (isAnalyzing || (analyzeError && !localError)) {
@@ -446,6 +471,32 @@ export default function Step2Config() {
               </option>
             ))}
           </select>
+
+          {targetValues && (
+            <>
+              <div style={{ height: 16 }} />
+              <label className="section-title" htmlFor="positive-label">
+                Positive outcome
+              </label>
+              <p className="helper" style={{ marginBottom: 8 }}>
+                Which value of '{targetCol}' is the favourable or selected outcome.
+                Selection rates and impact ratios are computed for this value.
+              </p>
+              <select
+                id="positive-label"
+                className="select"
+                value={positiveLabel}
+                onChange={(event) => setPositiveLabel(event.target.value)}
+              >
+                <option value="">Infer automatically</option>
+                {targetValues.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
 
           <div style={{ height: 24 }} />
 

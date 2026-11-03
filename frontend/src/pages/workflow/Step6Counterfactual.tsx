@@ -16,7 +16,6 @@ export default function Step6Counterfactual() {
     sensitiveCols,
     counterfactualResult,
     projectId,
-    advanceStep,
   } = useAppContext();
   const { showToast } = useToast();
   const [sensitiveCol, setSensitiveCol] = useState(
@@ -131,7 +130,8 @@ export default function Step6Counterfactual() {
           </div>
         </div>
         <div className="card" style={{ display: "grid", placeItems: "center" }}>
-          <ScoreGauge score={100 - flip_rate * 100} />
+          {/* Same bands as the flip-rate card on Model Bias: <=5% acceptable, <=15% moderate. */}
+          <ScoreGauge score={100 - flip_rate * 100} bands={{ low: 95, moderate: 85 }} />
           <div className="helper" style={{ marginTop: 8 }}>
             Counterfactual Fairness
           </div>

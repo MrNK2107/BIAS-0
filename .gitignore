@@ -64,3 +64,20 @@ data/
 
 # Firebase service account credentials (raw JSON, never commit)
 *firebase-adminsdk*.json
+
+# Night-run cleanup: stray/local artifacts (kept on disk, untracked)
+MechArenaSetup.exe
+*.exe
+INTERVIEW_GUIDE/
+frontend/playwright-report/
+frontend/test-results/
+playwright-report/
+test-results/
+frontend/step2-config.png
+frontend/search_results.md
+.vite/
+.understand-anything/.trash-*/
+.pytest_cache/
+backend/.local_storage/
+.coverage
+htmlcov/

@@ -5,7 +5,7 @@ from typing import Any
 
 import httpx
 import pandas as pd
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 from sklearn.metrics import accuracy_score
 
@@ -37,6 +37,7 @@ async def bias_model(
     file: UploadFile = File(...),
     model_path: str | None = Form(None),
     metric_priority: str = Form(default="balanced"),
+    positive_label: str | None = Form(None),
     uid: str = Depends(require_user),
 ) -> dict[str, Any]:
     await require_project(project_id, uid)
@@ -45,13 +46,17 @@ async def bias_model(
         item.strip() for item in sensitive_cols.split(",") if item.strip()
     ]
     metric_weights = get_metric_weights(metric_priority)
-    return run_model_bias_analysis(
-        df,
-        sensitive_list,
-        target_col,
-        model_path=model_path,
-        metric_weights=metric_weights,
-    )
+    try:
+        return run_model_bias_analysis(
+            df,
+            sensitive_list,
+            target_col,
+            model_path=model_path,
+            metric_weights=metric_weights,
+            positive_label=positive_label or None,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @router.post("/model-from-api")

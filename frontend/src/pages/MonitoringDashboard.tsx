@@ -68,7 +68,7 @@ export default function MonitoringDashboard() {
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <img
             src="/logo.png"
-            alt="BIAS LAB Logo"
+            alt="BIAS-0 Logo"
             style={{
               width: 80,
               height: 80,

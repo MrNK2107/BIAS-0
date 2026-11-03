@@ -11,3 +11,12 @@ README.md
 implementation_plan.md
 task.md
 walkthrough.md
+# Never bake secrets or local data into the image
+**/.env
+**/.env.*
+!**/.env.example
+backend/.local_storage
+frontend/playwright-report
+frontend/test-results
+frontend/unit/.out
+NIGHT_RUN_NOTES.md

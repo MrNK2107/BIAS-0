@@ -57,7 +57,9 @@ def _apply_fix(
 
         # Encode categoricals for SMOTE
         encoders = {}
-        for col in X_mod.select_dtypes(include=["object", "str"]).columns:
+        # Object or pandas string columns; "str" in select_dtypes only works on pandas >= 3.
+        text_cols = [c for c in X_mod.columns if pd.api.types.is_string_dtype(X_mod[c].dtype)]
+        for col in text_cols:
             le = LabelEncoder()
             X_mod[col] = le.fit_transform(X_mod[col].astype(str))
             encoders[col] = le

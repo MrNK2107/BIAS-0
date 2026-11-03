@@ -14,6 +14,7 @@ import { useEffect, useRef } from "react";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProjectGuard from "./components/ProjectGuard";
 import ErrorBoundary from "./components/ErrorBoundary";
+import DemoBanner from "./components/DemoBanner";
 import { useAuth } from "./context/AuthContext";
 
 const Step1Upload = lazy(() => import("./pages/workflow/Step1Upload"));
@@ -31,7 +32,9 @@ const Step8Sandbox = lazy(() => import("./pages/workflow/Step8Sandbox"));
 const Step9Monitoring = lazy(() => import("./pages/workflow/Step9Monitoring"));
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const HeroPage = lazy(() => import("./pages/HeroPage"));
+const Landing = lazy(() => import("./pages/Landing"));
+const Assurance = lazy(() => import("./pages/Assurance"));
+const PairedTest = lazy(() => import("./pages/PairedTest"));
 const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -42,6 +45,13 @@ const ModelVersionComparison = lazy(
   () => import("./pages/ModelVersionComparison"),
 );
 const NotFound = lazy(() => import("./pages/NotFound"));
+
+const PROTECTED_PATHS = [
+  "/workflow/step-",
+  "/compliance",
+  "/versions",
+  "/monitoring",
+];
 
 function AuthOnlyRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -69,13 +79,6 @@ export default function App() {
   //    This is a safety net _above_ the individual ProjectGuard component.
   //    It only fires AFTER Firestore has responded (projectsLoaded) to
   //    avoid stale localStorage values slipping through.
-  const PROTECTED_PATHS = [
-    "/workflow/step-",
-    "/compliance",
-    "/versions",
-    "/monitoring",
-  ];
-
   useEffect(() => {
     if (!projectsLoaded) return;
 
@@ -125,6 +128,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       {!isHero && !isAuthPage && <BackgroundGrid />}
+      {!isHero && !isAuthPage && <DemoBanner />}
       <Routes
         location={location}
         key={location.pathname === "/" ? "root" : "app"}
@@ -134,7 +138,7 @@ export default function App() {
           element={
             <Suspense fallback={null}>
               <PageTransition locationKey="hero">
-                <HeroPage />
+                <Landing />
               </PageTransition>
             </Suspense>
           }
@@ -186,6 +190,24 @@ export default function App() {
                       element={
                         <PageTransition locationKey="dash">
                           <Dashboard />
+                        </PageTransition>
+                      }
+                    />
+
+                    <Route
+                      path="/assurance"
+                      element={
+                        <PageTransition locationKey="assurance">
+                          <Assurance />
+                        </PageTransition>
+                      }
+                    />
+
+                    <Route
+                      path="/paired"
+                      element={
+                        <PageTransition locationKey="paired">
+                          <PairedTest />
                         </PageTransition>
                       }
                     />

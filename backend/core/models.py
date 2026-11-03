@@ -13,6 +13,25 @@ from xgboost import XGBClassifier
 
 logger = __import__("logging").getLogger(__name__)
 
+# High-cardinality categoricals (e.g. a 5000-row file with ~3000 distinct
+# zip_codes) used to one-hot into thousands of near-unique columns, which made
+# tuning/SHAP slow and added mostly noise. Keep at most this many columns per
+# categorical: the most frequent categories seen in *training* data (the
+# encoder is fit inside the pipeline, so nothing leaks from test rows), with
+# everything rarer -- and unseen test values -- pooled into one
+# "<col>_infrequent_sklearn" column. Low-cardinality columns are unaffected.
+MAX_ONEHOT_CATEGORIES: int | None = 20
+
+
+def make_onehot_encoder() -> OneHotEncoder:
+    if MAX_ONEHOT_CATEGORIES is None:
+        return OneHotEncoder(handle_unknown="ignore", sparse_output=False)
+    return OneHotEncoder(
+        handle_unknown="infrequent_if_exist",
+        max_categories=MAX_ONEHOT_CATEGORIES,
+        sparse_output=False,
+    )
+
 
 def _recommend_model_type(
     X_train: pd.DataFrame, y_train: pd.Series
@@ -61,7 +80,7 @@ def build_classifier(X_train: pd.DataFrame, model_type: str = "rf") -> Pipeline:
     categorical_pipeline = Pipeline(
         steps=[
             ("imputer", SimpleImputer(strategy="most_frequent")),
-            ("encoder", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
+            ("encoder", make_onehot_encoder()),
         ]
     )
     preprocessor = ColumnTransformer(

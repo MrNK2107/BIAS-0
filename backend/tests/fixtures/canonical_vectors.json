@@ -1,0 +1,35 @@
+{
+  "description": "RFC 8785 canonical JSON vectors shared by frontend/src/utils/integrity.ts and backend/core/evidence_integrity.py. Generated from the browser implementation; both test suites must reproduce canonical and sha256 from input.",
+  "vectors": [
+    {
+      "input": "[333333333.33333329, 1E30, 4.50, 2e-3, 0.000000000000000000000000001]",
+      "canonical": "[333333333.3333333,1e+30,4.5,0.002,1e-27]",
+      "sha256": "7c6bc86d861387d823ae596b79ca0b26567dddc22a77acb1f4e06d441f555adf"
+    },
+    {
+      "input": "{\"numbers\":[333333333.33333329,1E30,4.50,2e-3,0.000000000000000000000000001],\"string\":\"\\u20ac$\\u000F\\u000aA'\\u0042\\u0022\\u005c\\\\\\\"\\/\",\"literals\":[null,true,false]}",
+      "canonical": "{\"literals\":[null,true,false],\"numbers\":[333333333.3333333,1e+30,4.5,0.002,1e-27],\"string\":\"€$\\u000f\\nA'B\\\"\\\\\\\\\\\"/\"}",
+      "sha256": "2d5e01a318d0f0879ab568c4be289c8b1f64ef8921a53c6277d5e069978baacb"
+    },
+    {
+      "input": "[0, -0, 1, -1, 5.0, 0.1, 0.2, 0.30000000000000004, 1e21, 1e20, 123456789012345680000, 1e-6, 1e-7, 1.5e-7, 9007199254740993, 1152921504606846976, -1.7976931348623157e308, 5e-324, 100, 1234.5678]",
+      "canonical": "[0,0,1,-1,5,0.1,0.2,0.30000000000000004,1e+21,100000000000000000000,123456789012345680000,0.000001,1e-7,1.5e-7,9007199254740992,1152921504606847000,-1.7976931348623157e+308,5e-324,100,1234.5678]",
+      "sha256": "18535c8f060fa8020b0d0bf1e329592d38db0842d16bddcd6644a877512788f9"
+    },
+    {
+      "input": "{\"b\":1,\"a\":{\"z\":[],\"y\":{}},\"A\":\"x\",\"\\u00e9\":\"e-acute\",\"\\ud83d\\ude00\":\"emoji\",\"\\uffff\":\"max-bmp\",\"10\":\"ten\",\"1\":\"one\"}",
+      "canonical": "{\"1\":\"one\",\"10\":\"ten\",\"A\":\"x\",\"a\":{\"y\":{},\"z\":[]},\"b\":1,\"é\":\"e-acute\",\"😀\":\"emoji\",\"￿\":\"max-bmp\"}",
+      "sha256": "42a2451e3c74f6152530c335f0a9c4a4388ff0894ba2df8d5feecf5b8f0feeec"
+    },
+    {
+      "input": "{\"tab\":\"a\\tb\",\"nl\":\"line\\nnext\",\"ctl\":\"\\u0001\\u001f\\u007f\",\"quote\":\"say \\\"hi\\\"\",\"slash\":\"a/b\",\"bs\":\"c:\\\\d\"}",
+      "canonical": "{\"bs\":\"c:\\\\d\",\"ctl\":\"\\u0001\\u001f\",\"nl\":\"line\\nnext\",\"quote\":\"say \\\"hi\\\"\",\"slash\":\"a/b\",\"tab\":\"a\\tb\"}",
+      "sha256": "8be085a5ba6c666da9b827c76e4698765be4a7eba120866239bd927c8b83bc66"
+    },
+    {
+      "input": "{\"schema\":\"bias0.evidence-pack\",\"schema_version\":\"1.1.0\",\"summary\":{\"fairness_score\":72.4,\"decision\":\"LOW RISK\",\"stage_scores\":{\"model_bias_score\":70,\"data_bias_score\":80.25}},\"gaps\":[{\"point\":0.18,\"ci_lower\":0.12000000000000001,\"ci_upper\":0.24,\"se\":0.03}],\"provenance\":null}",
+      "canonical": "{\"gaps\":[{\"ci_lower\":0.12000000000000001,\"ci_upper\":0.24,\"point\":0.18,\"se\":0.03}],\"provenance\":null,\"schema\":\"bias0.evidence-pack\",\"schema_version\":\"1.1.0\",\"summary\":{\"decision\":\"LOW RISK\",\"fairness_score\":72.4,\"stage_scores\":{\"data_bias_score\":80.25,\"model_bias_score\":70}}}",
+      "sha256": "fe9de3684a64378b5a78e8ec9bd7d40fca2567fef2c0c8c5a0898da056e55b37"
+    }
+  ]
+}

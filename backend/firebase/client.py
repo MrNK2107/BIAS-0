@@ -41,7 +41,9 @@ _FIREBASE_DISABLED = False
 
 
 def is_firestore_available() -> bool:
-    return not _FIREBASE_DISABLED
+    # Resolve lazily so callers never see "available" before init has run.
+    init_firebase()
+    return _firebase_app is not None and not _FIREBASE_DISABLED
 
 
 def init_firebase() -> None:
@@ -49,30 +51,46 @@ def init_firebase() -> None:
     if _firebase_app is not None or _FIREBASE_DISABLED:
         return
 
-    cred = _build_cred_from_env()
-    if cred is None:
-        cred_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
-        if cred_json:
-            cred = credentials.Certificate(json.loads(cred_json))
-        else:
-            cred_path = os.getenv("FIREBASE_SERVICE_ACCOUNT_PATH")
-            if cred_path:
-                cred = credentials.Certificate(cred_path)
+    if os.getenv("DEMO_MODE", "0") == "1":
+        logger.info(
+            "DEMO_MODE=1: Firebase disabled; using in-memory repositories and "
+            "local file storage."
+        )
+        _FIREBASE_DISABLED = True
+        return
+
+    try:
+        cred = _build_cred_from_env()
+        if cred is None:
+            cred_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+            if cred_json:
+                cred = credentials.Certificate(json.loads(cred_json))
+            else:
+                cred_path = os.getenv("FIREBASE_SERVICE_ACCOUNT_PATH")
+                if cred_path:
+                    cred = credentials.Certificate(cred_path)
+    except Exception as exc:  # malformed key / missing file
+        logger.warning("Invalid Firebase credentials (%s); running without Firebase.", exc)
+        cred = None
 
     if cred is None:
         logger.warning(
             "Firebase credentials not found. Firestore/storage will be unavailable. "
             "Set FIREBASE_PROJECT_ID + FIREBASE_PRIVATE_KEY + FIREBASE_CLIENT_EMAIL "
-            "or set AUTH_DISABLED=1 for local development."
+            "or set DEMO_MODE=1 (or AUTH_DISABLED=1) for local development."
         )
         _FIREBASE_DISABLED = True
         return
 
     storage_bucket = os.getenv("FIREBASE_STORAGE_BUCKET")
-    _firebase_app = firebase_admin.initialize_app(
-        cred,
-        options={"storageBucket": storage_bucket} if storage_bucket else None,
-    )
+    try:
+        _firebase_app = firebase_admin.initialize_app(
+            cred,
+            options={"storageBucket": storage_bucket} if storage_bucket else None,
+        )
+    except Exception as exc:
+        logger.warning("Firebase init failed (%s); running without Firebase.", exc)
+        _FIREBASE_DISABLED = True
 
 
 def get_firestore() -> firestore.Client | None:

@@ -10,25 +10,21 @@
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "fixture:evidence": "esbuild scripts/make-evidence-fixture.ts --bundle --platform=node --format=esm --outfile=unit/.out/make-evidence-fixture.mjs --log-level=warning && node unit/.out/make-evidence-fixture.mjs ../backend/tests/fixtures/evidence_bundle_js.zip",
+    "test:unit": "esbuild \"unit/*.test.ts\" --bundle --platform=node --format=esm --outdir=unit/.out --log-level=warning && node --test \"unit/.out/*.test.js\""
   },
   "dependencies": {
     "@radix-ui/react-progress": "^1.1.4",
-    "@react-three/drei": "^9.122.0",
-    "@react-three/fiber": "^8.18.0",
-    "@react-three/postprocessing": "^3.0.4",
-    "@types/three": "^0.184.0",
     "axios": "^1.7.9",
     "firebase": "^12.14.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^0.469.0",
-    "postprocessing": "^6.39.1",
     "radix-ui": "^1.4.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.1",
-    "recharts": "^2.15.1",
-    "three": "^0.184.0"
+    "recharts": "^2.15.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

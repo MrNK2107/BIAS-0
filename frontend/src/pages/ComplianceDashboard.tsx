@@ -13,18 +13,29 @@ import {
   BookOpen,
   ChevronDown,
   Lightbulb,
+  FileArchive,
 } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
-import { api } from "../api/client";
+import { api, formApi } from "../api/client";
 import EmptyState from "../components/EmptyState";
 import HelpButton from "../components/HelpButton";
 import { downloadAuditReport } from "../utils/reportExport";
+import { downloadEvidenceBundle } from "../utils/evidencePack";
+import EvidenceVerify from "../components/EvidenceVerify";
+import {
+  describeExcluded,
+  formatCheckValue,
+  ll144Payload,
+  type ImpactRatioTable,
+} from "../utils/compliance";
 
 interface ComplianceCheck {
   check: string;
   value: number | string;
   passed: boolean;
   required: number | boolean;
+  /** Heuristic shown for context; does not count toward the status. */
+  informational?: boolean;
 }
 
 interface RegulationResult {
@@ -34,6 +45,7 @@ interface RegulationResult {
   total_checks: number;
   checks: ComplianceCheck[];
   overall_score: number;
+  impact_ratios?: Record<string, ImpactRatioTable>;
 }
 
 interface NarrativeSection {
@@ -114,7 +126,8 @@ const STATUS_CONFIG = {
     label: "Partial",
   },
   non_compliant: {
-    color: "#A24A46",
+    // lighter than the brand red so status text passes 4.5:1 on its tint
+    color: "#D9837E",
     bg: "rgba(162, 74, 70, 0.12)",
     icon: XCircle,
     label: "Non-Compliant",
@@ -122,9 +135,36 @@ const STATUS_CONFIG = {
 };
 
 export default function ComplianceDashboard() {
-  const { projectId, projects, pipelineResults } = useAppContext();
+  const { projectId, projects, pipelineResults, refreshProjects } = useAppContext();
   const [compliance, setCompliance] = useState<ComplianceResult | null>(null);
   const [loading, setLoading] = useState(false);
+  // 6 RCNY 5-301(d): the auditor MAY exclude a category under 2% of the data
+  // (off by default); the justification is reported with the excluded category.
+  const [excludeSmall, setExcludeSmall] = useState(false);
+  const [justificationDraft, setJustificationDraft] = useState("");
+  const [justification, setJustification] = useState("");
+  // 6 RCNY 5-301(b) selection rates, or (c) scoring rates when the AEDT outputs a score.
+  // The choice is a project setting (PATCH /project/{id}/settings), so later
+  // runs record it in their provenance.
+  const savedRateType =
+    projects.find((p) => String(p.id) === String(projectId))?.ll144_rate_type ?? "selection";
+  const [rateType, setRateTypeState] = useState<"selection" | "scoring">(savedRateType);
+  useEffect(() => setRateTypeState(savedRateType), [savedRateType]);
+  const [rateTypeError, setRateTypeError] = useState<string | null>(null);
+  const setRateType = (value: "selection" | "scoring") => {
+    setRateTypeState(value);
+    if (!projectId) return;
+    const form = new FormData();
+    form.append("ll144_rate_type", value);
+    formApi
+      .patch(`/project/${projectId}/settings`, form)
+      .then(() => {
+        setRateTypeError(null);
+        return refreshProjects();
+      })
+      .catch(() => setRateTypeError("Could not save the rate type to the project settings."));
+  };
+  const hasScores = Boolean(pipelineResults?.model_bias?.ll144?.scoring);
 
   useEffect(() => {
     if (!projectId || !pipelineResults?.scores) return;
@@ -146,6 +186,9 @@ export default function ComplianceDashboard() {
       has_audit_documentation: true,
       has_independent_audit: false,
       has_human_oversight: true,
+      ...ll144Payload(pipelineResults.model_bias, rateType),
+      exclude_small_categories: excludeSmall,
+      exclusion_justification: excludeSmall && justification ? justification : null,
     };
 
     api
@@ -155,7 +198,7 @@ export default function ComplianceDashboard() {
         setLoading(false);
       })
       .finally(() => setLoading(false));
-  }, [projectId, pipelineResults, projects]);
+  }, [projectId, pipelineResults, projects, excludeSmall, justification, rateType]);
 
   if (!projectId) {
     return (
@@ -404,6 +447,61 @@ export default function ComplianceDashboard() {
         </div>
       </div>
 
+      {/* NYC LL144 auditor option: 6 RCNY 5-301(d) small-category exclusion */}
+      <div
+        className="card"
+        style={{ marginBottom: 24, padding: "14px 18px", fontSize: "0.82rem", display: "grid", gap: 8 }}
+      >
+        <label style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-secondary)" }}>
+          <input
+            type="checkbox"
+            checked={excludeSmall}
+            onChange={(e) => setExcludeSmall(e.target.checked)}
+          />
+          NYC LL144: exclude categories under 2% of the data from the impact ratios (auditor's option,
+          6 RCNY 5-301(d)). Excluded categories are still reported with their count and rate.
+        </label>
+        {hasScores && (
+          <label style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-secondary)" }}>
+            <input
+              type="checkbox"
+              checked={rateType === "scoring"}
+              onChange={(e) => setRateType(e.target.checked ? "scoring" : "selection")}
+            />
+            The tool scores candidates: use scoring rates (share above the median score, 6 RCNY
+            5-301(c)) instead of selection rates. Saved as a project setting and recorded in the
+            provenance of later runs.
+          </label>
+        )}
+        {!hasScores && rateType === "scoring" && (
+          <span style={{ color: "var(--text-secondary)" }}>
+            The project is set to scoring rates, but this run has no scores (the model has no
+            predict_proba), so selection rates are shown.
+          </span>
+        )}
+        {rateTypeError && (
+          <span role="alert" style={{ color: "var(--text-secondary)" }}>
+            {rateTypeError}
+          </span>
+        )}
+        {excludeSmall && (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <input
+              type="text"
+              aria-label="Justification for the exclusion"
+              placeholder="Auditor's justification (required in the summary of results)"
+              value={justificationDraft}
+              maxLength={2000}
+              onChange={(e) => setJustificationDraft(e.target.value)}
+              style={{ flex: "1 1 280px", minWidth: 0 }}
+            />
+            <button className="btn btn-small" onClick={() => setJustification(justificationDraft.trim())}>
+              Apply
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Regulation Cards */}
       <div style={{ display: "grid", gap: 24 }}>
         {Object.entries(regulations).map(([key, reg]) => {
@@ -575,14 +673,25 @@ export default function ComplianceDashboard() {
                           alignItems: "center",
                           gap: 12,
                           padding: "10px 14px",
-                          background: check.passed
-                            ? "rgba(143, 168, 155, 0.06)"
-                            : "rgba(162, 74, 70, 0.06)",
+                          background: check.informational
+                            ? "transparent"
+                            : check.passed
+                              ? "rgba(143, 168, 155, 0.06)"
+                              : "rgba(162, 74, 70, 0.06)",
                           borderRadius: 8,
-                          border: `1px solid ${check.passed ? "rgba(143, 168, 155, 0.15)" : "rgba(162, 74, 70, 0.15)"}`,
+                          border: check.informational
+                            ? "1px dashed var(--border, rgba(127, 127, 127, 0.3))"
+                            : `1px solid ${check.passed ? "rgba(143, 168, 155, 0.15)" : "rgba(162, 74, 70, 0.15)"}`,
                         }}
                       >
-                        {check.passed ? (
+                        {check.informational ? (
+                          <AlertTriangle
+                            size={16}
+                            color="var(--text-muted)"
+                            style={{ flexShrink: 0 }}
+                            aria-label="Informational heuristic, not a legal threshold"
+                          />
+                        ) : check.passed ? (
                           <CheckCircle2
                             size={16}
                             color="#8FA89B"
@@ -608,19 +717,83 @@ export default function ComplianceDashboard() {
                           style={{
                             fontSize: "0.78rem",
                             fontWeight: 600,
-                            color: check.passed ? "#8FA89B" : "#A24A46",
+                            color: check.informational
+                              ? "var(--text-secondary)"
+                              : check.passed
+                                ? "#8FA89B"
+                                : "#A24A46",
                             whiteSpace: "nowrap",
                           }}
                         >
-                          {typeof check.value === "number"
-                            ? (check.value as number) > 1
-                              ? check.value
-                              : `${((check.value as number) * 100).toFixed(1)}%`
-                            : String(check.value)}
+                          {formatCheckValue(check)}
                         </div>
                       </motion.div>
                     ))}
                   </div>
+                  {reg.impact_ratios &&
+                    Object.entries(reg.impact_ratios).map(([attr, table]) => (
+                      <div key={attr} style={{ marginTop: 16 }}>
+                        <div
+                          style={{
+                            fontSize: "0.75rem",
+                            color: "var(--text-muted)",
+                            marginBottom: 6,
+                          }}
+                        >
+                          Impact ratios — {attr} ({table.rate_type ?? "selection"} rate ÷ rate of{" "}
+                          {table.most_selected ??
+                            (table.rate_type === "scoring"
+                              ? "the highest scoring category"
+                              : "the most selected category")}
+                          )
+                        </div>
+                        <table style={{ width: "100%", fontSize: "0.8rem", borderCollapse: "collapse" }}>
+                          <thead>
+                            <tr style={{ color: "var(--text-muted)", textAlign: "left" }}>
+                              <th style={{ padding: "4px 6px", fontWeight: 500 }}>Category</th>
+                              <th style={{ padding: "4px 6px", fontWeight: 500 }}>n</th>
+                              <th style={{ padding: "4px 6px", fontWeight: 500 }}>
+                                {table.rate_type === "scoring" ? "Scoring rate" : "Selection rate"}
+                              </th>
+                              <th style={{ padding: "4px 6px", fontWeight: 500 }}>Impact ratio</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {table.categories.map((row) => (
+                              <tr key={row.category} style={{ color: "var(--text-primary)" }}>
+                                <td style={{ padding: "4px 6px" }}>{row.category}</td>
+                                <td style={{ padding: "4px 6px" }}>{row.n ?? "—"}</td>
+                                <td style={{ padding: "4px 6px" }}>
+                                  {row.rate === null ? "n/a" : `${(row.rate * 100).toFixed(1)}%`}
+                                </td>
+                                <td style={{ padding: "4px 6px" }}>
+                                  {row.impact_ratio === null ? "n/a" : row.impact_ratio.toFixed(3)}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        {table.unknown_categories.length > 0 && (
+                          <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 4 }}>
+                            Unknown category left out of the calculation:{" "}
+                            {table.unknown_categories.join(", ")}
+                            {table.unknown_count ? ` (${table.unknown_count} individuals)` : ""}
+                          </div>
+                        )}
+                        {(table.excluded_categories?.length ?? 0) > 0 && (
+                          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: 4 }}>
+                            Excluded by the auditor (under 2% of the data, 6 RCNY 5-301(d)):{" "}
+                            {table.excluded_categories!.map(describeExcluded).join("; ")}.{" "}
+                            Justification: {table.exclusion_justification ?? "not given"}
+                          </div>
+                        )}
+                        {table.exclusion_note && (
+                          <div style={{ fontSize: "0.72rem", color: "#D9837E", marginTop: 4 }}>
+                            {table.exclusion_note}
+                          </div>
+                        )}
+                      </div>
+                    ))}
                 </div>
               </div>
             </motion.div>
@@ -642,6 +815,8 @@ export default function ComplianceDashboard() {
         style={{
           marginTop: 24,
           display: "flex",
+          flexWrap: "wrap",
+          gap: 16,
           justifyContent: "space-between",
           alignItems: "center",
         }}
@@ -652,7 +827,7 @@ export default function ComplianceDashboard() {
             Generate a compliance-ready audit report for regulatory submission.
           </span>
         </div>
-        <div style={{ display: "flex", gap: 12 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
           <button
             className="btn btn-small"
             onClick={() => {
@@ -662,17 +837,34 @@ export default function ComplianceDashboard() {
                   pipelineResults,
                   "compliance-audit-report",
                    compliance.narrative as unknown as Record<string, unknown>,
+                  compliance.regulations?.nyc_law_144?.impact_ratios ?? null,
                 );
               }
             }}
           >
             <Download size={14} /> Export Report
           </button>
+          <button
+            className="btn btn-small"
+            disabled={!pipelineResults}
+            onClick={() =>
+              pipelineResults &&
+              downloadEvidenceBundle(
+                pipelineResults,
+                compliance?.narrative as unknown as Record<string, unknown> | undefined,
+                compliance?.regulations?.nyc_law_144?.impact_ratios ?? null,
+              )
+            }
+            title="ZIP: evidence pack JSON, CSV, HTML report and a SHA-256 manifest"
+          >
+            <FileArchive size={14} /> Evidence Bundle
+          </button>
           <button className="btn btn-primary btn-small">
             <ExternalLink size={14} /> View Full Audit Trail
           </button>
         </div>
       </div>
+      <EvidenceVerify />
     </div>
   );
 }

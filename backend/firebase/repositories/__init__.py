@@ -1,4 +1,5 @@
 from firebase.repositories.alert_repo import alert_repo
+from firebase.repositories.assurance_ledger_repo import assurance_ledger_repo
 from firebase.repositories.audit_run_repo import audit_run_repo
 from firebase.repositories.compliance_repo import compliance_repo
 from firebase.repositories.flag_repo import flag_repo
@@ -16,4 +17,5 @@ __all__ = [
     "monitoring_log_repo",
     "alert_repo",
     "flag_repo",
+    "assurance_ledger_repo",
 ]

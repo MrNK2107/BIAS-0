@@ -115,3 +115,16 @@ export function getConfigError(): FirebaseConfigError | null {
 export function isFirebaseConfigured(): boolean {
   return getConfigError() === null;
 }
+
+/**
+ * Demo mode: run the full UI without a Firebase project.
+ * Enabled explicitly with VITE_DEMO_MODE=1, or automatically when the Firebase
+ * web config is missing / still has placeholder values. Pair it with the
+ * backend's DEMO_MODE=1 (auth disabled, in-memory storage).
+ */
+export function isDemoMode(): boolean {
+  const flag = readEnv("VITE_DEMO_MODE").trim().toLowerCase();
+  if (flag === "1" || flag === "true") return true;
+  if (flag === "0" || flag === "false") return false;
+  return !isFirebaseConfigured();
+}

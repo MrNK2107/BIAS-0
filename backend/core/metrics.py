@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, confusion_matrix
 
-from .data import _drop_nan
+from .data import _drop_nan, group_labels
 
 # ── Shared Constants ──────────────────────────────────────────────────────
 
@@ -19,26 +19,118 @@ ZERO_GAPS: dict[str, float] = {
 # ── Fairness Gaps ────────────────────────────────────────────────────────
 
 
+def _confusion_counts(
+    y_true: np.ndarray, y_pred: np.ndarray
+) -> tuple[int, int, int, int]:
+    """(tn, fp, fn, tp) for binary 0/1 labels; same as sklearn's confusion_matrix
+    with labels=[0, 1] but without its per-call validation overhead (this runs
+    thousands of times inside bootstrap / permutation tests)."""
+    t1 = y_true == 1
+    t0 = y_true == 0
+    p1 = y_pred == 1
+    p0 = y_pred == 0
+    return (
+        int(np.sum(t0 & p0)),
+        int(np.sum(t0 & p1)),
+        int(np.sum(t1 & p0)),
+        int(np.sum(t1 & p1)),
+    )
+
+
+def _iter_group_arrays(y_true: pd.Series, y_pred: pd.Series, group: pd.Series):
+    """Yield (y_true, y_pred) numpy arrays per group, NaN rows removed."""
+    if y_true.index.equals(group.index) and y_pred.index.equals(group.index):
+        g = group_labels(group).to_numpy()
+        yt = pd.to_numeric(y_true, errors="coerce").to_numpy(dtype=float)
+        yp = pd.to_numeric(y_pred, errors="coerce").to_numpy(dtype=float)
+        valid = ~(np.isnan(yt) | np.isnan(yp))
+        for value in pd.unique(g):
+            m = (g == value) & valid
+            if m.any():
+                yield yt[m], yp[m]
+        return
+    # Fallback: label-aligned indexing (indexes differ between inputs)
+    group_str = group_labels(group)
+    for value in group_str.unique():
+        mask = group_str == value
+        group_true, group_pred = _drop_nan(y_true[mask], y_pred[mask])
+        if len(group_true) == 0:
+            continue
+        yield group_true.to_numpy(dtype=float), group_pred.to_numpy(dtype=float)
+
+
+def _spread(values: np.ndarray) -> float:
+    return float(values.max() - values.min()) if values.size else 0.0
+
+
+def _fairness_gaps_vectorized(
+    y_pred: pd.Series, y_true: pd.Series, group: pd.Series
+) -> dict[str, float]:
+    """Same result as the per-group loop in ``fairness_gaps``, in O(n) with
+    bincount. The loop was O(n * groups): with a near-unique sensitive column
+    (~3700 zip codes) the 3000 bootstrap/permutation calls took ~3 minutes."""
+    codes, uniques = pd.factorize(group_labels(group).to_numpy())
+    yt = pd.to_numeric(y_true, errors="coerce").to_numpy(dtype=float)
+    yp = pd.to_numeric(y_pred, errors="coerce").to_numpy(dtype=float)
+    valid = ~(np.isnan(yt) | np.isnan(yp))
+    codes, yt, yp = codes[valid], yt[valid], yp[valid]
+    k = len(uniques)
+
+    def count(mask: np.ndarray) -> np.ndarray:
+        return np.bincount(codes, weights=mask.astype(float), minlength=k)
+
+    n = np.bincount(codes, minlength=k).astype(float)
+    pred_sum = np.bincount(codes, weights=yp, minlength=k)
+    tp = count((yt == 1) & (yp == 1))
+    fn = count((yt == 1) & (yp == 0))
+    fp = count((yt == 0) & (yp == 1))
+    tn = count((yt == 0) & (yp == 0))
+    present = n > 0
+    pos = present & (tp + fn > 0)
+    neg = present & (fp + tn > 0)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        tpr = tp[pos] / (tp[pos] + fn[pos])
+        fnr = fn[pos] / (tp[pos] + fn[pos])
+        fpr = fp[neg] / (fp[neg] + tn[neg])
+        approval = pred_sum[present] / n[present]
+    return {
+        "demographic_parity_difference": _spread(approval),
+        "equal_opportunity_difference": _spread(tpr),
+        "fpr_gap": _spread(fpr),
+        "fnr_gap": _spread(fnr),
+    }
+
+
 def fairness_gaps(
     y_pred: pd.Series, y_true: pd.Series, group: pd.Series
 ) -> dict[str, float]:
-    group_values = group.astype(str).unique()
-    approval_rates = []
-    tprs = []
-    fprs = []
-    fnrs = []
-    for value in group_values:
-        mask = group.astype(str) == value
-        group_true, group_pred = _drop_nan(y_true[mask], y_pred[mask])
+    """Max-minus-min gap across groups for four group-fairness metrics.
 
-        if len(group_true) == 0:
-            continue
+    - demographic_parity_difference: spread of P(y_pred=1 | group)
+    - equal_opportunity_difference:  spread of TPR = TP / (TP + FN)
+    - fpr_gap:                        spread of FPR = FP / (FP + TN)
+    - fnr_gap:                        spread of FNR = FN / (TP + FN)
 
-        tn, fp, fn, tp = confusion_matrix(group_true, group_pred, labels=[0, 1]).ravel()
+    Equalized odds difference is max(equal_opportunity_difference, fpr_gap).
+    Rows where y_true or y_pred is NaN are ignored.
+    """
+    if y_true.index.equals(group.index) and y_pred.index.equals(group.index):
+        return _fairness_gaps_vectorized(y_pred, y_true, group)
+    approval_rates: list[float] = []
+    tprs: list[float] = []
+    fprs: list[float] = []
+    fnrs: list[float] = []
+    for group_true, group_pred in _iter_group_arrays(y_true, y_pred, group):
+        tn, fp, fn, tp = _confusion_counts(group_true, group_pred)
         approval_rates.append(float(np.mean(group_pred)))
-        tprs.append(float(tp / max(tp + fn, 1)))
-        fprs.append(float(fp / max(fp + tn, 1)))
-        fnrs.append(float(fn / max(tp + fn, 1)))
+        # TPR/FNR are undefined for a group with no actual positives, and FPR
+        # for a group with no actual negatives. Skip undefined rates instead of
+        # treating them as 0, which would fabricate a large gap.
+        if tp + fn > 0:
+            tprs.append(float(tp / (tp + fn)))
+            fnrs.append(float(fn / (tp + fn)))
+        if fp + tn > 0:
+            fprs.append(float(fp / (fp + tn)))
     return {
         "demographic_parity_difference": (
             float(max(approval_rates) - min(approval_rates)) if approval_rates else 0.0
@@ -49,27 +141,54 @@ def fairness_gaps(
     }
 
 
+def equalized_odds_difference(
+    y_pred: pd.Series, y_true: pd.Series, group: pd.Series
+) -> float:
+    """Equalized odds difference: the larger of the TPR gap and the FPR gap.
+
+    Matches ``fairlearn.metrics.equalized_odds_difference`` (method="between_groups").
+    """
+    gaps = fairness_gaps(y_pred, y_true, group)
+    return float(max(gaps["equal_opportunity_difference"], gaps["fpr_gap"]))
+
+
+def disparate_impact_ratio(y_pred: pd.Series, group: pd.Series) -> float:
+    """min / max selection rate across groups (the "four-fifths rule" ratio).
+
+    1.0 means identical approval rates; < 0.8 is the conventional red flag.
+    Returns 1.0 when no group has any approvals (nothing to compare).
+    """
+    pred = pd.Series(y_pred).reset_index(drop=True)
+    grp = group_labels(pd.Series(group)).reset_index(drop=True)
+    mask = pred.notna()
+    rates = pred[mask].astype(float).groupby(grp[mask]).mean()
+    if rates.empty or float(rates.max()) == 0.0:
+        return 1.0
+    return float(rates.min() / rates.max())
+
+
 # ── Group Metrics ────────────────────────────────────────────────────────
 
 
 def group_metrics(
     y_true: pd.Series, y_pred: pd.Series, group: pd.Series
-) -> dict[str, dict[str, float]]:
-    output: dict[str, dict[str, float]] = {}
-    for value in group.astype(str).unique():
-        mask = group.astype(str) == value
+) -> dict[str, dict[str, float | None]]:
+    output: dict[str, dict[str, float | None]] = {}
+    labels = group_labels(group)
+    for value in labels.unique():
+        mask = labels == value
         group_true, group_pred = _drop_nan(y_true[mask], y_pred[mask])
 
         if len(group_true) == 0:
             continue
 
         tn, fp, fn, tp = confusion_matrix(group_true, group_pred, labels=[0, 1]).ravel()
-        denom_pos = max(tp + fn, 1)
-        denom_neg = max(fp + tn, 1)
+        # TPR is undefined without actual positives and FPR without actual
+        # negatives: report None (shown as "n/a"), not a fabricated 0.
         output[value] = {
             "approval_rate": float(np.mean(group_pred)),
-            "tpr": float(tp / denom_pos),
-            "fpr": float(fp / denom_neg),
+            "tpr": float(tp / (tp + fn)) if tp + fn else None,
+            "fpr": float(fp / (fp + tn)) if fp + tn else None,
             "accuracy": float(accuracy_score(group_true, group_pred)),
         }
     return output

@@ -1,6 +1,8 @@
 type ScoreGaugeProps = {
   score: number;
   label?: string;
+  /** Scores at or above `low` read Low Risk, at or above `moderate` Moderate Risk, else High Risk. */
+  bands?: { low: number; moderate: number };
 };
 
 const radius = 54;
@@ -9,6 +11,7 @@ const circumference = 2 * Math.PI * radius;
 export default function ScoreGauge({
   score,
   label = "Fairness Score",
+  bands = { low: 75, moderate: 50 },
 }: ScoreGaugeProps) {
   const normalized = Math.max(0, Math.min(100, score));
   const offset = circumference * (1 - normalized / 100);
@@ -16,10 +19,10 @@ export default function ScoreGauge({
   let color = "var(--green)";
   let riskLabel = "Low Risk";
 
-  if (normalized < 50) {
+  if (normalized < bands.moderate) {
     color = "var(--red)";
     riskLabel = "High Risk";
-  } else if (normalized < 75) {
+  } else if (normalized < bands.low) {
     color = "var(--text-secondary)";
     riskLabel = "Moderate Risk";
   }
